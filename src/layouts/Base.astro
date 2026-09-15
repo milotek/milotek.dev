@@ -27,8 +27,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta name="author" content={site.name} />
     <meta name="theme-color" content="#11111b" />
     <link rel="canonical" href={canonical} />
-    <link rel="icon" href={url('favicon.svg')} type="image/svg+xml" />
     <link rel="icon" href={url('favicon.ico')} sizes="48x48" />
+    <link rel="icon" href={url('favicon.png')} type="image/png" sizes="64x64" />
+    <link rel="apple-touch-icon" href={url('apple-touch-icon.png')} />
     <link rel="alternate" type="application/rss+xml" title={`${site.handle} blog`} href={url('rss.xml')} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
