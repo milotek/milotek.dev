@@ -26,8 +26,7 @@ npm run build
 npm run check
 ```
 
-`npm run dev` and `npm run build` both run `scripts/sync-vault.ts` first.
-The build passes `--force` because the synced blog folder is regenerated every time and Astro's content cache would otherwise keep stale entries.
+The build passes `--force` because the vault sync regenerates the blog folder wholesale and Astro's content cache would otherwise keep stale entries.
 
 ## Where things live
 
@@ -36,14 +35,15 @@ src/config.ts              identity, socials, splash lines, friends' buttons
 src/content/projects/*.md  one file per project, frontmatter + write-up
 src/data/art.ts            the art page
 src/assets/                images, optimised at build time
-scripts/sync-vault.ts      Obsidian vault -> src/content/blog (gitignored)
+src/content/blog/          written by the vault sync, do not edit by hand
 public/88x31.png           the button
 ```
 
 ## Blog
 
 Posts come from `Personal/Blogs/` in the private ObsidianVault repo.
-Clone it to `vault/` (gitignored) and the sync script picks it up.
+Its `sync-blog.yml` workflow runs on every push that touches that folder, rewrites `src/content/blog/` here and pushes the result to `main`, which triggers a deploy.
+It authenticates with the `MILOTEK_DEV_TOKEN` secret in the vault repo, which needs contents write access to this repo.
 
 A post is published when its frontmatter has a date:
 
@@ -54,11 +54,9 @@ summary: One line for the index and the feed.
 ---
 ```
 
-Anything without `published` is a draft and is left out of the build.
-`PUBLISH_DRAFTS=1 npm run build` includes drafts, marked as such, for previewing.
-The dev server always shows drafts.
+Anything without `published` is a draft and never leaves the vault.
 
-Obsidian embeds (`![[file.png|300]]`), wikilinks and callouts are rewritten by the sync script.
+Obsidian embeds (`![[file.png|300]]`), wikilinks and callouts are rewritten by the sync.
 Attachments are found anywhere in the vault by filename.
 
 ## Deploying under a subpath
@@ -70,4 +68,4 @@ SITE_URL=https://example.com SITE_BASE=/milo npm run build
 ```
 
 Every internal link goes through `url()` in `src/lib/url.ts`, so nothing breaks when the path changes.
-The GitHub Actions workflow reads `SITE_URL` and `SITE_BASE` from repository variables and `VAULT_TOKEN` from secrets.
+The GitHub Actions workflow reads `SITE_URL` and `SITE_BASE` from repository variables.

@@ -20,7 +20,7 @@ const projects = defineCollection({
     }),
 });
 
-// Populated by scripts/sync-vault.ts; empty until the vault has been synced.
+// Written by the sync-blog workflow in the ObsidianVault repo, not by hand.
 const blog = defineCollection({
   loader: glob({
     pattern: '*/index.md',
