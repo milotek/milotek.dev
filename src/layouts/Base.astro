@@ -3,8 +3,6 @@ import '../styles/global.css';
 import { site } from '../config';
 import { url } from '../lib/url';
 import Bar from '../components/Bar.astro';
-import Keys from '../components/Keys.astro';
-import Footer from '../components/Footer.astro';
 
 interface Props {
   title?: string;
@@ -45,24 +43,24 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <main class="workspace" id="main">
       <slot />
     </main>
-    <Footer />
-    <Keys />
+    <footer class="foot">
+      <span>{site.name}</span>
+      <span class="foot__sep">/</span>
+      <a href={url('rss.xml')}>rss</a>
+      <span class="foot__sep">/</span>
+      <a href="https://astro.build">astro</a>
+      <span class="foot__sep">/</span>
+      <a href="https://catppuccin.com">catppuccin mocha</a>
+      <span class="foot__sep">/</span>
+      <span>built {new Date().toISOString().slice(0, 10)}</span>
+    </footer>
   </body>
 </html>
 
 <style>
   .skip {
-    position: absolute;
-    left: 1rem;
-    top: -3rem;
-    background: var(--accent);
-    color: var(--crust);
-    padding: 0.4rem 0.8rem;
-    border-radius: var(--radius-sm);
-    text-decoration: none;
-    z-index: 10;
+    position: absolute; left: 1rem; top: -3rem; z-index: 10;
+    background: var(--accent); color: var(--crust); padding: 0.4rem 0.8rem; border-radius: var(--radius-sm); text-decoration: none;
   }
-  .skip:focus {
-    top: 1rem;
-  }
+  .skip:focus { top: 1rem; }
 </style>

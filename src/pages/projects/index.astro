@@ -10,7 +10,7 @@ const hobby = all.filter((p) => p.data.hobby);
 ---
 
 <Base title="projects" description="Things Milo Tekchandani has built: backend and infrastructure, hardware, apps, games.">
-  <Win title="~/projects" meta={`${all.length} total`} focus>
+  <Win title="~/projects" meta={`${all.length} total`}>
     <p class="lead">
       The day job is the Google Search app for Android: backend, infrastructure, developer tooling, and lately page
       transitions. None of that is on GitHub. This is the rest.
@@ -26,11 +26,3 @@ const hobby = all.filter((p) => p.data.hobby);
     </div>
   </Win>
 </Base>
-
-<style>
-  .lead {
-    color: var(--subtext1);
-    margin: 0 0 1.5rem;
-    max-width: 38rem;
-  }
-</style>

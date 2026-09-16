@@ -13,14 +13,11 @@ export async function getStaticPaths() {
 const { project } = Astro.props;
 const { Content } = await render(project);
 const { title, blurb, status, year, tech, links, images } = project.data;
-
-const gallery = await Promise.all(
-  images.map(async (img) => ({ ...img, full: (await getImage({ src: img.src, width: 1600 })).src })),
-);
+const gallery = await Promise.all(images.map(async (img) => ({ ...img, full: (await getImage({ src: img.src, width: 1600 })).src })));
 ---
 
 <Base title={title} description={blurb} type="article">
-  <Win title={`~/projects/${project.id}`} span="twothirds" meta={year} read focus>
+  <Win title={`~/projects/${project.id}`} span="twothirds" meta={year} read>
     <article class="prose">
       <h1>{title}</h1>
       <p class="blurb">{blurb}</p>
@@ -48,7 +45,7 @@ const gallery = await Promise.all(
     </div>
     {
       links.length > 0 && (
-        <ul class="links">
+        <ul class="list links">
           {links.map((l) => (
             <li>
               <a href={l.href}>{l.label}</a>
@@ -63,50 +60,18 @@ const gallery = await Promise.all(
 </Base>
 
 <style>
-  .blurb {
-    color: var(--subtext1);
-    font-size: 1.15rem;
-    margin-top: 0.5rem;
-  }
-  .meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-    align-items: center;
-  }
-  .links {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    margin-top: 1rem;
-  }
-  .links a::before {
-    content: '↗ ';
-    color: var(--overlay1);
-  }
-  .gallery {
-    margin-top: 2rem;
-    display: grid;
-    gap: var(--gap);
-    grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
-  }
+  .blurb { color: var(--subtext1); font-size: 1.15rem; margin-top: 0.5rem; }
+  .meta { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; }
+  .links { margin-top: 1rem; }
+  .links a::before { content: '↗ '; color: var(--overlay1); }
+  .gallery { margin-top: 2rem; display: grid; gap: var(--gap); grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr)); }
   .gallery a {
-    display: block;
-    border-radius: var(--radius-sm);
-    overflow: hidden;
-    border: 1px solid var(--surface0);
-    background: var(--crust);
+    display: block; overflow: hidden;
+    background: var(--crust); border: 1px solid var(--surface0); border-radius: var(--radius-sm);
   }
   .gallery img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    aspect-ratio: 4 / 3;
+    width: 100%; height: 100%; object-fit: cover; aspect-ratio: 4 / 3;
     transition: transform var(--fast) var(--ease);
   }
-  .gallery a:hover img {
-    transform: scale(1.02);
-  }
+  .gallery a:hover img { transform: scale(1.02); }
 </style>

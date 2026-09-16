@@ -33,46 +33,16 @@ const { title, blurb, status, year, tech, cover } = project.data;
 </a>
 
 <style>
-  .project {
-    padding: 0;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
+  .project { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
   .cover {
-    display: block;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-    border-bottom: 1px solid var(--surface0);
-    background: var(--crust);
+    display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover;
+    background: var(--crust); border-bottom: 1px solid var(--surface0);
   }
   .cover--none {
-    background: repeating-linear-gradient(
-      135deg,
-      var(--crust),
-      var(--crust) 7px,
-      var(--base) 7px,
-      var(--base) 14px
-    );
+    background: repeating-linear-gradient(135deg, var(--crust), var(--crust) 7px, var(--base) 7px, var(--base) 14px);
   }
-  .body {
-    padding: 1rem 1.2rem 1.1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    flex: 1;
-  }
-  .title-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 0.5rem;
-  }
-  .blurb {
-    color: var(--subtext1);
-  }
-  .year {
-    color: var(--accent);
-  }
+  .body { padding: 1rem 1.2rem 1.1rem; display: flex; flex-direction: column; gap: 0.5rem; flex: 1; }
+  .title-row { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
+  .blurb { color: var(--subtext1); }
+  .year { color: var(--accent); }
 </style>
