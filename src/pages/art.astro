@@ -33,17 +33,10 @@ const items = await Promise.all(
 </Base>
 
 <style>
-  .lead {
-    color: var(--subtext1);
-    margin: 0 0 1.5rem;
-    max-width: 38rem;
-  }
+  .lead { color: var(--subtext1); margin: 0 0 1.5rem; max-width: 38rem; }
   /* Three columns here rather than two: the window is wider than the old
      centred measure, so two would stretch each piece past its own resolution. */
-  .masonry {
-    columns: 3;
-    column-gap: var(--gap);
-  }
+  .masonry { columns: 3; column-gap: var(--gap); }
   figure {
     margin: 0 0 var(--gap);
     break-inside: avoid;
@@ -52,29 +45,14 @@ const items = await Promise.all(
     border-radius: var(--radius-sm);
     overflow: hidden;
   }
-  figure a {
-    display: block;
-  }
-  figure img {
-    width: 100%;
-    transition: transform var(--fast) var(--ease);
-  }
-  figure:hover img {
-    transform: scale(1.01);
-  }
-  figcaption {
-    padding: 0.55rem 0.8rem 0.65rem;
-    font-size: 0.9rem;
-    color: var(--subtext1);
-  }
+  figure a { display: block; }
+  figure img { width: 100%; transition: transform var(--fast) var(--ease); }
+  figure:hover img { transform: scale(1.01); }
+  figcaption { padding: 0.55rem 0.8rem 0.65rem; font-size: 0.9rem; color: var(--subtext1); }
   @media (max-width: 60rem) {
-    .masonry {
-      columns: 2;
-    }
+    .masonry { columns: 2; }
   }
   @media (max-width: 34rem) {
-    .masonry {
-      columns: 1;
-    }
+    .masonry { columns: 1; }
   }
 </style>

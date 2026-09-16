@@ -63,29 +63,10 @@ const gallery = await Promise.all(
 </Base>
 
 <style>
-  .blurb {
-    color: var(--subtext1);
-    font-size: 1.15rem;
-    margin-top: 0.5rem;
-  }
-  .meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-    align-items: center;
-  }
-  .links {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    margin-top: 1rem;
-  }
-  .links a::before {
-    content: '↗ ';
-    color: var(--overlay1);
-  }
+  .blurb { color: var(--subtext1); font-size: 1.15rem; margin-top: 0.5rem; }
+  .meta { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; }
+  .links { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.4rem; margin-top: 1rem; }
+  .links a::before { content: '↗ '; color: var(--overlay1); }
   .gallery {
     margin-top: 2rem;
     display: grid;
@@ -106,7 +87,5 @@ const gallery = await Promise.all(
     aspect-ratio: 4 / 3;
     transition: transform var(--fast) var(--ease);
   }
-  .gallery a:hover img {
-    transform: scale(1.02);
-  }
+  .gallery a:hover img { transform: scale(1.02); }
 </style>

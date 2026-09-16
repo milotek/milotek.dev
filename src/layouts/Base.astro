@@ -55,14 +55,12 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     position: absolute;
     left: 1rem;
     top: -3rem;
+    z-index: 10;
     background: var(--accent);
     color: var(--crust);
     padding: 0.4rem 0.8rem;
     border-radius: var(--radius-sm);
     text-decoration: none;
-    z-index: 10;
   }
-  .skip:focus {
-    top: 1rem;
-  }
+  .skip:focus { top: 1rem; }
 </style>

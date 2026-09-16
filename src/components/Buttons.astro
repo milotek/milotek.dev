@@ -45,38 +45,14 @@ const snippet = `<a href="${new URL(url(''), Astro.site).href}"><img src="${own}
 </script>
 
 <style>
-  .wall {
-    margin: 0;
-  }
-  .head {
-    display: flex;
-    align-items: baseline;
-    gap: 1rem;
-    flex-wrap: wrap;
-    margin-bottom: 1rem;
-  }
-  .head p {
-    font-size: 0.9rem;
-  }
-  .buttons {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  .buttons img {
-    image-rendering: pixelated;
-    transition: transform var(--fast) var(--ease);
-  }
-  .buttons a:hover img {
-    transform: scale(1.5);
-  }
-  .buttons a {
-    display: block;
-    outline-offset: 2px;
-  }
+  .wall { margin: 0; }
+  .head { display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .head p { font-size: 0.9rem; }
+  .buttons { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .buttons a { display: block; outline-offset: 2px; }
+  .buttons img, .mine img { image-rendering: pixelated; }
+  .buttons img { transition: transform var(--fast) var(--ease); }
+  .buttons a:hover img { transform: scale(1.5); }
   .mine {
     margin-top: 1.25rem;
     padding-top: 1rem;
@@ -85,9 +61,6 @@ const snippet = `<a href="${new URL(url(''), Astro.site).href}"><img src="${own}
     align-items: center;
     gap: 1rem;
     font-size: 0.9rem;
-  }
-  .mine img {
-    image-rendering: pixelated;
   }
   button {
     font: inherit;
@@ -101,7 +74,5 @@ const snippet = `<a href="${new URL(url(''), Astro.site).href}"><img src="${own}
     cursor: pointer;
     margin-top: 0.2rem;
   }
-  button:hover {
-    border-color: var(--accent);
-  }
+  button:hover { border-color: var(--accent); }
 </style>

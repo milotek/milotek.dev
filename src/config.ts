@@ -2,8 +2,7 @@ export const site = {
   name: 'Milo Tekchandani',
   handle: 'milotek',
   role: 'Software Engineering @ Google, London',
-  description:
-    'Software Engineer @ Google, working on the Google Search app for Android and iOS.',
+  description: 'Software Engineer @ Google, working on the Google Search app for Android and iOS.',
   email: 'milo@milotek.dev',
   phone: '+44 7745 011538',
   cv: 'https://github.com/milotek/milotek/raw/main/CV.pdf',
@@ -17,26 +16,14 @@ export const site = {
 
 // The number is both the visible label and the keybind, so the bar and the
 // keybind overlay have to agree on it; they both read this list.
-export interface Workspace {
-  key: string;
-  name: string;
-  path: string;
-}
-
-export const workspaces: Workspace[] = [
+export const workspaces = [
   { key: '1', name: 'home', path: '' },
   { key: '2', name: 'projects', path: 'projects/' },
   { key: '3', name: 'blog', path: 'blog/' },
   { key: '4', name: 'art', path: 'art/' },
 ];
 
-export interface Social {
-  label: string;
-  href: string;
-  handle: string;
-}
-
-export const socials: Social[] = [
+export const socials = [
   { label: 'Email', href: `mailto:${site.email}`, handle: site.email },
   { label: 'GitHub', href: 'https://github.com/milotek', handle: '@milotek' },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/fired/', handle: 'in/fired' },
@@ -55,12 +42,4 @@ export const splashes = [
   'de_lake player',
 ];
 
-export interface Friend {
-  name: string;
-  href: string;
-  button: string;
-}
-
-export const friends: Friend[] = [
-  { name: 'test', href: 'https://bomberfish.ca', button: 'https://bomberfish.ca/button.gif' },
-];
+export const friends = [{ name: 'test', href: 'https://bomberfish.ca', button: 'https://bomberfish.ca/button.gif' }];

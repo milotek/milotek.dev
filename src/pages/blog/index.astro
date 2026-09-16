@@ -39,39 +39,13 @@ const posts = await getPosts();
 </Base>
 
 <style>
-  .lead {
-    color: var(--subtext1);
-    margin: 0 0 1.5rem;
-  }
-  .posts {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-  .posts li {
-    display: flex;
-    gap: 1.25rem;
-    align-items: baseline;
-  }
-  .title {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 1.1rem;
-    text-decoration: none;
-  }
-  .title:hover {
-    text-decoration: underline;
-  }
-  .pill {
-    margin-left: 0.5rem;
-    vertical-align: middle;
-  }
+  .lead { color: var(--subtext1); margin: 0 0 1.5rem; }
+  .posts { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+  .posts li { display: flex; gap: 1.25rem; align-items: baseline; }
+  .title { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; text-decoration: none; }
+  .title:hover { text-decoration: underline; }
+  .pill { margin-left: 0.5rem; vertical-align: middle; }
   @media (max-width: 30rem) {
-    .posts li {
-      flex-direction: column;
-      gap: 0.3rem;
-    }
+    .posts li { flex-direction: column; gap: 0.3rem; }
   }
 </style>
