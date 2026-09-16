@@ -3,16 +3,13 @@ interface Props {
   title: string;
   span?: 'half' | 'third' | 'twothirds';
   meta?: string;
-  focus?: boolean;
   side?: boolean;
   read?: boolean;
   id?: string;
 }
 
-const { title, span, meta, focus, side, read, id } = Astro.props;
-const classes = ['win', span && `win--${span}`, focus && 'win--focus', side && 'win--side', read && 'win--read']
-  .filter(Boolean)
-  .join(' ');
+const { title, span, meta, side, read, id } = Astro.props;
+const classes = ['win', span && `win--${span}`, side && 'win--side', read && 'win--read'].filter(Boolean).join(' ');
 ---
 
 <section class={classes} id={id}>

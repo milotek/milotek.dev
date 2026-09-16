@@ -10,9 +10,7 @@ const lastfmReady = Boolean(site.lastfm.user && site.lastfm.apiKey);
     <div class="row">
       <div class="art" aria-hidden="true" hidden={!lastfmReady}></div>
       <div class="meta">
-        <p class="track">
-          {lastfmReady ? 'checking…' : <a href={site.spotify}>Spotify profile</a>}
-        </p>
+        <p class="track">{lastfmReady ? 'checking…' : <a href={site.spotify}>Spotify profile</a>}</p>
         <p class="sub muted">{lastfmReady ? ' ' : 'Last.fm is not wired up yet.'}</p>
       </div>
     </div>
@@ -21,9 +19,7 @@ const lastfmReady = Boolean(site.lastfm.user && site.lastfm.apiKey);
   <section class="card github" aria-labelledby="github-h" data-user={site.github}>
     <h3 id="github-h" class="mono muted">github</h3>
     <ul class="events">
-      <li class="muted">
-        loading… (or <a href={`https://github.com/${site.github}`}>go there</a>)
-      </li>
+      <li class="muted">loading… (or <a href={`https://github.com/${site.github}`}>go there</a>)</li>
     </ul>
   </section>
 </div>
@@ -54,14 +50,14 @@ const lastfmReady = Boolean(site.lastfm.user && site.lastfm.apiKey);
     const track = card.querySelector<HTMLElement>('.track')!;
     const sub = card.querySelector<HTMLElement>('.sub')!;
     const art = card.querySelector<HTMLElement>('.art')!;
+    const params = new URLSearchParams({
+      method: 'user.getrecenttracks',
+      user: card.dataset.user,
+      api_key: card.dataset.key,
+      format: 'json',
+      limit: '1',
+    });
     try {
-      const params = new URLSearchParams({
-        method: 'user.getrecenttracks',
-        user: card.dataset.user,
-        api_key: card.dataset.key,
-        format: 'json',
-        limit: '1',
-      });
       const res = await fetch(`https://ws.audioscrobbler.com/2.0/?${params}`);
       if (!res.ok) throw new Error(String(res.status));
       const t = (await res.json())?.recenttracks?.track?.[0];
@@ -70,10 +66,7 @@ const lastfmReady = Boolean(site.lastfm.user && site.lastfm.apiKey);
       track.replaceChildren(el('a', { href: t.url, textContent: t.name }));
       sub.textContent = `${t.artist['#text']} · ${live ? 'now playing' : ago(Number(t.date.uts) * 1000)}`;
       const img = t.image?.find((i: { size: string }) => i.size === 'large')?.['#text'];
-      if (img) {
-        art.style.backgroundImage = `url("${img}")`;
-        art.classList.add('has-art');
-      }
+      if (img) art.style.backgroundImage = `url("${img}")`;
       if (live) card.classList.add('live-now');
     } catch {
       track.textContent = 'quiet for now';
@@ -81,47 +74,17 @@ const lastfmReady = Boolean(site.lastfm.user && site.lastfm.apiKey);
     }
   }
 
-  interface GhEvent {
-    type: string;
-    created_at: string;
-    repo: { name: string };
-    payload: {
-      action?: string;
-      ref_type?: string;
-      ref?: string;
-      pull_request?: { number: number; title: string; html_url: string };
-      issue?: { number: number; html_url: string };
-      release?: { tag_name: string; html_url: string };
-    };
-  }
-
-  function describe(e: GhEvent): { text: string; href: string } | undefined {
-    const repo = `https://github.com/${e.repo.name}`;
-    const { action, ref, ref_type, pull_request: pr, issue, release } = e.payload;
-    switch (e.type) {
-      case 'PushEvent': {
-        // The public events API no longer includes the commit count.
-        const branch = ref?.replace('refs/heads/', '');
-        return { text: `pushed to ${e.repo.name}${branch && branch !== 'main' ? ` (${branch})` : ''}`, href: repo };
-      }
-      case 'PullRequestEvent':
-        return { text: `${action} PR #${pr!.number} in ${e.repo.name}`, href: pr!.html_url };
-      case 'IssuesEvent':
-        return { text: `${action} an issue in ${e.repo.name}`, href: issue!.html_url };
-      case 'CreateEvent':
-        return ref_type === 'repository'
-          ? { text: `created ${e.repo.name}`, href: repo }
-          : { text: `created ${ref_type} ${ref} in ${e.repo.name}`, href: repo };
-      case 'ReleaseEvent':
-        return { text: `released ${release!.tag_name} of ${e.repo.name}`, href: release!.html_url };
-      case 'WatchEvent':
-        return { text: `starred ${e.repo.name}`, href: repo };
-      case 'ForkEvent':
-        return { text: `forked ${e.repo.name}`, href: repo };
-      default:
-        return undefined;
-    }
-  }
+  // The interesting half of a public event is which repo it touched, so every
+  // type reduces to a verb and links to the repo rather than the exact object.
+  const VERBS: Record<string, string> = {
+    PushEvent: 'pushed to',
+    PullRequestEvent: 'PR in',
+    IssuesEvent: 'issue in',
+    CreateEvent: 'created',
+    ReleaseEvent: 'released',
+    WatchEvent: 'starred',
+    ForkEvent: 'forked',
+  };
 
   async function github() {
     const card = document.querySelector<HTMLElement>('.github');
@@ -130,15 +93,15 @@ const lastfmReady = Boolean(site.lastfm.user && site.lastfm.apiKey);
     try {
       const res = await fetch(`https://api.github.com/users/${card.dataset.user}/events/public?per_page=30`);
       if (!res.ok) throw new Error(String(res.status));
-      const events = (await res.json()) as GhEvent[];
-      const items = events.map((e) => ({ when: e.created_at, ...describe(e) })).filter((i) => i.text).slice(0, 4);
+      const events = (await res.json()) as { type: string; created_at: string; repo: { name: string } }[];
+      const items = events.filter((e) => VERBS[e.type]).slice(0, 4);
       if (!items.length) throw new Error('empty');
       list.replaceChildren(
-        ...items.map((i) => {
+        ...items.map((e) => {
           const li = document.createElement('li');
           li.append(
-            el('a', { href: i.href!, textContent: i.text! }),
-            el('span', { className: 'when', textContent: ago(i.when) }),
+            el('a', { href: `https://github.com/${e.repo.name}`, textContent: `${VERBS[e.type]} ${e.repo.name}` }),
+            el('span', { className: 'when', textContent: ago(e.created_at) }),
           );
           return li;
         }),
@@ -155,37 +118,21 @@ const lastfmReady = Boolean(site.lastfm.user && site.lastfm.apiKey);
 </script>
 
 <style>
-  .live {
-    display: grid;
-    gap: var(--gap);
-    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-  }
+  .live { display: grid; gap: var(--gap); grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
   h3 { font-family: var(--font-mono); font-weight: 500; font-size: 0.8rem; margin-bottom: 0.7rem; }
   h3::before { content: '● '; color: var(--surface2); }
   .live-now h3::before { color: var(--green); }
   .row { display: flex; gap: 0.9rem; align-items: center; }
   .art {
-    flex: none;
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: var(--radius-sm);
-    background: var(--surface0) center / cover no-repeat;
-    border: 1px solid var(--surface1);
+    flex: none; width: 3.5rem; height: 3.5rem;
+    background: var(--surface0) center / cover no-repeat; border: 1px solid var(--surface1); border-radius: var(--radius-sm);
   }
   .art[hidden] { display: none; }
   .meta { min-width: 0; }
   .track, .sub, .events :global(a) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .track { font-weight: 600; }
   .sub { font-size: 0.9rem; }
-  .events {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    font-size: 0.95rem;
-  }
+  .events { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.95rem; }
   .events > :global(li) { display: flex; justify-content: space-between; gap: 0.75rem; align-items: baseline; }
   .events :global(.when) { flex: none; font-family: var(--font-mono); font-size: 0.75rem; color: var(--overlay1); }
 </style>

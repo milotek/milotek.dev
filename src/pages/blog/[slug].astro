@@ -16,7 +16,7 @@ const meta = post.data.draft ? 'draft' : undefined;
 ---
 
 <Base title={post.data.title} description={post.data.summary ?? post.data.title} type="article">
-  <Win title={`~/blog/${post.id}`} meta={meta} read focus>
+  <Win title={`~/blog/${post.id}`} meta={meta} read>
     <article class="prose">
       <p class="date mono muted">
         <time datetime={isoDate(post.data.published)}>{longDate(post.data.published)}</time>

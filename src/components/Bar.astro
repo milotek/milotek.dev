@@ -21,9 +21,27 @@ const isActive = (href: string) => (href === url('') ? path === href : path.star
       })
     }
   </nav>
-  <div class="bar__status">
-    <span class="mod mod--host">milo@london</span>
-    <button class="mod mod--keys" type="button" id="keys-toggle" aria-expanded="false" aria-controls="keys">?</button>
-    <span class="mod mod--clock" id="clock" aria-hidden="true">--:--</span>
-  </div>
+  <span class="clock" id="clock" aria-hidden="true">--:--</span>
 </header>
+
+<script>
+  // The numbers are printed next to the names, so the bar is its own legend.
+  document.addEventListener('keydown', (e) => {
+    const el = e.target as HTMLElement | null;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (el?.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el?.tagName ?? '')) return;
+    const hit = document.querySelector<HTMLAnchorElement>(`.ws[data-key="${CSS.escape(e.key)}"]:not([aria-current])`);
+    if (hit) {
+      e.preventDefault();
+      window.location.href = hit.href;
+    }
+  });
+
+  // London time, because that is where I am and it is the only honest thing a
+  // status bar can tell you about someone else's machine.
+  const clock = document.getElementById('clock')!;
+  const fmt = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Europe/London' });
+  const tick = () => (clock.textContent = fmt.format(new Date()));
+  tick();
+  setInterval(tick, 15000);
+</script>
