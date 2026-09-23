@@ -3,6 +3,7 @@ title: "My email to Gabe Newell"
 published: 2026-09-22
 draft: false
 ---
+
 # My email to Gabe Newell
 
 Back in 2023, I had some brief email correspondence with [Gabe Newell](https://en.wikipedia.org/wiki/Gabe_Newell) of [Valve](https://en.wikipedia.org/wiki/Valve_Corporation), as part of "research". It was for my [extended project qualification](https://en.wikipedia.org/wiki/Extended_Project_Qualification), that I was mandated to do as part of sixth form. It was pretty fun and I enjoyed it.

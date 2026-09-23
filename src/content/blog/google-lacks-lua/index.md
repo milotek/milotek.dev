@@ -3,6 +3,7 @@ title: "Google Does Not Use Lua"
 published: 2026-08-25
 draft: false
 ---
+
 # Google Does Not Use Lua
 It's very very rarely, if ever, used, sadly.
 
