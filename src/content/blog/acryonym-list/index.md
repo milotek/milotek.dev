@@ -21,7 +21,7 @@ Here's a list of acronyms that me and some of my friends use, as some sort of te
 
 If you're reading this, it's probably because I said one of these in conversation, and you had no idea what I was talking about. I'm sorry.
 
-You should start using these, so then you can be part of the [cool kids club](acryonym_list.md#Cool%20kids%20club).
+You should start using these, so then you can be part of the cool kids club.
 
 ## Cool kids club
 (list of people who have used one of these at least a few times)

@@ -34,11 +34,11 @@ Aside from the fun applications, it would appear we have two main remaining Lua 
 1. Roblox Developers
 2. NeoVim plugin authors
 
-![500](lua_users_in_2026.png)
+![lua_users_in_2026](./lua-users-in-2026.png)
 
 So, it would appear it's just a subset of NeoVim powerusers, and Roblox developers. So basically, just Roblox.
 
-Ah, Roblox, a platform that was once filled with young pioneers, future engineers, and men destined to go on to do great things. It is currently, slowing, molting into a vibe-coding haven for techbros and [pharmers](Pharming.md) to to create slop for prepubescent iPad kids. **Thank you, private equity, for kicking off the beginning of the end of something beautiful.**
+Ah, Roblox, a platform that was once filled with young pioneers, future engineers, and men destined to go on to do great things. It is currently, slowing, molting into a vibe-coding haven for techbros and pharmers to to create slop for prepubescent iPad kids. **Thank you, private equity, for kicking off the beginning of the end of something beautiful.**
 
 Irregardless, Roblox has made a dedicated commitment to stick with Lua, or rather, their fork of the language - Luau. 
 
