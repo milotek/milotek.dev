@@ -1,8 +1,10 @@
 ---
-title: "acryonym list"
+title: "Milo's Acronyms"
 published: 2026-09-30
 draft: false
 ---
+
+# Milo's Acronyms
 
 Here's a list of acronyms that me and some of my friends use, as some sort of terrible, unfunny, re-occuring inside joke.
 
