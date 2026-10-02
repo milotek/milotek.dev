@@ -6,7 +6,7 @@ draft: false
 
 # My email to Gabe Newell
 
-Back in 2023, I had some brief email correspondence with [Gabe Newell](https://en.wikipedia.org/wiki/Gabe_Newell) of [Valve](https://en.wikipedia.org/wiki/Valve_Corporation), as part of "research". It was for my [extended project qualification](https://en.wikipedia.org/wiki/Extended_Project_Qualification), that I was mandated to do as part of sixth form. It was pretty fun and I enjoyed it.
+Back in 2023, I had some brief email correspondence with [Gabe Newell](https://en.wikipedia.org/wiki/Gabe_Newell) of [Valve](https://en.wikipedia.org/wiki/Valve_Corporation), as part of "research". It was for my [extended project qualification](https://en.wikipedia.org/wiki/Extended_Project_Qualification) which I was mandated to do as part of sixth form. It was pretty fun and I enjoyed it.
 
 I didn't expect him to reply initially, so I didn't check my email for ages (I was like, 16, at the time. What 16 year old frequently checks their emails?)
 
@@ -16,8 +16,7 @@ Anyway, I fished it out of my archive for the world to see - here it is:
 
 ## The email
 
-> [!]
-> > On Dec 23, 2023, at 6:12 PM, Milo Tek <milotek07@gmail.com> wrote:
+> > On Dec 23, 2023, at 6:12 PM, Milo Tek \[redacted_personal_email_here] wrote:
 > > 
 > > Hello sir :^)
 > > 
@@ -56,4 +55,4 @@ Anyway, I fished it out of my archive for the world to see - here it is:
 
 I wrote quite a lot of notes based on his feedback. I remember them being pretty analytical. If I can be arsed, I'll fish them out of whatever drive they're hiding in.
 
-TODO: fish the notes for the answers back out of the epq pdf
+TODO: fish the notes for the answers back out of the EPQ write-up.

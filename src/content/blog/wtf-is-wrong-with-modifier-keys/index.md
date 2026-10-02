@@ -18,7 +18,7 @@ Here's the keyboards, where I use them, and when I use them:
 | ----------------------------------------- | ----------------------------------------- | ----------------------------------------- |
 | Home                                      | Travel                                    | Office                                    |
 | Linux, Mac                                | Mac                                       | Mac                                       |
-| ![Pasted image 20260830222522](./pasted-image-20260830222522.png) | ![Pasted image 20260830222547](./pasted-image-20260830222547.png) | ![Pasted image 20260830222737](./pasted-image-20260830222737.png) |
+| ![300](Pasted%20image%2020260830222522.png%5C) | ![300](Pasted%20image%2020260830222547.png%5C) | ![300](Pasted%20image%2020260830222737.png%5C) |
 
 ---
 

@@ -11,8 +11,8 @@ Valve have a long and extensive history in VR.
 
 They practically pioneered the first "big boom" of consumer virtual reality by collaborating with HTC to make the [HTC Vive](https://en.wikipedia.org/wiki/HTC_Vive). But, we're discussing explicitly *their* headsets here, which are:
 
-1. #Valve Index
-2. #Steam Frame
+1. [#Valve Index](#Valve%20Index)
+2. [#Steam Frame](#Steam%20Frame)
 
 ### Valve Index
 When it was released all the way back in 2019 (wow, time flies, huh), the Valve Index was **the** greatest virtual reality headset money could buy you - and it was a **damn good deal too!**
@@ -37,7 +37,7 @@ If it weren't for its unfortunate *(but unavoidable for the time)* shortcomings 
 
 Matter of fact, you will still find new Reddit threads of people debating if they should pick up a Q3 or a second-hand Index to this day.
 
-![Pasted image 20260910225925](./pasted-image-20260910225925.png)
+![Pasted image 20260910225925](Pasted%20image%2020260910225925.png)
 
 If people have choice paralysis so bad between devices released 5 years apart that they make a Reddit thread about it, you know you had some real good fucking engineering going on.
 #### All good things must come to an end
@@ -54,11 +54,11 @@ I will never be a communist, but I'll forever agree that the phrase "good billio
 
 Although Gabe Newell he did reply to my email once for a college project, and might be a "chill guy", it still doesn't stop him from being a cunt who neglects his games...
 
-![Pasted image 20260724121539](./pasted-image-20260724121539.png)
+![500](Pasted%20image%2020260724121539.png)
 
 ... and someone responsible for indoctrinating millions of children into underage gambling.
 
-![Pasted image 20260910230137](./pasted-image-20260910230137.png)
+![500](Pasted%20image%2020260910230137.png)
 
 *Counter-Strike* is the first heading in the [Wikipedia article for Skin Gambling](https://en.wikipedia.org/wiki/Skin_gambling), which I think is very telling.
 
@@ -69,7 +69,7 @@ Although Gabe Newell he did reply to my email once for a college project, and mi
 ---
 ### Steam Frame
 
-![Pasted image 20260910231013](./pasted-image-20260910231013.png)
+![Pasted image 20260910231013](Pasted%20image%2020260910231013.png)
 
 <aside class="callout" data-callout="quote">
 <p class="callout-title">From the [Steam Frame's article on Wikipedia](https://en.wikipedia.org/wiki/Steam_Frame):</p>
@@ -83,11 +83,11 @@ TODO
 ---
 
 ## My thoughts
-Okay, let's start with my predictions, before the Frame was even announced, and then let's move on to my thoughts.
+Okay, let's start with [my predictions](#My%20predictions), before the Frame was even announced, and then let's move on to [my thoughts](#My%20thoughts).
 
 ### My predictions
 
-![Pasted image 20260724133124](./pasted-image-20260724133124.png)
+![Pasted image 20260724133124](Pasted%20image%2020260724133124.png)
 (At the time, "Fremont" was Valve's internal / leaked codename for the Steam Machine)
 
 I wrote that before anything was announced, and before we officially knew anything.
@@ -111,13 +111,13 @@ Let's compare my predictions to the actual Steam Frame.
 		4. and Steam can generate free money by streamlining wireless PCVR without all the bullshit and just make it plug-and-play - Steam users already have a PC, and all their games on it.
 - [x] 2k120hz
 
-![Pasted image 20260724133954](./pasted-image-20260724133954.png)
+![Pasted image 20260724133954](Pasted%20image%2020260724133954.png)
 
 So I knew what I was talking about. This was based off leaks and also common sense.
 When the Steam Frame was announced with specs and all, I couldn't help but feel a little miffed however. In spite of their marketing, this did not *feel* like a device designed for streaming first.
 
 I'm going to write my argument by juxtaposing the Frame against its primary competitor, the Quest 3 - released in 2023.
 
-![Pasted image 20260910232508](./pasted-image-20260910232508.png)
+![Pasted image 20260910232508](Pasted%20image%2020260910232508.png)
 
 TODO
