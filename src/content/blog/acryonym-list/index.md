@@ -19,7 +19,7 @@ Here's a list of acronyms that me and some of my friends use, as some sort of te
 | CLife       | Chud Life / CL Life                                                                 |
 | CL          | [Basically a git pull request](https://google.github.io/eng-practices/#terminology) |
 | FMCL        | Fuck My Chud / Chungus / CL Life                                                    |
-|             |                                                                                     |
+
 
 If you're reading this, it's probably because I said one of these in conversation, and you had no idea what I was talking about. I'm sorry.
 
