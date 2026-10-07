@@ -8,7 +8,7 @@ draft: false
 
 Back in 2023, I had some brief email correspondence with [Gabe Newell](https://en.wikipedia.org/wiki/Gabe_Newell) of [Valve](https://en.wikipedia.org/wiki/Valve_Corporation), as part of "research". It was for my [extended project qualification](https://en.wikipedia.org/wiki/Extended_Project_Qualification) which I was mandated to do as part of sixth form. It was pretty fun and I enjoyed it.
 
-I didn't expect him to reply initially, so I didn't check my email for ages (I was like, 16, at the time. What 16 year old frequently checks their emails?)
+I didn't expect him to reply initially, so I didn't check my email for ages (I was like, 16, at the time, okay. What 16 year old frequently checks their emails?)
 
 Sometimes, in conversation (when it's relevant), I'll bring up this small fact up, and people are like wow, oh my goodness! You emailed the "world's only good billionaire!" *(I would argue the phrase "good billionaire" is a bit of an oxymoron)*
 
