@@ -11,7 +11,7 @@ no
 
 ## Another loss for the open internet!
 
-While I'm still mad at this a little, because I do find Reddit threads useful to read for opinions (especially **old pre-2023 posts**), fortunately Steve Huffman and co have been enshittifying the site into an algorithmic slop farm for 5+ years. Back in 2022 they introduced a new algorithmic feed and made it the default, then in 2023 they removed the old "subscribed subreddits" feed. As soon as Reddit like its competitors fell into the attention-centric design pattern like its competitors, my use for it stopped existing.
+While I'm still mad at this a little, because I do find Reddit threads useful to read for opinions (especially **old pre-2023 posts**), fortunately Steve Huffman and co have been enshittifying the site into an slop feed for morons for 5+ years, so I don't really care. Back in 2022 they introduced a new algorithmic feed, later making it the default, then in 2023 they removed the old, traditional "subscribed subreddits" feed. And with that, as soon as Reddit fell into the attention-centric design pattern like its competitors, my use for it stopped existing.
 
 To be fair, Reddit has already been taken for what we need. Just ask any LLM what you need and it will spit out exactly what a Redditor would say. I wonder if my posts and comments have ever been used as training data?
 
