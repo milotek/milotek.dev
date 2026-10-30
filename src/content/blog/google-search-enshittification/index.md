@@ -23,7 +23,7 @@ As a result, please assume some level of bias.
 The modern internet sucks = Reddit sucks = walled garden platforms suck = it's not going to get any better.
 
 ---
-### This is how much of my results were AI
+### How much of my search results were AI?
 
 Here I do an investigation into the authenticity of the top result that Google gave me for each query (in **bold** at the top, before each one).
 
@@ -52,12 +52,14 @@ Here I do an investigation into the authenticity of the top result that Google g
 					- ![Pasted image 20261003023609](./pasted-image-20261003023609.png)
 					- Oops! All bot comments for future GEO farming!
 
-Some brainless moron reading this right now might be thinking - "ok, and whats wrong with AI answers ROFL?", to which I don't have the energy to respond to.
+
 
 ---
 
 Much like my thoughts on politics in my country, I once again feel like:
-- I have a different (probably somewhat misinformed and ignorant) opinion to the majority
+- I have a different (probably somewhat misinformed and ignorant) opinion to the majority.
 - There's no clear direction for me, or us, to go from here. 
+
+Some brainless moron reading this right now might be thinking - "ok, and whats wrong with AI answers ROFL?", to which I don't have the energy to respond to.
 
 I'm going to miss you, pre-AI internet. You might have been filled with spam, but you were filled with less spam. Can we just hit the [undelete button already](https://worldofgoo.fandom.com/wiki/Deliverance)?
