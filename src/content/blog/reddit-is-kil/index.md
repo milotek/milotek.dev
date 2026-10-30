@@ -13,19 +13,17 @@ no
 
 While I'm still mad at this a little, because I do find Reddit threads useful to read for opinions (especially **old pre-2023 posts**), fortunately Steve Huffman and co have been enshittifying the site into an slop feed for morons for 5+ years, so I don't really care. Back in 2022 they introduced a new algorithmic feed, later making it the default, then in 2023 they removed the old, traditional "subscribed subreddits" feed. And with that, as soon as Reddit fell into the attention-centric design pattern like its competitors, my use for it stopped existing.
 
-To be fair, Reddit has already been taken for what we need. Just ask any LLM what you need and it will spit out exactly what a Redditor would say. I wonder if my posts and comments have ever been used as training data?
+To be fair, Reddit has already been taken for what it was worth. Just ask any LLM what you need and it will spit out exactly what a Redditor would say. Hm, I wonder if my old posts and comments have ever been used as training data?
 
 
 ## Actually wait who cares lmao
-Reddit is like a good 40% bots and that % is only going to ticker up over time. proof
-The platform is dead anyway and not only has the objective quality of posts gone down significantly over time (as those with a molecule of intelligence [realised it was about to become a shitfest](https://en.wikipedia.org/wiki/Reddit_API_controversy)),
-It's 70% botted posts, comments and upvotes, mainly from someone buying accounts trying to not-so-subtly promote their product.
-They censored the site to death (no source, just look into it, it's obvious if you used it before, say, 2019).
-
-![Pasted image 20261030091042](./pasted-image-20261030091042.png)
+- Reddit is like a good 40% bots and that % is only going to ticker up over time. [This is what Reddit wants](https://files.tek.rip/Pictures/based_anon.webp). They benefit from this.
+- The platform is dead anyway and not only has the objective quality of posts gone down significantly over time (as those with a molecule of intelligence [realised it was about to become a shitfest](https://en.wikipedia.org/wiki/Reddit_API_controversy)),
+- It's 70% botted posts, comments and upvotes, mainly from people buying accounts trying to not-so-subtly promote their product, or AI SEO farm, since Gemini ranks Reddit as a whole as a good source.
+- They censored the site to death (no source, just look into it, it's obvious if you used it before, say, 2019).
 
 Also this guy puts into words what I was gonna say pretty well! It's bots all down the chain. Pretty ironic considering their [tagline](https://files.tek.rip/Pictures/lying_ass_tagline.webp)...
-## Goypharms
+## Flogging a dead horse
 I don't really give a fuck, but about 3 years ago, they perma-banned my account, which had 60,000 karma, and was 7 years old. Suspiciously, though, they didn't remove the *content* of my posts - only remove the poster ID. So now all my posts attributed me as the unidentifiable"*\[deleted]*". 
 
 Normally I wouldn't care, because I *thought* like, absolutely zero people read anything I ever posted on there, so I wasn't really giving as much as I had taken. However, I was clearly wrong!
@@ -36,7 +34,7 @@ Through that comment, I got about **80+** friend requests from random people ask
 
 ![dyn-e592b51104ba7dce9c6b4477ee79de46](./dyn-e592b51104ba7dce9c6b4477ee79de46.png)
 
-Fuck you, Reddit!
+I asked them if they could delete it wholly under GDPR and they told me to verify with my ID. I will **not** be doing that - fuck you, Reddit!
 
 ---
 
