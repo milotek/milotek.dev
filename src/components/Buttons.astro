@@ -29,6 +29,8 @@ const snippet = `<a href="${new URL(url(''), Astro.site).href}"><img src="${own}
       <button type="button" data-snippet={snippet}>copy the html</button>
     </div>
   </div>
+  <script is:inline src="https://pawr.ing/webring/webring.js" defer></script>
+  <div id="pawring"></div>
 </section>
 
 <script>
@@ -61,4 +63,5 @@ const snippet = `<a href="${new URL(url(''), Astro.site).href}"><img src="${own}
     background: var(--base); border: 1px solid var(--surface1); border-radius: 999px; padding: 0.15rem 0.7rem; margin-top: 0.2rem;
   }
   button:hover { border-color: var(--accent); }
+  #pawring { margin-top: 1rem; }
 </style>
