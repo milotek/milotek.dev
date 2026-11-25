@@ -8,10 +8,10 @@ interface Props {
 }
 
 const { project } = Astro.props;
-const { title, blurb, year, cover } = project.data;
+const { title, blurb, year, cover, status } = project.data;
 ---
 
-<a class="project" href={url(`projects/${project.id}/`)}>
+<a class="project" href={url(`projects/${project.id}/`)} data-status={status}>
   {cover ? <Image src={cover} alt="" width={480} densities={[1, 2]} /> : <span class="blank" aria-hidden="true" />}
   <div>
     <span class="mono dim">{year}</span>
@@ -21,7 +21,17 @@ const { title, blurb, year, cover } = project.data;
 </a>
 
 <style>
-  .project { display: flex; flex-direction: column; color: inherit; text-decoration: none; background: var(--base); }
+  .project { position: relative; display: flex; flex-direction: column; color: inherit; text-decoration: none; background: var(--base); }
+  .project[data-status='featured'] { box-shadow: 0 0 18px 2px rgb(255 189 189 / 0.45); }
+  .project[data-status='goated']::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    z-index: -1;
+    background: var(--rainbow);
+    filter: blur(10px);
+    animation: rainbow 3s linear infinite;
+  }
   img, .blank { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; filter: saturate(0.85); transition: filter 0.25s; }
   .blank { background: repeating-linear-gradient(135deg, var(--crust) 0 7px, var(--base) 7px 14px); }
   .project:hover img { filter: none; }

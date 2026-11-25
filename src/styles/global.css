@@ -39,6 +39,8 @@
   --font-wide: 'Builder Extended', var(--font-sans);
   --font-mono: 'Builder Mono', ui-monospace, monospace;
 
+  --rainbow: linear-gradient(90deg, #f5c2e7, #eba0ac, #fab387, #f9e2af, #a6e3a1, #94e2d5, #89dceb, #74c7ec, #89b4fa, #b4befe, #f5c2e7) 0 0 / 200% 100%;
+
   --gap: 20px;
   --page: 1120px;
 }
@@ -137,6 +139,10 @@ a.chip:hover, a.chip[aria-current='page'] { color: var(--pink); background: var(
 
 @media (max-width: 600px) {
   .page { padding-top: 32px; }
+}
+
+@keyframes rainbow {
+  to { background-position: 200% 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

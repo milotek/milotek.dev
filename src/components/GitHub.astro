@@ -49,16 +49,9 @@ const weeks = calendar?.weeks.slice(-40) ?? [];
 {
   profile && calendar ? (
     <>
-      <div class="numbers">
-        <p class="wide">
-          {calendar.totalContributions.toLocaleString('en-GB')}
-          <span class="mono dim">contributions this year</span>
-        </p>
-        <p class="wide">
-          {profile.repositories.totalCount}
-          <span class="mono dim">public repos</span>
-        </p>
-      </div>
+      <p class="numbers mono dim">
+        {calendar.totalContributions.toLocaleString('en-GB')} contributions · {profile.repositories.totalCount} repos
+      </p>
       <div class="calendar" style={`--weeks: ${weeks.length}`} aria-hidden="true">
         {weeks.flatMap((w) => w.contributionDays.map((d) => <i class={`l${LEVEL[d.contributionLevel]}`} />))}
       </div>
@@ -74,16 +67,11 @@ const weeks = calendar?.weeks.slice(-40) ?? [];
       </ul>
     </>
   ) : (
-    <p class="sub">
-      Everything lives on <a href={`https://github.com/${site.github}`}>github.com/{site.github}</a>.
-    </p>
+    <a href={`https://github.com/${site.github}`}>github.com/{site.github}</a>
   )
 }
 
 <style>
-  .numbers { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-  .numbers p { font-size: 34px; line-height: 1.1; }
-  .numbers span { display: block; }
   .calendar {
     display: grid;
     grid-template-rows: repeat(7, 1fr);

@@ -1,14 +1,13 @@
 ---
 title: AutoPet Feeder
-blurb: An automatic pet feeder built to a neighbour's specification, from cardboard to a 3D-printed shell.
-status: shipped
+blurb: 'A fully automated luxury pet feeder, made to my neighbours'' spec.'
 year: '2024'
+by: 'me, running rebeccathedev''s petfeedd'
 tech: [Raspberry Pi, JavaScript, CAD, 3D printing]
 links:
   - { label: Source, href: 'https://github.com/milotek/petfeeder' }
   - { label: Design document (PDF), href: 'https://github.com/milotek/petfeeder/blob/master/Product%20Design%20NEA%20Edited.pdf' }
-featured: true
-order: 40
+status: featured
 cover: ../../assets/projects/petfeeder/exterior.jpg
 images:
   - { src: ../../assets/projects/petfeeder/exterior.jpg, alt: The finished feeder, a white 3D-printed shell with an oak lid, from several angles }
@@ -17,6 +16,6 @@ images:
   - { src: ../../assets/projects/petfeeder/design.jpg, alt: Design sketches for the food and water compartments and an annotated cardboard model }
 ---
 
-My A level product design project, with a real client: a neighbour who wanted their pet fed on time whether or not anyone was home.
+Raspberry Pi, a servo and a touchscreen, in a 3D-printed ABS shell with an oak finish.
 
-A Raspberry Pi drives a servo that meters the food, with a touchscreen for the schedule and USB-C for power. The shell is 3D-printed ABS with an oak lid. It went through cardboard prototypes and rounds of client feedback before the final print, and the whole process is in the design document.
+The software is [petfeedd](https://github.com/rebeccathedev/petfeedd), used 1:1. The repo is a reupload so the design document has somewhere to live.

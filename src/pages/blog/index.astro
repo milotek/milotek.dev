@@ -10,7 +10,6 @@ const posts = await getPosts();
 
 <Base title="blog" description="Writing by Milo Tekchandani. Keyboards, VR headsets, Lua, whatever else.">
   <Tile label="blog" action={{ href: url('rss.xml'), text: 'rss ↗' }}>
-    <p class="sub lead">Opinions, mostly about hardware and software that annoyed me.</p>
     <ul class="posts">
       {
         posts.map((p) => (
@@ -27,7 +26,6 @@ const posts = await getPosts();
 </Base>
 
 <style>
-  .lead { margin-bottom: 12px; }
   .posts a { display: flex; gap: 20px; align-items: baseline; padding: 14px 0; border-bottom: 1px solid var(--line); color: var(--text); text-decoration: none; }
   .posts li:last-child a { border: 0; }
   .posts time { flex: none; }

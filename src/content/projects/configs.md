@@ -1,13 +1,16 @@
 ---
 title: configs
-blurb: Every game autoexec I have, and a script that keeps them in the repo.
-status: live
+blurb: 'pixeljam''s configs for video games.'
 year: 2025 to now
 tech: [Python, cfg]
 links:
-  - { label: Source, href: 'https://github.com/milotek/configs' }
-hobby: true
-order: 130
+  - { label: Source, href: 'https://github.com/milotek/autoexecs' }
+  - { label: L4D2 showcase (YouTube), href: 'https://youtu.be/O6OQ100bRKM' }
+cover: ../../assets/projects/configs/banner.png
+images:
+  - { src: ../../assets/projects/configs/l4d2.jpg, alt: Thumbnail of the Left 4 Dead 2 autoexec showcase video }
 ---
 
-CS2, Left 4 Dead 2, Team Fortress 2 and tetr.io. A small Python script reads a list of paths and copies whatever changed back into the repo, so the config on disk and the config in git are the same thing.
+- sensible keybinds
+- always similar to default, but better
+- funny stuff included sometimes
