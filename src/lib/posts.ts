@@ -13,7 +13,7 @@ function titleOf(entry: CollectionEntry<'blog'>): string {
 }
 
 function published(path: string): Date {
-  const dates = execFileSync('git', ['log', '--no-renames', '--diff-filter=A', '--format=%aI', '--', path], { encoding: 'utf8' }).trim();
+  const dates = execFileSync('git', ['log', '--full-history', '--topo-order', '--no-renames', '--diff-filter=A', '--format=%aI', '--', path], { encoding: 'utf8' }).trim();
   const latest = dates.split('\n')[0];
   return latest ? new Date(latest) : new Date();
 }
