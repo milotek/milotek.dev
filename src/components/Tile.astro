@@ -1,4 +1,6 @@
 ---
+import { labels } from '../data/labels';
+
 interface Props {
   label: string;
   span?: 4 | 5 | 7 | 8 | 12;
@@ -10,10 +12,17 @@ const { label, span = 12, action, id } = Astro.props;
 ---
 
 <section class:list={['tile', `span-${span}`]} id={id} aria-label={label}>
-  <span class="chip tab">{label}</span>
+  <span class="chip tab" data-names={JSON.stringify([label, ...(labels[label] ?? [])])}>{label}</span>
   {action && <a class="action mono" href={action.href}>{action.text}</a>}
   <slot />
 </section>
+
+<script>
+  for (const tab of document.querySelectorAll<HTMLElement>('[data-names]')) {
+    const names: string[] = JSON.parse(tab.dataset.names!);
+    tab.textContent = names[Math.floor(Math.random() * names.length)]!;
+  }
+</script>
 
 <style>
   .tile {
