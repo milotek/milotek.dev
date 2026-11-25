@@ -1,14 +1,16 @@
 ---
 title: CollisionSounds
-blurb: Material-aware impact sounds for Roblox, borrowed from the Source engine.
-status: shipped
+blurb: A Roblox module that makes objects play material-specific sounds when they hit something.
 year: '2025'
 tech: [Luau, Roblox]
 links:
   - { label: Source, href: 'https://github.com/milotek/CollisionSounds' }
   - { label: Release, href: 'https://github.com/milotek/CollisionSounds/releases' }
-hobby: true
-order: 120
 ---
 
-Things that hit each other should sound like what they are made of. This module plays a sound per material, scales the volume by impact speed, picks a soft or hard variant, and can spawn particles. Each instance deletes itself once its part goes to sleep, so it costs nothing while nothing is moving.
+- a sound per material, soft or hard depending on impact speed
+- louder the harder it hits
+- Source engine sounds by default, with per-object overrides (cartoon springs for a bouncy ball)
+- optional particles on impact
+
+Primitive right now. May or may not be updated...

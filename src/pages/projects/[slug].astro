@@ -1,9 +1,8 @@
 ---
-import { Image, getImage } from 'astro:assets';
+import { Image } from 'astro:assets';
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Tile from '../../components/Tile.astro';
-import Lightbox from '../../components/Lightbox.astro';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects');
@@ -12,8 +11,7 @@ export async function getStaticPaths() {
 
 const { project } = Astro.props;
 const { Content } = await render(project);
-const { title, blurb, status, year, tech, links, images } = project.data;
-const gallery = await Promise.all(images.map(async (img) => ({ ...img, full: (await getImage({ src: img.src, width: 1600 })).src })));
+const { title, blurb, year, by, tech, links, images } = project.data;
 ---
 
 <Base title={title} description={blurb} type="article">
@@ -22,24 +20,14 @@ const gallery = await Promise.all(images.map(async (img) => ({ ...img, full: (aw
       <h1>{title}</h1>
       <p class="blurb">{blurb}</p>
       <Content />
+      {images.map((img) => <Image src={img.src} alt={img.alt} width={1200} densities={[1, 2]} loading="lazy" />)}
     </article>
-    {
-      gallery.length > 0 && (
-        <div class="gallery" aria-label="Screenshots">
-          {gallery.map((img) => (
-            <a href={img.full} data-lightbox={img.alt}>
-              <Image src={img.src} alt={img.alt} width={720} densities={[1, 2]} loading="lazy" />
-            </a>
-          ))}
-        </div>
-      )
-    }
   </Tile>
 
   <Tile label="details" span={4}>
     <dl>
-      <dt class="mono dim">status</dt>
-      <dd>{status}</dd>
+      <dt class="mono dim">by</dt>
+      <dd>{by}</dd>
       <dt class="mono dim">year</dt>
       <dd>{year}</dd>
       <dt class="mono dim">made with</dt>
@@ -57,17 +45,10 @@ const gallery = await Promise.all(images.map(async (img) => ({ ...img, full: (aw
       )
     }
   </Tile>
-
-  <Lightbox />
 </Base>
 
 <style>
   .blurb { color: var(--text); font-size: 1.15rem; }
-  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr)); gap: 12px; margin-top: 2rem; }
-  .gallery a { display: block; overflow: hidden; background: var(--crust); }
-  .gallery img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; transition: transform 0.2s; }
-  .gallery a:hover img { transform: scale(1.03); }
-  dl { display: grid; gap: 2px 0; }
   dd + dt { margin-top: 10px; }
   .links { display: flex; flex-direction: column; gap: 6px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
 </style>

@@ -1,13 +1,11 @@
 ---
 title: Lockyn
-blurb: A study app for GCSE and sixth form students. Focus timer, screen-time nudges, weekly summary.
-status: shelved
+blurb: A studying app for GCSE and sixth form students.
 year: 2025 to 2026
 tech: [TypeScript, React Native, Firebase]
 links:
   - { label: Early prototype source, href: 'https://github.com/milotek/studyapp' }
-featured: true
-order: 50
+status: featured
 cover: ../../assets/projects/lockyn/cover.jpg
 images:
   - { src: ../../assets/projects/lockyn/welcome.jpg, alt: Lockyn welcome screen with a gradient orb and a sign in with email button }
@@ -16,6 +14,6 @@ images:
   - { src: ../../assets/projects/lockyn/summary.jpg, alt: Weekly summary with per-app usage bars and a screen time highlight }
 ---
 
-My A level computer science project, built as an actual app rather than a coursework demo. Onboarding asks why you are here, the home screen is a focus timer with a daily goal, and the summary compares your screen time with your peers.
+A Pomodoro app: 25 minutes of focused work, 5 of rest, with far more settings than the free ones and none of the price of the paid ones.
 
-TypeScript and React Native on the front, Firebase behind it. Release was held back until after results day, and then the apprenticeship started. Shelved rather than dead.
+My A level computer science NEA. It started with my best friend Lukas, who kept getting side-tracked by games.

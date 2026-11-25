@@ -1,6 +1,5 @@
 ---
 import { Image } from 'astro:assets';
-import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Tile from '../components/Tile.astro';
 import NowPlaying from '../components/NowPlaying.astro';
@@ -8,19 +7,20 @@ import ProjectCard from '../components/ProjectCard.astro';
 import GitHub from '../components/GitHub.astro';
 import Buttons from '../components/Buttons.astro';
 import { getPosts } from '../lib/posts';
+import { getProjects } from '../lib/projects';
 import { isoDate } from '../lib/time';
 import { url } from '../lib/url';
 import { site, socials } from '../config';
-import drawing from '../assets/me/drawing.jpg';
+import me from '../assets/art/3525b230.jpg';
 
-const featured = (await getCollection('projects', (p) => p.data.featured)).sort((a, b) => a.data.order - b.data.order).slice(0, 4);
+const featured = (await getProjects()).filter((p) => p.data.status).slice(0, 4);
 const posts = (await getPosts()).slice(0, 4);
 ---
 
 <Base>
-  <Tile label="whoami" span={5}>
+  <Tile label="about" span={5}>
     <div class="who">
-      <Image src={drawing} alt="A drawing of me" width={112} densities={[1, 2]} />
+      <Image src={me} alt="A drawing of me" width={112} densities={[1, 2]} />
       <div>
         <h1 class="wide">{site.name}</h1>
         <p class="role mono">{site.role.toLowerCase()}</p>
@@ -44,7 +44,7 @@ const posts = (await getPosts()).slice(0, 4);
     <GitHub />
   </Tile>
 
-  <Tile label="say hi" span={5} id="contact">
+  <Tile label="contact" span={5}>
     <ul class="links">
       {
         socials.map((s) => (

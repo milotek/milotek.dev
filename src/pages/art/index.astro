@@ -1,0 +1,34 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import Tile from '../../components/Tile.astro';
+import { artworks } from '../../data/art';
+import { url } from '../../lib/url';
+---
+
+<Base title="art" description="Drawings and pixel art by Milo Tekchandani, mostly made in Procreate.">
+  <Tile label="art">
+    <div class="masonry">
+      {
+        artworks.map((a) => (
+          <a href={url(`art/${a.slug}/`)}>
+            <Image src={a.src} alt={a.caption} width={560} densities={[1, 2]} loading="lazy" />
+          </a>
+        ))
+      }
+    </div>
+  </Tile>
+</Base>
+
+<style>
+  .masonry { columns: 3; column-gap: var(--gap); }
+  a { display: block; margin-bottom: var(--gap); break-inside: avoid; }
+  img { width: 100%; transition: transform 0.2s; }
+  a:hover img { transform: scale(1.02); }
+  @media (max-width: 900px) {
+    .masonry { columns: 2; }
+  }
+  @media (max-width: 600px) {
+    .masonry { columns: 1; }
+  }
+</style>

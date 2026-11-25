@@ -1,14 +1,10 @@
 ---
 import { Image } from 'astro:assets';
 import { url } from '../lib/url';
+import { site } from '../config';
 import selfie from '../assets/me/selfie.jpg';
 import swap from '../assets/me/swap.jpg';
 
-interface Props {
-  compact?: boolean;
-}
-
-const { compact = false } = Astro.props;
 const here = Astro.url.pathname;
 
 const nav = [
@@ -16,19 +12,18 @@ const nav = [
   { href: url('projects/'), text: '/projects' },
   { href: url('blog/'), text: '/blog' },
   { href: url('art/'), text: '/art' },
-  { href: `${url('')}#contact`, text: '/contact' },
+  { href: `mailto:${site.email}`, text: '/contact' },
 ];
 
 function current(href: string) {
-  if (href.includes('#')) return false;
   return href === url('') ? here === href : here.startsWith(href);
 }
 ---
 
-<header class:list={['hero', { compact }]}>
+<header class="hero">
   <div class="card">
     <Image class="photo" src={selfie} alt="" widths={[800, 1600]} sizes="(max-width: 1152px) 100vw, 1120px" loading="eager" />
-    <Image class="photo" src={swap} alt="" widths={[800, 1600]} sizes="(max-width: 1152px) 100vw, 1120px" hidden />
+    <Image class="photo stretched" src={swap} alt="" widths={[800, 1600]} sizes="(max-width: 1152px) 100vw, 1120px" hidden />
     <nav aria-label="Site">
       {nav.map((n) => <a class="chip" href={n.href} aria-current={current(n.href) ? 'page' : undefined}>{n.text}</a>)}
     </nav>
@@ -39,7 +34,7 @@ function current(href: string) {
     <p class="copy">COPYRIGHT LOLOLOLOL</p>
     <div class="buttons">
       <button type="button" data-action="sound" aria-pressed="false" aria-label="Music">a</button>
-      <button type="button" data-action="flip" aria-pressed="false" aria-label="Flip the card">b</button>
+      <button type="button" data-action="flip" aria-pressed="false" aria-label="Flip the header">b</button>
       <button type="button" data-action="swap" aria-pressed="false" aria-label="Swap the picture">c</button>
     </div>
   </div>
@@ -50,7 +45,6 @@ function current(href: string) {
   import { url } from '../lib/url';
 
   const hero = document.querySelector<HTMLElement>('.hero')!;
-  const card = hero.querySelector<HTMLElement>('.card')!;
   const [selfie, swapped] = hero.querySelectorAll<HTMLImageElement>('.photo');
   const music = hero.querySelector<HTMLAudioElement>('.music')!;
   const buttons = [...hero.querySelectorAll<HTMLButtonElement>('.buttons button')];
@@ -87,7 +81,7 @@ function current(href: string) {
   }
 
   function setFlip(on: boolean) {
-    card.classList.toggle('flipped', on);
+    hero.classList.toggle('flipped', on);
     setPressed('flip', on);
     remember('flip', on);
   }
@@ -132,7 +126,7 @@ function current(href: string) {
   }
 
   button('sound').addEventListener('click', () => setSound(!soundOn));
-  button('flip').addEventListener('click', () => setFlip(!card.classList.contains('flipped')));
+  button('flip').addEventListener('click', () => setFlip(!hero.classList.contains('flipped')));
   button('swap').addEventListener('click', () => setSwap(selfie!.hidden === false));
 
   document.querySelectorAll<HTMLElement>('.hero a, .hero button').forEach((el) => {
@@ -145,15 +139,14 @@ function current(href: string) {
 </script>
 
 <style>
+  .hero { transition: transform 0.3s; }
+  .hero.flipped { transform: scaleX(-1); }
   .card {
     position: relative;
     height: 420px;
     overflow: hidden;
     background: var(--mantle);
-    transition: transform 0.3s;
   }
-  .card.flipped { transform: scaleX(-1); }
-  .compact .card { height: 220px; }
   .photo {
     position: absolute;
     inset: 0;
@@ -163,6 +156,7 @@ function current(href: string) {
     object-position: center 30%;
   }
   .photo[hidden] { display: none; }
+  .stretched { object-fit: fill; }
   nav {
     position: absolute;
     top: 40px;
@@ -172,14 +166,6 @@ function current(href: string) {
     align-items: flex-start;
     gap: 18px;
     font-size: 24px;
-  }
-  .compact nav {
-    top: 24px;
-    left: 24px;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 10px;
-    font-size: 20px;
   }
   .brand {
     position: absolute;
@@ -192,15 +178,10 @@ function current(href: string) {
     color: var(--pink);
     background: var(--base);
   }
-  .compact .brand { font-size: 32px; }
   .rainbow {
     height: 10px;
-    background: linear-gradient(90deg, #f5c2e7, #eba0ac, #fab387, #f9e2af, #a6e3a1, #94e2d5, #89dceb, #74c7ec, #89b4fa, #b4befe, #f5c2e7);
-    background-size: 200% 100%;
+    background: var(--rainbow);
     animation: rainbow 3s linear infinite;
-  }
-  @keyframes rainbow {
-    to { background-position: 200% 0; }
   }
   .strip {
     display: flex;
@@ -234,8 +215,5 @@ function current(href: string) {
     .card { height: 360px; }
     nav { top: 20px; left: 20px; }
     .brand { font-size: 30px; }
-    .compact .card { height: 200px; }
-    .compact nav { font-size: 17px; gap: 8px; }
-    .compact .brand { font-size: 24px; }
   }
 </style>

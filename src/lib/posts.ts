@@ -12,10 +12,10 @@ function titleOf(entry: CollectionEntry<'blog'>): string {
   return entry.body?.match(/^#\s+(.+)$/m)?.[1]?.trim() ?? entry.id;
 }
 
-function firstCommitted(path: string): Date {
+function published(path: string): Date {
   const dates = execFileSync('git', ['log', '--no-renames', '--diff-filter=A', '--format=%aI', '--', path], { encoding: 'utf8' }).trim();
-  const first = dates.split('\n').at(-1);
-  return first ? new Date(first) : new Date();
+  const latest = dates.split('\n')[0];
+  return latest ? new Date(latest) : new Date();
 }
 
 export async function getPosts(): Promise<Post[]> {
@@ -24,7 +24,7 @@ export async function getPosts(): Promise<Post[]> {
     .map((entry) => ({
       id: entry.id,
       title: titleOf(entry),
-      published: firstCommitted(entry.filePath!),
+      published: published(entry.filePath!),
       entry,
     }))
     .sort((a, b) => b.published.getTime() - a.published.getTime());

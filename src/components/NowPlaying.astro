@@ -8,7 +8,7 @@ const ready = Boolean(user && apiKey);
 <div class="np" data-user={user} data-key={apiKey}>
   <a class="art" aria-hidden="true" tabindex="-1"></a>
   <div class="meta">
-    <p class="state mono">{ready ? 'checking last.fm…' : 'not scrobbling here yet'}</p>
+    <p class="state mono"></p>
     <p class="track wide">{ready ? ' ' : <a href={site.spotify}>my spotify</a>}</p>
     <p class="artist sub"></p>
     <div class="bars" aria-hidden="true">{Array.from({ length: 12 }, (_, i) => <b style={`animation-delay: -${(i * 0.37) % 1}s`}></b>)}</div>
@@ -77,8 +77,7 @@ const ready = Boolean(user && apiKey);
         }),
       );
     } catch {
-      state.textContent = 'last.fm is not answering';
-      track.textContent = 'quiet for now';
+      track.replaceChildren(link(`https://www.last.fm/user/${user}`, 'last.fm'));
     }
   }
 
