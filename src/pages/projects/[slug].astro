@@ -2,7 +2,7 @@
 import { Image, getImage } from 'astro:assets';
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import Win from '../../components/Win.astro';
+import Tile from '../../components/Tile.astro';
 import Lightbox from '../../components/Lightbox.astro';
 
 export async function getStaticPaths() {
@@ -17,61 +17,57 @@ const gallery = await Promise.all(images.map(async (img) => ({ ...img, full: (aw
 ---
 
 <Base title={title} description={blurb} type="article">
-  <Win title={`~/projects/${project.id}`} span="twothirds" meta={year} read>
+  <Tile label="project" span={8}>
     <article class="prose">
       <h1>{title}</h1>
       <p class="blurb">{blurb}</p>
       <Content />
     </article>
-
     {
       gallery.length > 0 && (
-        <section class="gallery" aria-label="Screenshots">
+        <div class="gallery" aria-label="Screenshots">
           {gallery.map((img) => (
             <a href={img.full} data-lightbox={img.alt}>
               <Image src={img.src} alt={img.alt} width={720} densities={[1, 2]} loading="lazy" />
             </a>
           ))}
-        </section>
+        </div>
       )
     }
-  </Win>
+  </Tile>
 
-  <Win title="~/meta" span="third" side>
-    <div class="meta">
-      <span class="pill" data-status={status}>{status}</span>
-      <span class="chip">{year}</span>
-      {tech.map((t) => <span class="chip">{t}</span>)}
-    </div>
+  <Tile label="details" span={4}>
+    <dl>
+      <dt class="mono dim">status</dt>
+      <dd>{status}</dd>
+      <dt class="mono dim">year</dt>
+      <dd>{year}</dd>
+      <dt class="mono dim">made with</dt>
+      <dd>{tech.join(', ')}</dd>
+    </dl>
     {
       links.length > 0 && (
-        <ul class="list links">
+        <ul class="links">
           {links.map((l) => (
             <li>
-              <a href={l.href}>{l.label}</a>
+              <a href={l.href}>{l.label} ↗</a>
             </li>
           ))}
         </ul>
       )
     }
-  </Win>
+  </Tile>
 
   <Lightbox />
 </Base>
 
 <style>
-  .blurb { color: var(--subtext1); font-size: 1.15rem; margin-top: 0.5rem; }
-  .meta { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; }
-  .links { margin-top: 1rem; }
-  .links a::before { content: '↗ '; color: var(--overlay1); }
-  .gallery { margin-top: 2rem; display: grid; gap: var(--gap); grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr)); }
-  .gallery a {
-    display: block; overflow: hidden;
-    background: var(--crust); border: 1px solid var(--surface0); border-radius: var(--radius-sm);
-  }
-  .gallery img {
-    width: 100%; height: 100%; object-fit: cover; aspect-ratio: 4 / 3;
-    transition: transform var(--fast) var(--ease);
-  }
-  .gallery a:hover img { transform: scale(1.02); }
+  .blurb { color: var(--text); font-size: 1.15rem; }
+  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr)); gap: 12px; margin-top: 2rem; }
+  .gallery a { display: block; overflow: hidden; background: var(--crust); }
+  .gallery img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; transition: transform 0.2s; }
+  .gallery a:hover img { transform: scale(1.03); }
+  dl { display: grid; gap: 2px 0; }
+  dd + dt { margin-top: 10px; }
+  .links { display: flex; flex-direction: column; gap: 6px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
 </style>

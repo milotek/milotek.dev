@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import Win from '../../components/Win.astro';
+import Tile from '../../components/Tile.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
 
 const all = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
@@ -10,19 +10,19 @@ const hobby = all.filter((p) => p.data.hobby);
 ---
 
 <Base title="projects" description="Things Milo Tekchandani has built: backend and infrastructure, hardware, apps, games.">
-  <Win title="~/projects" meta={`${all.length} total`}>
-    <p class="lead">
-      The day job is the Google Search app for Android: backend, infrastructure, developer tooling, and lately page
-      transitions. None of that is on GitHub. This is the rest.
+  <Tile label="projects">
+    <p class="sub lead">
+      The day job is the Google Search app for Android: backend, infrastructure, developer tooling, and lately page transitions. None of that is on GitHub. This is the rest.
     </p>
-    <div class="grid">
-      {main.map((p) => <ProjectCard project={p} />)}
-    </div>
-  </Win>
+    <div class="cards">{main.map((p) => <ProjectCard project={p} />)}</div>
+  </Tile>
 
-  <Win title="~/projects --hobby" meta="smaller and sillier">
-    <div class="grid">
-      {hobby.map((p) => <ProjectCard project={p} />)}
-    </div>
-  </Win>
+  <Tile label="smaller and sillier">
+    <div class="cards">{hobby.map((p) => <ProjectCard project={p} />)}</div>
+  </Tile>
 </Base>
+
+<style>
+  .lead { max-width: 40rem; margin-bottom: 20px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 16px; }
+</style>

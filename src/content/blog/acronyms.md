@@ -1,9 +1,3 @@
----
-title: "Milo's Acronyms"
-published: 2026-10-19
-draft: false
----
-
 # Milo's Acronyms
 
 Here's a list of acronyms that me and some of my friends use, as some sort of terrible, unfunny, reoccuring inside joke.
@@ -28,7 +22,7 @@ Here's a list of acronyms that me and some of my friends use, as some sort of te
 
 If you're reading this, it's probably because I said one of these in conversation, and you had no idea what I was talking about. I'm sorry.
 
-You should start using these, so then you can be part of the cool kids club.
+You should start using these, so then you can be part of the [cool kids club](acronyms.md#Cool%20kids%20club).
 
 Except for the ones marked with an asterisk, it is imperative you do not say these aloud. Just use them over text.
 

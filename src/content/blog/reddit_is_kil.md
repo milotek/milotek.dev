@@ -1,13 +1,7 @@
----
-title: "Reddit is kil"
-published: 2026-10-30
-draft: false
----
-
 # Reddit is kil
 no
 
-![Pasted image 20261030083033](./pasted-image-20261030083033.png)
+![](Attachments/Pasted%20image%2020261030083033.png)
 
 ## Another loss for the open internet!
 
@@ -34,7 +28,7 @@ Before its deletion, I had **one** **singular** comment I posted that got 3 upvo
 
 Through that comment, I got about **80+** friend requests from random people asking me for it! And this is a comment with 3 upvotes, by the way. Now imagine how many people have read my other shitty comments and posts.
 
-![dyn-e592b51104ba7dce9c6b4477ee79de46](./dyn-e592b51104ba7dce9c6b4477ee79de46.png)
+![](Attachments/dyn-e592b51104ba7dce9c6b4477ee79de46.png)
 
 I asked them if they could delete the actual comment's *content*  (instead of just my name) wholly under GDPR and they told me to verify with my ID! I will **not** be doing that! Fuck you, Reddit!
 
@@ -48,3 +42,4 @@ This is kind of unrelated - but it's a bit poetic! I think, at this point, based
 Here's another good comment I saw online:
 
 ![Guy talks about idiots ruining Reddit](https://files.tek.rip/Pictures/reddit_sucks.webp)
+

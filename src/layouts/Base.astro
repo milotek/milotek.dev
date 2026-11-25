@@ -2,7 +2,8 @@
 import '../styles/global.css';
 import { site } from '../config';
 import { url } from '../lib/url';
-import Bar from '../components/Bar.astro';
+import Marquee from '../components/Marquee.astro';
+import Hero from '../components/Hero.astro';
 
 interface Props {
   title?: string;
@@ -13,6 +14,7 @@ interface Props {
 const { title, description = site.description, type = 'website' } = Astro.props;
 const fullTitle = title ? `${title} · ${site.handle}` : `${site.name} · ${site.handle}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const home = Astro.url.pathname === url('');
 ---
 
 <!doctype html>
@@ -23,12 +25,14 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <meta name="author" content={site.name} />
-    <meta name="theme-color" content="#11111b" />
+    <meta name="theme-color" content="#1e1e2e" />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href={url('favicon.ico')} sizes="48x48" />
     <link rel="icon" href={url('favicon.png')} type="image/png" sizes="64x64" />
     <link rel="apple-touch-icon" href={url('apple-touch-icon.png')} />
     <link rel="alternate" type="application/rss+xml" title={`${site.handle} blog`} href={url('rss.xml')} />
+    <link rel="preload" href={url('fonts/sans.otf')} as="font" type="font/otf" crossorigin />
+    <link rel="preload" href={url('fonts/extended.otf')} as="font" type="font/otf" crossorigin />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content={type} />
@@ -38,29 +42,32 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta name="generator" content={Astro.generator} />
   </head>
   <body>
-    <a class="skip" href="#main">Skip to content</a>
-    <Bar />
-    <main class="workspace" id="main">
-      <slot />
-    </main>
-    <footer class="foot">
-      <span>{site.name}</span>
-      <span class="foot__sep">/</span>
-      <a href={url('rss.xml')}>rss</a>
-      <span class="foot__sep">/</span>
-      <a href="https://astro.build">astro</a>
-      <span class="foot__sep">/</span>
-      <a href="https://catppuccin.com">catppuccin mocha</a>
-      <span class="foot__sep">/</span>
-      <span>built {new Date().toISOString().slice(0, 10)}</span>
-    </footer>
+    <Marquee />
+    <div class="page">
+      <Hero compact={!home} />
+      <main class="grid">
+        <slot />
+      </main>
+      <footer class="mono dim">
+        <span>{site.name}</span>
+        <a href={url('rss.xml')}>rss</a>
+        <span>built {new Date().toISOString().slice(0, 10)}</span>
+      </footer>
+    </div>
   </body>
 </html>
 
 <style>
-  .skip {
-    position: absolute; left: 1rem; top: -3rem; z-index: 10;
-    background: var(--accent); color: var(--crust); padding: 0.4rem 0.8rem; border-radius: var(--radius-sm); text-decoration: none;
+  footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 28px;
   }
-  .skip:focus { top: 1rem; }
+  footer > * {
+    padding: 4px 8px;
+    background: var(--mantle);
+  }
+  footer a { color: var(--dim); }
+  footer a:hover { color: var(--pink); }
 </style>

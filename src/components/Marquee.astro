@@ -1,0 +1,43 @@
+---
+import { marquee } from '../data/marquee';
+---
+
+<div class="marquee" aria-hidden="true">
+  {marquee.map((line) => <div class="row"><span>{line} {line}</span></div>)}
+</div>
+
+<style>
+  .marquee {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    pointer-events: none;
+    user-select: none;
+  }
+  .row {
+    display: flex;
+    white-space: nowrap;
+    font: 700 120px/1 var(--font-wide);
+    color: #18182580;
+  }
+  span {
+    padding-right: 50px;
+    animation: left 240s linear infinite;
+  }
+  .row:nth-child(even) span { animation-name: right; }
+  @keyframes left {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes right {
+    from { transform: translateX(-50%); }
+    to { transform: translateX(0); }
+  }
+  @media (max-width: 600px) {
+    .row { font-size: 72px; }
+  }
+</style>

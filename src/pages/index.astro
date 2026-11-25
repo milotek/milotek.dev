@@ -1,120 +1,114 @@
 ---
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
-import { getPosts } from '../lib/posts';
 import Base from '../layouts/Base.astro';
-import Win from '../components/Win.astro';
-import LiveCards from '../components/LiveCards.astro';
+import Tile from '../components/Tile.astro';
+import NowPlaying from '../components/NowPlaying.astro';
 import ProjectCard from '../components/ProjectCard.astro';
+import GitHub from '../components/GitHub.astro';
 import Buttons from '../components/Buttons.astro';
-import { site, socials, splashes } from '../config';
-import { url } from '../lib/url';
+import { getPosts } from '../lib/posts';
 import { isoDate } from '../lib/time';
-import photo from '../assets/me/photo.jpg';
+import { url } from '../lib/url';
+import { site, socials } from '../config';
+import drawing from '../assets/me/drawing.jpg';
 
 const featured = (await getCollection('projects', (p) => p.data.featured)).sort((a, b) => a.data.order - b.data.order).slice(0, 4);
-const posts = (await getPosts()).slice(0, 3);
+const posts = (await getPosts()).slice(0, 4);
 ---
 
 <Base>
-  <Win title="~/whoami" span="twothirds">
-    <div class="hero">
-      <Image class="photo" src={photo} alt="A picture of Milo Tekchandani." width={176} densities={[1, 2]} loading="eager" />
+  <Tile label="whoami" span={5}>
+    <div class="who">
+      <Image src={drawing} alt="A drawing of me" width={112} densities={[1, 2]} />
       <div>
-        <h1>{site.name}</h1>
-        <p class="role">{site.role}</p>
-        <!-- The server-rendered first line is the no-JS fallback. -->
-        <p class="splash" data-splashes={JSON.stringify(splashes)}>{splashes[0]}</p>
+        <h1 class="wide">{site.name}</h1>
+        <p class="role mono">{site.role.toLowerCase()}</p>
+        <p class="sub">19, from the UK. I work on the backend and infrastructure of the Google Search app for Android, right now on transitions between results tabs.</p>
+        <p class="sub">Outside work: Linux and NixOS, the Source engine, Roblox (pre-slop), homelabbing. I also draw, cook and play drums.</p>
       </div>
     </div>
-    <div class="prose intro">
-      <p>Hello! My name is Milo, a 19 year old from the United Kingdom.</p>
-      <p>
-        Currently, I work on the backend and infrastructure of the Google Search App for Android. My work has included creating internal dev-tools for <a href="https://google.com">google.com</a> developers, and micro-optimising our search latency and WebView. Right now, I am working on bringing transitions between search results tabs to the app.
-      </p>
-      <p>
-        Outside work, I like Linux and Nix(OS) and have a few side projects. I also draw, cook, and play drums. You can check it all out below =)
-      </p>
-      <p>
-        I take great interest in homelabbing, Valve's Source Engine, Roblox development (pre-slop days), iOS jailbreaking + sideloading.
-      </p>
-    </div>
-  </Win>
+  </Tile>
 
-  <Win title="~/now" span="third">
-    <LiveCards />
-  </Win>
+  <Tile label="now playing" span={7} action={site.lastfm.user ? { href: `https://www.last.fm/user/${site.lastfm.user}`, text: 'last.fm ↗' } : undefined}>
+    <NowPlaying />
+  </Tile>
 
-  <Win title="~/projects --featured" meta="all of them">
-    <div class="grid">
+  <Tile label="things i've made" action={{ href: url('projects/'), text: 'all projects →' }}>
+    <div class="projects">
       {featured.map((p) => <ProjectCard project={p} />)}
     </div>
-    <p class="more"><a href={url('projects/')}>every project</a></p>
-  </Win>
+  </Tile>
 
-  <Win title="~/writing" span="half">
-    {
-      posts.length ? (
-        <ul class="list">
-          {posts.map((p) => (
-            <li>
-              <time class="mono muted" datetime={isoDate(p.data.published)}>
-                {isoDate(p.data.published)}
-              </time>
-              <a href={url(`blog/${p.id}/`)}>{p.data.title}</a>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p class="muted">There isn't anything published yet :(</p>
-      )
-    }
-    <p class="more"><a href={url('blog/')}>the blog</a></p>
-  </Win>
+  <Tile label="github" span={7} action={{ href: `https://github.com/${site.github}`, text: `@${site.github} ↗` }}>
+    <GitHub />
+  </Tile>
 
-  <Win title="~/contact" span="half" id="contact">
-    <p>Say hi, for whatever it may be!</p>
-    <ul class="list">
+  <Tile label="say hi" span={5} id="contact">
+    <ul class="links">
       {
         socials.map((s) => (
           <li>
-            <span class="label mono muted">{s.label.toLowerCase()}</span>
-            <a href={s.href}>{s.handle}</a>
+            <a href={s.href}>
+              {s.label.toLowerCase()} <span class="mono">{s.handle}</span>
+            </a>
           </li>
         ))
       }
-      <li><span class="label mono muted">phone</span><a href={`tel:${site.phone.replace(/\s/g, '')}`}>{site.phone}</a></li>
-      <li><span class="label mono muted">cv</span><a href={site.cv}>CV.pdf</a></li>
     </ul>
-  </Win>
+  </Tile>
 
-  <Win title="~/buttons">
+  <Tile label="blog" span={7} action={{ href: url('blog/'), text: 'every post →' }}>
+    <ul class="posts">
+      {
+        posts.map((p) => (
+          <li>
+            <a href={url(`blog/${p.id}/`)}>
+              <time class="mono dim" datetime={isoDate(p.published)}>{isoDate(p.published)}</time>
+              {p.title}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </Tile>
+
+  <Tile label="buttons" span={5}>
     <Buttons />
-  </Win>
+  </Tile>
 </Base>
 
-<script>
-  const el = document.querySelector<HTMLElement>('.splash')!;
-  const lines = JSON.parse(el.dataset.splashes!) as string[];
-  el.textContent = lines[Math.floor(Math.random() * lines.length)]!;
-</script>
-
 <style>
-  .hero { display: flex; align-items: center; gap: 1.5rem; }
-  .photo {
-    flex: none; width: 6.5rem; height: 6.5rem; object-fit: cover; object-position: 60% 20%;
-    border: 2px solid var(--surface0); border-radius: 999px;
-    transform: rotate(-2deg); transition: transform var(--fast) var(--ease);
+  .who { display: flex; gap: 18px; }
+  .who img { flex: none; width: 112px; height: 112px; object-fit: cover; }
+  h1 { font-size: 28px; line-height: 1.1; }
+  .role { color: var(--pink); margin: 6px 0 12px; }
+  .who p + p { margin-top: 8px; }
+  .projects { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .links { display: flex; flex-direction: column; gap: 10px; }
+  .links a {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    font-weight: 700;
+    color: var(--text);
+    background: var(--base);
+    text-decoration: none;
+    transition: background-color 0.2s, color 0.2s;
   }
-  .photo:hover { transform: rotate(2deg) scale(1.03); }
-  .role { color: var(--subtext1); margin: 0.25rem 0 0.4rem; }
-  .splash { font-family: var(--font-mono); font-size: 0.85rem; color: var(--subtext0); }
-  .splash::before { content: '// '; color: var(--overlay1); }
-  .intro { margin-top: 1.25rem; }
-  .list li { display: flex; gap: 1rem; align-items: baseline; }
-  .label { width: 5.5rem; flex: none; }
-  .more { margin-top: 1rem; font-family: var(--font-mono); font-size: 0.78rem; }
-  @media (max-width: 30rem) {
-    .hero { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .links span { color: var(--dim); overflow: hidden; text-overflow: ellipsis; }
+  .links a:hover, .links a:hover span { color: var(--base); background: var(--pink); }
+  .posts a { display: flex; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--line); color: var(--text); text-decoration: none; }
+  .posts li:last-child a { border: 0; }
+  .posts time { flex: none; padding-top: 2px; }
+  .posts a:hover { color: var(--pink); }
+  @media (max-width: 900px) {
+    .projects { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .who { flex-direction: column; }
+    .projects { grid-template-columns: 1fr; }
+    .posts a { flex-direction: column; gap: 2px; }
   }
 </style>

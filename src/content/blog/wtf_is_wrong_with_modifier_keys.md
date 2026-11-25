@@ -1,9 +1,6 @@
 ---
-title: "WTF is wrong with modifier keys?"
 published: 2026-08-30
-draft: false
 ---
-
 # WTF is wrong with modifier keys?
 blah
 
@@ -11,14 +8,13 @@ blah
 1. I have 3 keyboards.
 2. I travel between my home and the office
 3. I use Linux and Mac.
-
 Here's the keyboards, where I use them, and when I use them:
 
 | Wooting 80HE                              | Standard MacBook built-in keyboard        | HHKB Hybrid Type-S                        |
 | ----------------------------------------- | ----------------------------------------- | ----------------------------------------- |
 | Home                                      | Travel                                    | Office                                    |
 | Linux, Mac                                | Mac                                       | Mac                                       |
-| ![Pasted image 20260830222522](./pasted-image-20260830222522.png) | ![Pasted image 20260830222547](./pasted-image-20260830222547.png) | ![Pasted image 20260830222737](./pasted-image-20260830222737.png) |
+| ![300](Attachments/Pasted%20image%2020260830222522.png) | ![300](Attachments/Pasted%20image%2020260830222547.png) | ![300](Attachments/Pasted%20image%2020260830222737.png) |
 
 ---
 
@@ -52,7 +48,6 @@ This is the bit I prefer about OSX:
 	- By word nav, alt characters, + other functions that spilled off command :)
 - **Ctrl** is the *terminal* modifier.
 	-  `^C`, `^D`, `^Z`, blah... ~~not~~ rarely used outside of that purpose.
-
 I don't know *why* I prefer it, I guess I've just spent the most time being productive on OSX more than any other OS. I typically do all my work SSH'ed in from OSX. And I primarily use my Linux desktop (and formerly Windows) to play my videya.
 
 ### Software

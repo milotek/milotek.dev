@@ -1,0 +1,107 @@
+---
+import { site } from '../config';
+
+interface Day {
+  date: string;
+  contributionLevel: 'NONE' | 'FIRST_QUARTILE' | 'SECOND_QUARTILE' | 'THIRD_QUARTILE' | 'FOURTH_QUARTILE';
+}
+
+interface Profile {
+  repositories: { totalCount: number };
+  recent: { nodes: { name: string; description: string | null; url: string }[] };
+  contributionsCollection: { contributionCalendar: { totalContributions: number; weeks: { contributionDays: Day[] }[] } };
+}
+
+const QUERY = `query($login: String!) {
+  user(login: $login) {
+    repositories(privacy: PUBLIC, ownerAffiliations: OWNER) { totalCount }
+    recent: repositories(first: 2, privacy: PUBLIC, ownerAffiliations: OWNER, orderBy: { field: PUSHED_AT, direction: DESC }) {
+      nodes { name description url }
+    }
+    contributionsCollection { contributionCalendar { totalContributions weeks { contributionDays { date contributionLevel } } } }
+  }
+}`;
+
+async function fetchProfile(): Promise<Profile | undefined> {
+  const token = process.env.GITHUB_TOKEN;
+  if (!token) return undefined;
+  const res = await fetch('https://api.github.com/graphql', {
+    method: 'POST',
+    headers: { authorization: `bearer ${token}`, 'content-type': 'application/json' },
+    body: JSON.stringify({ query: QUERY, variables: { login: site.github } }),
+  });
+  if (!res.ok) throw new Error(`GitHub GraphQL ${res.status}`);
+  const { data, errors } = await res.json();
+  if (errors) throw new Error(`GitHub GraphQL: ${errors[0].message}`);
+  return data.user;
+}
+
+const LEVEL = { NONE: 0, FIRST_QUARTILE: 1, SECOND_QUARTILE: 2, THIRD_QUARTILE: 3, FOURTH_QUARTILE: 4 };
+
+const profile = await fetchProfile().catch((error) => {
+  console.warn(`GitHub tile falls back to a link: ${error.message}`);
+  return undefined;
+});
+const calendar = profile?.contributionsCollection.contributionCalendar;
+const weeks = calendar?.weeks.slice(-40) ?? [];
+---
+
+{
+  profile && calendar ? (
+    <>
+      <div class="numbers">
+        <p class="wide">
+          {calendar.totalContributions.toLocaleString('en-GB')}
+          <span class="mono dim">contributions this year</span>
+        </p>
+        <p class="wide">
+          {profile.repositories.totalCount}
+          <span class="mono dim">public repos</span>
+        </p>
+      </div>
+      <div class="calendar" style={`--weeks: ${weeks.length}`} aria-hidden="true">
+        {weeks.flatMap((w) => w.contributionDays.map((d) => <i class={`l${LEVEL[d.contributionLevel]}`} />))}
+      </div>
+      <ul class="repos">
+        {profile.recent.nodes.map((r) => (
+          <li>
+            <a href={r.url}>
+              <b class="mono">{r.name}</b>
+              {r.description && <span class="sub">{r.description}</span>}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </>
+  ) : (
+    <p class="sub">
+      Everything lives on <a href={`https://github.com/${site.github}`}>github.com/{site.github}</a>.
+    </p>
+  )
+}
+
+<style>
+  .numbers { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .numbers p { font-size: 34px; line-height: 1.1; }
+  .numbers span { display: block; }
+  .calendar {
+    display: grid;
+    grid-template-rows: repeat(7, 1fr);
+    grid-template-columns: repeat(var(--weeks), 1fr);
+    grid-auto-flow: column;
+    gap: 3px;
+    margin: 14px 0;
+  }
+  .calendar i { aspect-ratio: 1; background: var(--line); }
+  .calendar .l1 { background: #ffbdbd40; }
+  .calendar .l2 { background: #ffbdbd80; }
+  .calendar .l3 { background: #ffbdbdc0; }
+  .calendar .l4 { background: var(--pink); }
+  .repos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .repos a { display: block; height: 100%; padding: 10px 12px; background: var(--base); text-decoration: none; }
+  .repos a:hover { outline: 1px solid var(--pink); }
+  .repos span { display: block; margin-top: 4px; font-size: 13px; }
+  @media (max-width: 600px) {
+    .repos { grid-template-columns: 1fr; }
+  }
+</style>

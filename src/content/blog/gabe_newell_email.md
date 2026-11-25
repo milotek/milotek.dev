@@ -1,9 +1,3 @@
----
-title: "My email to Gabe Newell"
-published: 2026-09-22
-draft: false
----
-
 # My email to Gabe Newell
 
 Back in 2023, I had some brief email correspondence with [Gabe Newell](https://en.wikipedia.org/wiki/Gabe_Newell) of [Valve](https://en.wikipedia.org/wiki/Valve_Corporation), as part of "research". It was for my [extended project qualification](https://en.wikipedia.org/wiki/Extended_Project_Qualification) which I was mandated to do as part of sixth form. It was pretty fun and I enjoyed it.
@@ -56,3 +50,4 @@ Anyway, I fished it out of my archive for the world to see - here it is:
 I wrote quite a lot of notes based on his feedback. I remember them being pretty analytical. If I can be arsed, I'll fish them out of whatever drive they're hiding in.
 
 TODO: fish the notes for the answers back out of the EPQ write-up.
+

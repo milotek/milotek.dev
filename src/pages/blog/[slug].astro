@@ -1,9 +1,10 @@
 ---
 import { render } from 'astro:content';
-import { getPosts } from '../../lib/posts';
 import Base from '../../layouts/Base.astro';
-import Win from '../../components/Win.astro';
+import Tile from '../../components/Tile.astro';
+import { getPosts } from '../../lib/posts';
 import { isoDate, longDate } from '../../lib/time';
+import { url } from '../../lib/url';
 
 export async function getStaticPaths() {
   const posts = await getPosts();
@@ -11,21 +12,19 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const { Content } = await render(post);
-const meta = post.data.draft ? 'draft' : undefined;
+const { Content } = await render(post.entry);
 ---
 
-<Base title={post.data.title} description={post.data.summary ?? post.data.title} type="article">
-  <Win title={`~/blog/${post.id}`} meta={meta} read>
+<Base title={post.title} description={post.title} type="article">
+  <Tile label="blog" action={{ href: url('blog/'), text: '← every post' }}>
     <article class="prose">
-      <p class="date mono muted">
-        <time datetime={isoDate(post.data.published)}>{longDate(post.data.published)}</time>
-      </p>
+      <time class="mono dim" datetime={isoDate(post.published)}>{longDate(post.published)}</time>
       <Content />
     </article>
-  </Win>
+  </Tile>
 </Base>
 
 <style>
-  .date { margin: 0.6rem 0 1.75rem; display: flex; gap: 0.6rem; align-items: center; }
+  article { max-width: 46rem; margin-inline: auto; }
+  time { display: block; }
 </style>
