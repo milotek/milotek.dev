@@ -1,8 +1,6 @@
 export const site = {
   name: 'Milo Tekchandani',
   handle: 'milotek',
-  role: 'Software Engineering @ Google, London',
-  description: 'Software Engineer @ Google, working on the Google Search app for Android and iOS.',
   email: 'milo@milotek.dev',
   cv: 'https://github.com/milotek/milotek/raw/main/CV.pdf',
   github: 'milotek',

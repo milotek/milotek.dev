@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { site } from '../config';
+import { useTranslations } from '../i18n';
 import { url } from '../lib/url';
 import Marquee from '../components/Marquee.astro';
 import Hero from '../components/Hero.astro';
@@ -11,13 +12,14 @@ interface Props {
   type?: 'website' | 'article';
 }
 
-const { title, description = site.description, type = 'website' } = Astro.props;
+const t = useTranslations(Astro.currentLocale);
+const { title, description = t('site.description'), type = 'website' } = Astro.props;
 const fullTitle = title ? `${title} · ${site.handle}` : `${site.name} · ${site.handle}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
-<html lang="en-GB">
+<html lang={t('lang')}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -49,7 +51,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       </main>
       <footer class="mono dim">
         <span>{site.name}</span>
-        <a href={url('rss.xml')}>rss</a>
+        <a href={url('rss.xml')}>{t('footer.rss')}</a>
       </footer>
     </div>
   </body>

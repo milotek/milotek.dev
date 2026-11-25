@@ -1,5 +1,8 @@
 ---
 import { site } from '../config';
+import { useTranslations } from '../i18n';
+
+const t = useTranslations(Astro.currentLocale);
 
 interface Day {
   date: string;
@@ -50,9 +53,9 @@ const weeks = calendar?.weeks.slice(-40) ?? [];
   profile && calendar ? (
     <>
       <p class="numbers mono dim">
-        {calendar.totalContributions.toLocaleString('en-GB')} contributions · {profile.repositories.totalCount} repos
+        {t('github.summary', { contributions: calendar.totalContributions.toLocaleString(t('lang')), repos: profile.repositories.totalCount })}
       </p>
-      <div class="calendar" style={`--weeks: ${weeks.length}`} aria-hidden="true">
+      <div class="calendar" style={`--weeks: ${weeks.length}; --days: ${weeks.at(-1)?.contributionDays.length ?? 7}`} aria-hidden="true">
         {weeks.flatMap((w) => w.contributionDays.map((d) => <i class={`l${LEVEL[d.contributionLevel]}`} />))}
       </div>
       <ul class="repos">
@@ -72,19 +75,33 @@ const weeks = calendar?.weeks.slice(-40) ?? [];
 }
 
 <style>
+  /* One rainbow behind the whole grid, like the 3D graph on the GitHub profile.
+     The mask keeps only the cells (columns ∩ rows ∩ not the unfilled end of this
+     week); each cell then darkens the rainbow by contribution level. */
   .calendar {
+    --cell-gap: 3px;
+    --col: calc((100% + var(--cell-gap)) / var(--weeks));
+    --row: calc((100% + var(--cell-gap)) / 7);
     display: grid;
     grid-template-rows: repeat(7, 1fr);
     grid-template-columns: repeat(var(--weeks), 1fr);
     grid-auto-flow: column;
-    gap: 3px;
+    gap: var(--cell-gap);
     margin: 14px 0;
+    background: var(--rainbow);
+    animation: rainbow 10s linear infinite reverse;
+    mask:
+      linear-gradient(90deg, #000 calc(100% - var(--cell-gap)), #0000 0) 0 0 / var(--col) 100%,
+      linear-gradient(#000 calc(100% - var(--cell-gap)), #0000 0) 0 0 / 100% var(--row),
+      linear-gradient(90deg, #000 calc(100% - var(--col)), #0000 0),
+      linear-gradient(#000 calc(var(--row) * var(--days)), #0000 0);
+    mask-composite: intersect, intersect, add;
   }
-  .calendar i { aspect-ratio: 1; background: var(--line); }
-  .calendar .l1 { background: #ffbdbd40; }
-  .calendar .l2 { background: #ffbdbd80; }
-  .calendar .l3 { background: #ffbdbdc0; }
-  .calendar .l4 { background: var(--pink); }
+  .calendar i { aspect-ratio: 1; }
+  .calendar .l0 { background: color-mix(in srgb, var(--base) 75%, transparent); }
+  .calendar .l1 { background: color-mix(in srgb, var(--base) 45%, transparent); }
+  .calendar .l2 { background: color-mix(in srgb, var(--base) 30%, transparent); }
+  .calendar .l3 { background: color-mix(in srgb, var(--base) 15%, transparent); }
   .repos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .repos a { display: block; height: 100%; padding: 10px 12px; background: var(--base); text-decoration: none; }
   .repos a:hover { outline: 1px solid var(--pink); }

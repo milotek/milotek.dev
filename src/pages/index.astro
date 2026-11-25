@@ -11,40 +11,42 @@ import { getProjects } from '../lib/projects';
 import { isoDate } from '../lib/time';
 import { url } from '../lib/url';
 import { site, socials } from '../config';
+import { useTranslations } from '../i18n';
 import me from '../assets/art/3525b230.jpg';
 
+const t = useTranslations(Astro.currentLocale);
 const featured = (await getProjects()).filter((p) => p.data.status).slice(0, 4);
 const posts = (await getPosts()).slice(0, 4);
 ---
 
 <Base>
-  <Tile label="about" span={5}>
+  <Tile label={t('home.about')} span={5}>
     <div class="who">
-      <Image src={me} alt="A drawing of me" width={112} densities={[1, 2]} />
+      <Image src={me} alt={t('home.portrait')} width={112} densities={[1, 2]} />
       <div>
         <h1 class="wide">{site.name}</h1>
-        <p class="role mono">{site.role.toLowerCase()}</p>
-        <p class="sub">19, from the UK. I work on the backend and infrastructure of the Google Search app for Android, right now on transitions between results tabs.</p>
-        <p class="sub">Outside work: Linux and NixOS, the Source engine, Roblox (pre-slop), homelabbing. I also draw, cook and play drums.</p>
+        <p class="role mono">{t('site.role')}</p>
+        <p class="sub">{t('home.bio')}</p>
+        <p class="sub" set:html={t('home.bio.fursona')} />
       </div>
     </div>
   </Tile>
 
-  <Tile label="now playing" span={7} action={site.lastfm.user ? { href: `https://www.last.fm/user/${site.lastfm.user}`, text: 'last.fm ↗' } : undefined}>
+  <Tile label={t('home.nowPlaying')} span={7} action={site.lastfm.user ? { href: `https://www.last.fm/user/${site.lastfm.user}`, text: t('home.lastfm') } : undefined}>
     <NowPlaying />
   </Tile>
 
-  <Tile label="things i've made" action={{ href: url('projects/'), text: 'all projects →' }}>
+  <Tile label={t('home.projects')} action={{ href: url('projects/'), text: t('home.allProjects') }}>
     <div class="projects">
       {featured.map((p) => <ProjectCard project={p} />)}
     </div>
   </Tile>
 
-  <Tile label="github" span={7} action={{ href: `https://github.com/${site.github}`, text: `@${site.github} ↗` }}>
+  <Tile label={t('home.github')} span={7} action={{ href: `https://github.com/${site.github}`, text: `@${site.github} ↗` }}>
     <GitHub />
   </Tile>
 
-  <Tile label="contact" span={5}>
+  <Tile label={t('home.contact')} span={5}>
     <ul class="links">
       {
         socials.map((s) => (
@@ -58,7 +60,7 @@ const posts = (await getPosts()).slice(0, 4);
     </ul>
   </Tile>
 
-  <Tile label="blog" span={7} action={{ href: url('blog/'), text: 'every post →' }}>
+  <Tile label={t('home.blog')} span={7} action={{ href: url('blog/'), text: t('home.everyPost') }}>
     <ul class="posts">
       {
         posts.map((p) => (
@@ -73,7 +75,7 @@ const posts = (await getPosts()).slice(0, 4);
     </ul>
   </Tile>
 
-  <Tile label="buttons" span={5}>
+  <Tile label={t('home.buttons')} span={5}>
     <Buttons />
   </Tile>
 </Base>

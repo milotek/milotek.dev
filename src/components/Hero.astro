@@ -2,17 +2,19 @@
 import { Image } from 'astro:assets';
 import { url } from '../lib/url';
 import { site } from '../config';
+import { useTranslations } from '../i18n';
 import selfie from '../assets/me/selfie.jpg';
 import swap from '../assets/me/swap.jpg';
 
+const t = useTranslations(Astro.currentLocale);
 const here = Astro.url.pathname;
 
 const nav = [
-  { href: url(''), text: '/' },
-  { href: url('projects/'), text: '/projects' },
-  { href: url('blog/'), text: '/blog' },
-  { href: url('art/'), text: '/art' },
-  { href: `mailto:${site.email}`, text: '/contact' },
+  { href: url(''), text: t('nav.home') },
+  { href: url('projects/'), text: t('nav.projects') },
+  { href: url('blog/'), text: t('nav.blog') },
+  { href: url('art/'), text: t('nav.art') },
+  { href: `mailto:${site.email}`, text: t('nav.contact') },
 ];
 
 function current(href: string) {
@@ -24,18 +26,18 @@ function current(href: string) {
   <div class="card">
     <Image class="photo" src={selfie} alt="" widths={[800, 1600]} sizes="(max-width: 1152px) 100vw, 1120px" loading="eager" />
     <Image class="photo stretched" src={swap} alt="" widths={[800, 1600]} sizes="(max-width: 1152px) 100vw, 1120px" hidden />
-    <nav aria-label="Site">
+    <nav aria-label={t('nav.label')}>
       {nav.map((n) => <a class="chip" href={n.href} aria-current={current(n.href) ? 'page' : undefined}>{n.text}</a>)}
     </nav>
-    <p class="brand">milo tek's site</p>
+    <p class="brand">{t('hero.brand')}</p>
   </div>
   <div class="rainbow"></div>
   <div class="strip">
-    <p class="copy">COPYRIGHT LOLOLOLOL</p>
+    <p class="copy">{t('hero.copyright')}</p>
     <div class="buttons">
-      <button type="button" data-action="sound" aria-pressed="false" aria-label="Music">a</button>
-      <button type="button" data-action="flip" aria-pressed="false" aria-label="Flip the header">b</button>
-      <button type="button" data-action="swap" aria-pressed="false" aria-label="Swap the picture">c</button>
+      <button type="button" data-action="sound" aria-pressed="false" aria-label={t('hero.music')}>a</button>
+      <button type="button" data-action="flip" aria-pressed="false" aria-label={t('hero.flip')}>b</button>
+      <button type="button" data-action="swap" aria-pressed="false" aria-label={t('hero.swap')}>c</button>
     </div>
   </div>
   <audio class="music" src={url('audio/music.mp3')} loop preload="none"></audio>

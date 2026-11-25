@@ -1,7 +1,9 @@
 ---
 import { friends, site } from '../config';
+import { useTranslations } from '../i18n';
 import { url } from '../lib/url';
 
+const t = useTranslations(Astro.currentLocale);
 const own = new URL(url('88x31.png'), Astro.site).href;
 const snippet = `<a href="${new URL(url(''), Astro.site).href}"><img src="${own}" alt="${site.handle}" width="88" height="31"></a>`;
 ---
@@ -18,22 +20,23 @@ const snippet = `<a href="${new URL(url(''), Astro.site).href}"><img src="${own}
   }
 </ul>
 <div class="mine">
-  <img src={url('88x31.png')} alt={`${site.handle} button`} width="88" height="31" />
-  <button type="button" data-snippet={snippet}>copy html</button>
+  <img src={url('88x31.png')} alt={t('buttons.mine', { handle: site.handle })} width="88" height="31" />
+  <button type="button" data-snippet={snippet} data-copied={t('buttons.copied')} data-failed={t('buttons.failed')}>{t('buttons.copy')}</button>
 </div>
 <script is:inline src="https://pawr.ing/webring/webring.js" defer></script>
 <div id="pawring"></div>
 
 <script>
   const button = document.querySelector<HTMLButtonElement>('.mine button')!;
+  const label = button.textContent;
   button.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(button.dataset.snippet!);
-      button.textContent = 'copied';
+      button.textContent = button.dataset.copied!;
     } catch {
-      button.textContent = 'clipboard said no';
+      button.textContent = button.dataset.failed!;
     }
-    setTimeout(() => (button.textContent = 'copy html'), 1500);
+    setTimeout(() => (button.textContent = label), 1500);
   });
 </script>
 

@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import Tile from '../../components/Tile.astro';
 import { artworks, type Artwork } from '../../data/art';
+import { useTranslations } from '../../i18n';
 import { url } from '../../lib/url';
 
 export function getStaticPaths() {
@@ -10,10 +11,11 @@ export function getStaticPaths() {
 }
 
 const { art } = Astro.props as { art: Artwork };
+const t = useTranslations(Astro.currentLocale);
 ---
 
 <Base title={art.title} description={art.caption} type="article">
-  <Tile label="art" action={{ href: url('art/'), text: '← all art' }}>
+  <Tile label={t('art.title')} action={{ href: url('art/'), text: t('art.back') }}>
     <article class="prose">
       <h1>{art.title}</h1>
       <p>{art.caption}</p>

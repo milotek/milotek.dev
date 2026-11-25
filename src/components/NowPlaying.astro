@@ -1,15 +1,18 @@
 ---
 import { site } from '../config';
+import { useTranslations } from '../i18n';
 
+const t = useTranslations(Astro.currentLocale);
 const { user, apiKey } = site.lastfm;
 const ready = Boolean(user && apiKey);
+const strings = { live: t('nowPlaying.live'), last: t('nowPlaying.last'), ago: t('nowPlaying.ago'), units: t('nowPlaying.units') };
 ---
 
-<div class="np" data-user={user} data-key={apiKey}>
+<div class="np" data-user={user} data-key={apiKey} data-strings={JSON.stringify(strings)}>
   <a class="art" aria-hidden="true" tabindex="-1"></a>
   <div class="meta">
     <p class="state mono"></p>
-    <p class="track wide">{ready ? ' ' : <a href={site.spotify}>my spotify</a>}</p>
+    <p class="track wide">{ready ? ' ' : <a href={site.spotify}>{t('nowPlaying.spotify')}</a>}</p>
     <p class="artist sub"></p>
     <div class="bars" aria-hidden="true">{Array.from({ length: 12 }, (_, i) => <b style={`animation-delay: -${(i * 0.37) % 1}s`}></b>)}</div>
   </div>
@@ -26,17 +29,22 @@ const ready = Boolean(user && apiKey);
     '@attr'?: { nowplaying?: string };
   }
 
-  const STEPS: [number, string][] = [[60, 'm'], [60, 'h'], [24, 'd'], [7, 'w'], [4.35, 'mo'], [12, 'y']];
+  interface Strings {
+    live: string;
+    last: string;
+    ago: string;
+    units: string;
+  }
 
-  function ago(ms: number): string {
+  const SIZES = [60, 60, 24, 7, 4.35, 12];
+
+  // Units come in as 's m h d w mo y': one per step, plus seconds first.
+  function ago(ms: number, strings: Strings): string {
+    const units = strings.units.split(' ');
     let n = Math.max(1, (Date.now() - ms) / 1000);
-    let unit = 's';
-    for (const [size, next] of STEPS) {
-      if (n < size) break;
-      n /= size;
-      unit = next;
-    }
-    return `${Math.round(n)}${unit} ago`;
+    let i = 0;
+    while (i < SIZES.length && n >= SIZES[i]!) n /= SIZES[i++]!;
+    return strings.ago.replace('{n}', String(Math.round(n))).replace('{unit}', units[i]!);
   }
 
   function link(href: string, text: string) {
@@ -46,6 +54,7 @@ const ready = Boolean(user && apiKey);
   async function load(root: HTMLElement) {
     const { user, key } = root.dataset;
     if (!user || !key) return;
+    const strings: Strings = JSON.parse(root.dataset.strings!);
     const state = root.querySelector<HTMLElement>('.state')!;
     const track = root.querySelector<HTMLElement>('.track')!;
     const artist = root.querySelector<HTMLElement>('.artist')!;
@@ -62,7 +71,7 @@ const ready = Boolean(user && apiKey);
 
       const live = latest['@attr']?.nowplaying === 'true';
       root.classList.toggle('live', live);
-      state.textContent = live ? 'listening now' : `last played ${ago(Number(latest.date?.uts) * 1000)}`;
+      state.textContent = live ? strings.live : strings.last.replace('{ago}', ago(Number(latest.date?.uts) * 1000, strings));
       track.replaceChildren(link(latest.url, latest.name));
       artist.textContent = latest.artist['#text'];
       const cover = latest.image?.find((i) => i.size === 'extralarge')?.['#text'];
@@ -72,7 +81,7 @@ const ready = Boolean(user && apiKey);
       recent.replaceChildren(
         ...older.slice(0, 2).map((t) => {
           const li = document.createElement('li');
-          li.append(link(t.url, t.name), ` - ${t.artist['#text']}`, t.date ? ` · ${ago(Number(t.date.uts) * 1000)}` : '');
+          li.append(link(t.url, t.name), ` - ${t.artist['#text']}`, t.date ? ` · ${ago(Number(t.date.uts) * 1000, strings)}` : '');
           return li;
         }),
       );
