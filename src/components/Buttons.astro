@@ -6,62 +6,60 @@ const own = new URL(url('88x31.png'), Astro.site).href;
 const snippet = `<a href="${new URL(url(''), Astro.site).href}"><img src="${own}" alt="${site.handle}" width="88" height="31"></a>`;
 ---
 
-<section aria-labelledby="buttons-h">
-  <div class="head">
-    <h2 id="buttons-h">friends</h2>
-    <p class="muted">88 by 31 pixels each. Hotlinking is fine, that is the point of them.</p>
-  </div>
-  <ul class="buttons">
-    {
-      friends.map((f) => (
-        <li>
-          <a href={f.href} title={f.name}>
-            <img src={f.button} alt={f.name} width="88" height="31" loading="lazy" decoding="async" />
-          </a>
-        </li>
-      ))
-    }
-  </ul>
-  <div class="mine">
-    <img src={url('88x31.png')} alt={`${site.handle} button`} width="88" height="31" />
-    <div>
-      <p>Mine, if you want it.</p>
-      <button type="button" data-snippet={snippet}>copy the html</button>
-    </div>
-  </div>
-  <script is:inline src="https://pawr.ing/webring/webring.js" defer></script>
-  <div id="pawring"></div>
-</section>
+<ul class="wall">
+  {
+    friends.map((f) => (
+      <li>
+        <a href={f.href} title={f.name}>
+          <img src={f.button} alt={f.name} width="88" height="31" loading="lazy" decoding="async" />
+        </a>
+      </li>
+    ))
+  }
+</ul>
+<div class="mine">
+  <img src={url('88x31.png')} alt={`${site.handle} button`} width="88" height="31" />
+  <span class="sub">mine, hotlink away</span>
+  <button type="button" data-snippet={snippet}>copy html</button>
+</div>
+<script is:inline src="https://pawr.ing/webring/webring.js" defer></script>
+<div id="pawring"></div>
 
 <script>
-  const btn = document.querySelector<HTMLButtonElement>('.mine button')!;
-  btn.addEventListener('click', async () => {
+  const button = document.querySelector<HTMLButtonElement>('.mine button')!;
+  button.addEventListener('click', async () => {
     try {
-      await navigator.clipboard.writeText(btn.dataset.snippet!);
-      btn.textContent = 'copied';
+      await navigator.clipboard.writeText(button.dataset.snippet!);
+      button.textContent = 'copied';
     } catch {
-      btn.textContent = 'clipboard said no';
+      button.textContent = 'clipboard said no';
     }
-    setTimeout(() => (btn.textContent = 'copy the html'), 1500);
+    setTimeout(() => (button.textContent = 'copy html'), 1500);
   });
 </script>
 
 <style>
-  .head { display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
-  .head p { font-size: 0.9rem; }
-  .buttons { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
-  .buttons a { display: block; outline-offset: 2px; }
+  .wall { display: flex; flex-wrap: wrap; gap: 6px; }
   img { image-rendering: pixelated; }
-  .buttons img { transition: transform var(--fast) var(--ease); }
-  .buttons a:hover img { transform: scale(1.5); }
+  .wall img { transition: transform 0.15s; }
+  .wall a:hover img { transform: scale(1.4); }
   .mine {
-    display: flex; align-items: center; gap: 1rem; font-size: 0.9rem;
-    margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--surface0);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+    font-size: 14px;
   }
   button {
-    font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); cursor: pointer;
-    background: var(--base); border: 1px solid var(--surface1); border-radius: 999px; padding: 0.15rem 0.7rem; margin-top: 0.2rem;
+    border: 0;
+    padding: 4px 10px;
+    font: 700 13px var(--font-sans);
+    color: var(--base);
+    background: var(--pink);
+    cursor: pointer;
   }
-  button:hover { border-color: var(--accent); }
-  #pawring { margin-top: 1rem; }
+  #pawring { margin-top: 14px; }
 </style>

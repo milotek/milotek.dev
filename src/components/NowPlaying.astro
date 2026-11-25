@@ -1,0 +1,120 @@
+---
+import { site } from '../config';
+
+const { user, apiKey } = site.lastfm;
+const ready = Boolean(user && apiKey);
+---
+
+<div class="np" data-user={user} data-key={apiKey}>
+  <a class="art" aria-hidden="true" tabindex="-1"></a>
+  <div class="meta">
+    <p class="state mono">{ready ? 'checking last.fm…' : 'not scrobbling here yet'}</p>
+    <p class="track wide">{ready ? ' ' : <a href={site.spotify}>my spotify</a>}</p>
+    <p class="artist sub"></p>
+    <div class="bars" aria-hidden="true">{Array.from({ length: 12 }, (_, i) => <b style={`animation-delay: -${(i * 0.37) % 1}s`}></b>)}</div>
+  </div>
+</div>
+<ul class="recent mono dim"></ul>
+
+<script>
+  interface Track {
+    name: string;
+    url: string;
+    artist: { '#text': string };
+    image?: { size: string; '#text': string }[];
+    date?: { uts: string };
+    '@attr'?: { nowplaying?: string };
+  }
+
+  const STEPS: [number, string][] = [[60, 'm'], [60, 'h'], [24, 'd'], [7, 'w'], [4.35, 'mo'], [12, 'y']];
+
+  function ago(ms: number): string {
+    let n = Math.max(1, (Date.now() - ms) / 1000);
+    let unit = 's';
+    for (const [size, next] of STEPS) {
+      if (n < size) break;
+      n /= size;
+      unit = next;
+    }
+    return `${Math.round(n)}${unit} ago`;
+  }
+
+  function link(href: string, text: string) {
+    return Object.assign(document.createElement('a'), { href, textContent: text });
+  }
+
+  async function load(root: HTMLElement) {
+    const { user, key } = root.dataset;
+    if (!user || !key) return;
+    const state = root.querySelector<HTMLElement>('.state')!;
+    const track = root.querySelector<HTMLElement>('.track')!;
+    const artist = root.querySelector<HTMLElement>('.artist')!;
+    const art = root.querySelector<HTMLAnchorElement>('.art')!;
+    const recent = root.nextElementSibling as HTMLUListElement;
+    const query = new URLSearchParams({ method: 'user.getrecenttracks', user, api_key: key, format: 'json', limit: '3' });
+
+    try {
+      const res = await fetch(`https://ws.audioscrobbler.com/2.0/?${query}`);
+      if (!res.ok) throw new Error(String(res.status));
+      const tracks: Track[] = (await res.json())?.recenttracks?.track ?? [];
+      const [latest, ...older] = tracks;
+      if (!latest) throw new Error('no tracks');
+
+      const live = latest['@attr']?.nowplaying === 'true';
+      root.classList.toggle('live', live);
+      state.textContent = live ? 'listening now' : `last played ${ago(Number(latest.date?.uts) * 1000)}`;
+      track.replaceChildren(link(latest.url, latest.name));
+      artist.textContent = latest.artist['#text'];
+      const cover = latest.image?.find((i) => i.size === 'extralarge')?.['#text'];
+      if (cover) art.style.backgroundImage = `url("${cover}")`;
+      art.href = latest.url;
+
+      recent.replaceChildren(
+        ...older.slice(0, 2).map((t) => {
+          const li = document.createElement('li');
+          li.append(link(t.url, t.name), ` - ${t.artist['#text']}`, t.date ? ` · ${ago(Number(t.date.uts) * 1000)}` : '');
+          return li;
+        }),
+      );
+    } catch {
+      state.textContent = 'last.fm is not answering';
+      track.textContent = 'quiet for now';
+    }
+  }
+
+  document.querySelectorAll<HTMLElement>('.np').forEach(load);
+</script>
+
+<style>
+  .np { display: flex; gap: 18px; }
+  .art {
+    flex: none;
+    width: 150px;
+    height: 150px;
+    background: conic-gradient(from 200deg, #f5c2e7, #89b4fa, #a6e3a1, #f9e2af, #f5c2e7) center / cover;
+  }
+  .meta { display: flex; flex-direction: column; min-width: 0; }
+  .state { color: var(--dim); margin-bottom: auto; }
+  .live .state { color: var(--green); }
+  .live .state::before { content: '● '; animation: pulse 1.4s ease-in-out infinite; }
+  .track { font-size: 28px; line-height: 1.1; overflow-wrap: anywhere; }
+  .track :global(a) { color: var(--text); text-decoration: none; }
+  .track :global(a:hover) { color: var(--pink); }
+  .artist { margin-top: 6px; }
+  .bars { display: none; gap: 3px; align-items: flex-end; height: 26px; margin-top: 14px; }
+  .live .bars { display: flex; }
+  .bars b { flex: 1; background: var(--pink); opacity: 0.7; animation: eq 1s ease-in-out infinite alternate; }
+  .recent:not(:empty) { margin-top: 16px; padding-top: 10px; border-top: 1px solid var(--line); }
+  .recent :global(a) { color: var(--sub); text-decoration: none; }
+  @keyframes eq {
+    from { height: 15%; }
+    to { height: 100%; }
+  }
+  @keyframes pulse {
+    50% { opacity: 0.25; }
+  }
+  @media (max-width: 600px) {
+    .np { flex-direction: column; }
+    .art { width: 100%; height: 160px; }
+  }
+</style>

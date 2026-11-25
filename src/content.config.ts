@@ -1,6 +1,7 @@
 import { defineCollection } from 'astro:content';
 import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
+import { slugify } from './lib/slug';
 
 const projects = defineCollection({
   loader: glob({ pattern: '*.md', base: './src/content/projects' }),
@@ -20,18 +21,11 @@ const projects = defineCollection({
     }),
 });
 
-// Written by the sync-blog workflow in the ObsidianVault repo, not by hand.
 const blog = defineCollection({
   loader: glob({
-    pattern: '*/index.md',
+    pattern: '*.md',
     base: './src/content/blog',
-    generateId: ({ entry }) => entry.split('/')[0]!,
-  }),
-  schema: z.object({
-    title: z.string(),
-    published: z.coerce.date(),
-    summary: z.string().optional(),
-    draft: z.boolean().default(false),
+    generateId: ({ entry }) => slugify(entry.replace(/\.md$/, '')),
   }),
 });
 

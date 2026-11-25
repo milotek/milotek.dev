@@ -12,9 +12,8 @@ export async function GET(context: APIContext) {
     site: new URL(url(''), context.site),
     trailingSlash: true,
     items: posts.map((p) => ({
-      title: p.data.title,
-      pubDate: p.data.published,
-      description: p.data.summary,
+      title: p.title,
+      pubDate: p.published,
       link: url(`blog/${p.id}/`),
     })),
   });

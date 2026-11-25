@@ -8,41 +8,24 @@ interface Props {
 }
 
 const { project } = Astro.props;
-const { title, blurb, status, year, tech, cover } = project.data;
+const { title, blurb, year, cover } = project.data;
 ---
 
-<a class="card project" href={url(`projects/${project.id}/`)}>
-  {
-    cover ? (
-      <Image class="cover" src={cover} alt="" width={640} densities={[1, 2]} />
-    ) : (
-      <span class="cover cover--none" aria-hidden="true" />
-    )
-  }
-  <div class="body">
-    <div class="title-row">
-      <h3>{title}</h3>
-      <span class="pill" data-status={status}>{status}</span>
-    </div>
-    <p class="blurb">{blurb}</p>
-    <ul class="chips" aria-label="Technologies">
-      <li class="chip year">{year}</li>
-      {tech.slice(0, 4).map((t) => <li class="chip">{t}</li>)}
-    </ul>
+<a class="project" href={url(`projects/${project.id}/`)}>
+  {cover ? <Image src={cover} alt="" width={480} densities={[1, 2]} /> : <span class="blank" aria-hidden="true" />}
+  <div>
+    <span class="mono dim">{year}</span>
+    <h3 class="wide">{title}</h3>
+    <p class="sub">{blurb}</p>
   </div>
 </a>
 
 <style>
-  .project { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
-  .cover {
-    display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover;
-    background: var(--crust); border-bottom: 1px solid var(--surface0);
-  }
-  .cover--none {
-    background: repeating-linear-gradient(135deg, var(--crust), var(--crust) 7px, var(--base) 7px, var(--base) 14px);
-  }
-  .body { padding: 1rem 1.2rem 1.1rem; display: flex; flex-direction: column; gap: 0.5rem; flex: 1; }
-  .title-row { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
-  .blurb { color: var(--subtext1); }
-  .year { color: var(--accent); }
+  .project { display: flex; flex-direction: column; color: inherit; text-decoration: none; background: var(--base); }
+  img, .blank { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; filter: saturate(0.85); transition: filter 0.25s; }
+  .blank { background: repeating-linear-gradient(135deg, var(--crust) 0 7px, var(--base) 7px 14px); }
+  .project:hover img { filter: none; }
+  div { flex: 1; padding: 12px 12px 14px; border-top: 3px solid var(--pink); }
+  h3 { font-size: 18px; margin: 4px 0; }
+  p { font-size: 14px; line-height: 1.4; }
 </style>
