@@ -87,13 +87,24 @@ const posts = await getPosts();
   pfps[Math.floor(Math.random() * pfps.length)]!.hidden = false;
 
   for (const row of document.querySelectorAll<HTMLElement>('.projects')) {
+    let target = 0;
+    let gliding = false;
+    const glide = () => {
+      row.scrollLeft += (target - row.scrollLeft) * 0.2;
+      gliding = Math.abs(target - row.scrollLeft) > 1;
+      if (gliding) requestAnimationFrame(glide);
+      else row.scrollLeft = target;
+    };
     row.addEventListener(
       'wheel',
       (e) => {
         const room = e.deltaY > 0 ? row.scrollWidth - row.clientWidth - row.scrollLeft : row.scrollLeft;
         if (!e.deltaY || room < 1) return;
         e.preventDefault();
-        row.scrollBy({ left: e.deltaY, behavior: 'smooth' });
+        if (!gliding) target = row.scrollLeft;
+        target = Math.max(0, Math.min(row.scrollWidth - row.clientWidth, target + e.deltaY));
+        if (!gliding) requestAnimationFrame(glide);
+        gliding = true;
       },
       { passive: false },
     );
@@ -113,11 +124,11 @@ const posts = await getPosts();
     grid-auto-flow: column;
     grid-auto-columns: calc((100% - 48px) / 4);
     gap: 16px;
-    margin-bottom: -17px;
-    padding-bottom: 5px;
+    margin-bottom: -15px;
+    padding-bottom: 7px;
     overflow-x: auto;
     --fade: 30%;
-    --strip: bottom / 100% 12px;
+    --strip: bottom / 100% 8px;
     --towards: to right;
   }
   .posts::-webkit-scrollbar-track { margin-block: 10px; }
@@ -129,7 +140,7 @@ const posts = await getPosts();
   .links a:hover span { color: var(--ink); }
   .posts a { display: flex; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--line); color: var(--text); text-decoration: none; }
   .posts li:last-child a { border: 0; }
-  .posts { margin-right: -17px; padding-right: 5px; overflow-y: auto; --fade: 48px; }
+  .posts { margin-right: -15px; padding-right: 7px; overflow-y: auto; --fade: 48px; }
   @media (min-width: 901px) {
     :global(.tile:has(.posts)) { contain: size; display: flex; flex-direction: column; }
     .posts { flex: 1; min-height: 0; }

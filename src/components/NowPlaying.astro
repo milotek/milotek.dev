@@ -277,8 +277,8 @@ const strings = { live: t('nowPlaying.live'), ago: t('nowPlaying.ago'), units: t
   .flash { fill: white; opacity: var(--flash, 0); }
   .played { fill: url(#np-fill); clip-path: inset(0 calc((1 - var(--progress)) * 100%) 0 0); }
   .time { flex: none; display: flex; flex-direction: column; align-items: flex-end; min-width: 4ch; font-size: 0.65rem; line-height: 1.25; font-variant-numeric: tabular-nums; color: var(--sub); }
-  .recent { flex: 1; min-height: 0; margin-right: -17px; padding-right: 5px; overflow-y: auto; --fade: 32px; }
-  .recent:not(:empty) { margin-top: 8px; padding-top: 6px; border-top: 1px solid var(--line); }
+  .recent { flex: 1; min-height: 0; margin-right: -15px; padding-right: 7px; overflow-y: auto; --fade: 32px; }
+  .recent:not(:empty) { margin-top: 8px; padding-top: 6px; }
   .recent::-webkit-scrollbar-track { margin-block: 6px; }
   .recent :global(button) { display: block; max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; border: 0; padding: 0; font: inherit; text-align: left; color: var(--sub); background: none; cursor: pointer; transition: color 0.25s; }
   .recent :global(button:hover) { color: var(--pink); }
