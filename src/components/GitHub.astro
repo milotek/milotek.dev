@@ -71,7 +71,7 @@ const weeks = calendar?.weeks.slice(-40) ?? [];
       <ul class="repos">
         {profile.pinnedItems.nodes.map((r) => (
           <li>
-            <a class="button" href={r.url}>
+            <a class="card" href={r.url}>
               <b class="mono">{r.name}</b>
               {r.description && <span class="sub">{r.description}</span>}
             </a>
@@ -115,9 +115,10 @@ const weeks = calendar?.weeks.slice(-40) ?? [];
     100% { background: var(--ctp-mocha-lavender); }
   }
   .repos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .repos a { display: block; height: 100%; padding: 10px 12px; text-decoration: none; }
-  .repos span { display: block; margin-top: 4px; font-size: 13px; transition: color 0.25s; }
-  .repos a:hover span { color: var(--base); }
+  .repos a { display: block; height: 100%; padding: 10px 12px; color: var(--text); background: var(--base); text-decoration: none; }
+  .repos b { transition: color 0.25s; }
+  .repos a:hover b { color: var(--pink); }
+  .repos span { display: block; margin-top: 4px; font-size: 13px; }
   @media (max-width: 600px) {
     .repos { grid-template-columns: 1fr; }
   }

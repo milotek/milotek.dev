@@ -11,7 +11,7 @@ const { project } = Astro.props;
 const { title, blurb, year, cover } = project.data;
 ---
 
-<a class="project" href={url(`projects/${project.id}/`)}>
+<a class="project card" href={url(`projects/${project.id}/`)}>
   {cover ? <Image src={cover} alt="" width={480} densities={[1, 2]} /> : <span class="blank" aria-hidden="true" />}
   <div>
     <span class="mono dim">{year}</span>

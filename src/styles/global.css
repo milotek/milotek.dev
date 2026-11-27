@@ -164,6 +164,9 @@ a.chip:hover, a.chip[aria-current='page'] { color: var(--pink); background: var(
 ::-webkit-scrollbar-thumb:hover { background-color: color-mix(in srgb, var(--text) 46%, transparent); }
 ::-webkit-scrollbar-thumb:active { background-color: color-mix(in srgb, var(--text) 64%, transparent); }
 
+.card { outline: 1px solid transparent; outline-offset: -1px; transition: outline-color 0.25s; }
+.card:hover { outline-color: var(--pink); }
+
 .button {
   border: 0;
   font: 700 14px var(--font-sans);
