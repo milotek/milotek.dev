@@ -1,4 +1,5 @@
 ---
+import { execFileSync } from 'node:child_process';
 import '../styles/global.css';
 import { site } from '../config';
 import { useTranslations } from '../i18n';
@@ -16,6 +17,7 @@ const t = useTranslations(Astro.currentLocale);
 const { title, description = t('site.description'), type = 'website' } = Astro.props;
 const fullTitle = title ? `${title} · ${site.handle}` : `${site.name} · ${site.handle}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const stamp = execFileSync('git', ['log', '-1', '--date=format:%Y-%m-%d %H:%M', '--format=%h @ %cd'], { encoding: 'utf8' }).trim();
 ---
 
 <!doctype html>
@@ -50,10 +52,42 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         <slot />
       </main>
       <footer class="mono dim">
-        <span>{site.name}</span>
-        <a href={url('rss.xml')}>{t('footer.rss')}</a>
+        <span>{t('footer.copyright', { year: new Date().getFullYear() })}</span>
+        <a href={site.repo}>{t('footer.source')}</a>
+        <a href={`${site.repo}/commit/${stamp.split(' ')[0]}`}>{stamp}</a>
       </footer>
     </div>
+    <script>
+      import { url } from '../lib/url';
+
+      const sounds: Record<string, HTMLAudioElement> = {};
+      const LOUD = '.button, a.chip, .project, a.badge, .repos a, nav a, .hero button, .recent button, .wave';
+
+      function sfx(name: string) {
+        const sound = (sounds[name] ??= new Audio(url(`audio/ui/${name}.mp3`)));
+        sound.currentTime = 0;
+        sound.play().catch(() => {});
+      }
+
+      for (const box of document.querySelectorAll<HTMLElement>('.scroller')) {
+        const edges = () => {
+          box.classList.toggle('scrolled', box.scrollTop + box.scrollLeft > 0);
+          box.classList.toggle('end', box.scrollTop + box.clientHeight >= box.scrollHeight - 4 && box.scrollLeft + box.clientWidth >= box.scrollWidth - 4);
+        };
+        box.addEventListener('scroll', edges, { passive: true });
+      }
+
+      let still = '';
+      addEventListener('pointerover', (e) => {
+        const el = (e.target as Element).closest(LOUD);
+        if (!el || el.contains(e.relatedTarget as Node | null) || still === `${e.screenX},${e.screenY}`) return;
+        still = `${e.screenX},${e.screenY}`;
+        sfx('hover');
+      });
+      addEventListener('click', (e) => {
+        if ((e.target as Element).closest(LOUD)) sfx('click');
+      });
+    </script>
   </body>
 </html>
 

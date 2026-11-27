@@ -3,11 +3,12 @@
 export default {
   lang: 'en-GB',
 
-  'site.role': 'software engineering @ google, london',
+  'site.role': 'Software Engineer @ Google, London',
   'site.description': 'Software Engineer @ Google, working on the Google Search app for Android and iOS.',
 
   'nav.label': 'Site',
   'nav.home': '/',
+  'nav.about': '/about',
   'nav.projects': '/projects',
   'nav.blog': '/blog',
   'nav.art': '/art',
@@ -19,7 +20,8 @@ export default {
   'hero.flip': 'Flip the header',
   'hero.swap': 'Swap the picture',
 
-  'footer.rss': 'rss',
+  'footer.copyright': 'copyright {year} @ ur mum',
+  'footer.source': 'source',
 
   'home.about': 'about',
   'home.portrait': 'A drawing of me',
@@ -27,46 +29,44 @@ export default {
   // HTML: rendered with set:html for the strikethrough.
   'home.bio.fursona': 'please <s>do not</s> ask me about my fursona',
   'home.nowPlaying': 'now playing',
-  'home.lastfm': 'last.fm ↗',
   'home.projects': "things i've made",
-  'home.allProjects': 'all projects →',
+  'home.allProjects': 'all projects ↗',
   'home.github': 'github',
   'home.contact': 'contact',
   'home.blog': 'blog',
-  'home.everyPost': 'every post →',
+  'home.more': 'more ↗',
+  'about.title': 'about',
   'home.buttons': 'buttons',
 
+  broke: '{what} broke',
   'github.summary': '{contributions} contributions · {repos} repos',
 
   'nowPlaying.spotify': 'my spotify',
-  'nowPlaying.live': 'listening now',
-  'nowPlaying.last': 'last played {ago}',
+  'nowPlaying.live': 'now!',
   'nowPlaying.ago': '{n}{unit} ago',
   'nowPlaying.units': 's m h d w mo y',
+  'nowPlaying.play': 'play',
+  'nowPlaying.pause': 'pause',
 
-  'buttons.copy': 'copy html',
-  'buttons.copied': 'copied',
-  'buttons.failed': 'clipboard said no',
-  'buttons.mine': '{handle} button',
 
   'projects.title': 'projects',
   'projects.description': 'Things Milo Tekchandani has built: backend and infrastructure, hardware, apps, games.',
   'project.label': 'project',
   'project.details': 'details',
   'project.by': 'by',
-  'project.year': 'year',
-  'project.tech': 'made with',
+  'project.year': 'in',
+  'project.tech': 'with',
 
   'blog.title': 'blog',
   'blog.description': 'Writing by Milo Tekchandani. Keyboards, VR headsets, Lua, whatever else.',
   'blog.rss': 'rss ↗',
-  'blog.back': '← every post',
+  'blog.back': 'every post ↗',
   'rss.title': '{handle} blog',
   'rss.description': 'Terrible writing from milo@milotek.dev.',
 
   'art.title': 'art',
   'art.description': 'Drawings and pixel art by Milo Tekchandani, mostly made in Procreate.',
-  'art.back': '← all art',
+  'art.back': 'all art ↗',
 
   '404.title': '404',
   '404.description': 'Not here.',

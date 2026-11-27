@@ -70,7 +70,7 @@ const weeks = calendar?.weeks.slice(-40) ?? [];
       </ul>
     </>
   ) : (
-    <a href={`https://github.com/${site.github}`}>github.com/{site.github}</a>
+    <p class="broke"><span><span>{t('broke', { what: 'github' })}</span></span></p>
   )
 }
 

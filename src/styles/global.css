@@ -22,24 +22,46 @@
 :root {
   color-scheme: dark;
 
-  --base: #1e1e2e;
-  --mantle: #181825;
-  --crust: #11111b;
-  --text: #cdd6f4;
-  --sub: #a6adc8;
-  --dim: #7f849c;
-  --line: #313244;
+  --ctp-mocha-rosewater: #f5e0dc;
+  --ctp-mocha-flamingo: #f2cdcd;
+  --ctp-mocha-pink: #f5c2e7;
+  --ctp-mocha-mauve: #cba6f7;
+  --ctp-mocha-red: #f38ba8;
+  --ctp-mocha-maroon: #eba0ac;
+  --ctp-mocha-peach: #fab387;
+  --ctp-mocha-yellow: #f9e2af;
+  --ctp-mocha-green: #a6e3a1;
+  --ctp-mocha-teal: #94e2d5;
+  --ctp-mocha-sky: #89dceb;
+  --ctp-mocha-sapphire: #74c7ec;
+  --ctp-mocha-blue: #89b4fa;
+  --ctp-mocha-lavender: #b4befe;
+  --ctp-mocha-text: #cdd6f4;
+  --ctp-mocha-subtext0: #a6adc8;
+  --ctp-mocha-overlay1: #7f849c;
+  --ctp-mocha-surface0: #313244;
+  --ctp-mocha-base: #1e1e2e;
+  --ctp-mocha-mantle: #181825;
+  --ctp-mocha-crust: #11111b;
+
+  --base: var(--ctp-mocha-base);
+  --mantle: var(--ctp-mocha-mantle);
+  --crust: var(--ctp-mocha-crust);
+  --text: var(--ctp-mocha-text);
+  --sub: var(--ctp-mocha-subtext0);
+  --dim: var(--ctp-mocha-overlay1);
+  --line: var(--ctp-mocha-surface0);
   --pink: #ffbdbd;
-  --peach: #fab387;
-  --red: #f38ba8;
-  --green: #a6e3a1;
-  --blue: #89b4fa;
+  --peach: var(--ctp-mocha-peach);
+  --red: var(--ctp-mocha-red);
+  --green: var(--ctp-mocha-green);
+  --blue: var(--ctp-mocha-blue);
 
   --font-sans: 'Builder Sans', Helvetica, Arial, sans-serif;
   --font-wide: 'Builder Extended', var(--font-sans);
   --font-mono: 'Builder Mono', ui-monospace, monospace;
 
-  --rainbow: linear-gradient(90deg, #f5c2e7, #eba0ac, #fab387, #f9e2af, #a6e3a1, #94e2d5, #89dceb, #74c7ec, #89b4fa, #b4befe, #f5c2e7) 0 0 / 200% 100%;
+  --rainbow: linear-gradient(90deg, white, var(--ctp-mocha-flamingo), var(--ctp-mocha-pink), var(--ctp-mocha-mauve), var(--ctp-mocha-red), var(--ctp-mocha-maroon), var(--ctp-mocha-peach), var(--ctp-mocha-yellow), var(--ctp-mocha-green), var(--ctp-mocha-teal), var(--ctp-mocha-sky), var(--ctp-mocha-sapphire), var(--ctp-mocha-blue), var(--ctp-mocha-lavender)) 0 0 / 200% 100%;
 
   --gap: 20px;
   --page: 1120px;
@@ -93,15 +115,75 @@ pre code { background: none; padding: 0; font-size: inherit; }
 }
 a.chip:hover, a.chip[aria-current='page'] { color: var(--pink); background: var(--base); }
 
+.broke { position: absolute; inset: 0; overflow: hidden; }
+.broke > span { position: absolute; inset-inline: 0; top: 0; animation: bounce-y 2.3s linear infinite alternate; }
+.broke span span { position: relative; left: 0; display: inline-block; font: 700 32px var(--font-wide); text-transform: uppercase; color: var(--red); animation: bounce-x 3.7s linear infinite alternate; }
+
+@keyframes bounce-y {
+  to { top: 100%; transform: translateY(-100%); }
+}
+
+@keyframes bounce-x {
+  to { left: 100%; transform: translateX(-100%); }
+}
+
+:root { scrollbar-color: color-mix(in srgb, var(--text) 28%, transparent) color-mix(in srgb, var(--crust) 60%, transparent); }
+@supports selector(::-webkit-scrollbar) {
+  :root { scrollbar-color: auto; }
+}
+@property --thumb {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: transparent;
+}
+@property --start {
+  syntax: '<length-percentage>';
+  inherits: false;
+  initial-value: 0px;
+}
+@property --end {
+  syntax: '<length-percentage>';
+  inherits: false;
+  initial-value: 0px;
+}
+:root, .scroller { --thumb: transparent; transition: --thumb 0.3s, --start 0.3s, --end 0.3s; }
+.scroller {
+  --start: 0px;
+  --end: var(--fade);
+  --strip: right / 12px 100%;
+  --towards: to bottom;
+  mask: linear-gradient(black, black) var(--strip) no-repeat, linear-gradient(var(--towards), transparent, black var(--start), black calc(100% - var(--end)), transparent);
+}
+.scroller.scrolled { --start: var(--fade); }
+.scroller.end { --end: 0px; }
+:root:hover, .scroller:hover { --thumb: color-mix(in srgb, var(--text) 28%, transparent); }
+::-webkit-scrollbar { width: 12px; height: 12px; background: transparent; }
+::-webkit-scrollbar-corner { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--thumb) padding-box; border: 0 solid transparent; border-width: 0 1px; }
+::-webkit-scrollbar-thumb:horizontal { border-width: 1px 0; }
+::-webkit-scrollbar-thumb:hover { background-color: color-mix(in srgb, var(--text) 46%, transparent); }
+::-webkit-scrollbar-thumb:active { background-color: color-mix(in srgb, var(--text) 64%, transparent); }
+
+.button {
+  border: 0;
+  font: 700 14px var(--font-sans);
+  color: var(--pink);
+  background: var(--base);
+  cursor: pointer;
+  transition: color 0.25s, background-color 0.25s;
+}
+.button:hover, .button[aria-pressed='true'] { color: var(--base); background: var(--pink); }
+.button:disabled { opacity: 0.35; pointer-events: none; }
+
 .mono { font-family: var(--font-mono); font-size: 0.8rem; }
 .dim { color: var(--dim); }
 .sub { color: var(--sub); }
 .wide { font-family: var(--font-wide); }
 
-.prose { font-size: 1.05rem; color: var(--sub); }
+.prose { font-size: 1.05rem; color: var(--text); }
 .prose > * + * { margin-top: 0.9em; }
 .prose h1, .prose h2, .prose h3, .prose h4 { font-family: var(--font-wide); color: var(--text); line-height: 1.15; }
-.prose h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); }
+.prose h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); color: var(--pink); }
 .prose h2 { font-size: 1.45rem; margin-top: 2.2rem; }
 .prose h3 { font-size: 1.2rem; margin-top: 1.8rem; }
 .prose h4 { font-size: 1.05rem; margin-top: 1.4rem; }

@@ -11,6 +11,7 @@ const here = Astro.url.pathname;
 
 const nav = [
   { href: url(''), text: t('nav.home') },
+  { href: url('about/'), text: t('nav.about') },
   { href: url('projects/'), text: t('nav.projects') },
   { href: url('blog/'), text: t('nav.blog') },
   { href: url('art/'), text: t('nav.art') },
@@ -35,48 +36,24 @@ function current(href: string) {
   <div class="strip">
     <p class="copy">{t('hero.copyright')}</p>
     <div class="buttons">
-      <button type="button" data-action="sound" aria-pressed="false" aria-label={t('hero.music')}>a</button>
-      <button type="button" data-action="flip" aria-pressed="false" aria-label={t('hero.flip')}>b</button>
-      <button type="button" data-action="swap" aria-pressed="false" aria-label={t('hero.swap')}>c</button>
+      <button class="button" type="button" data-action="sound" aria-pressed="false" aria-label={t('hero.music')}>a</button>
+      <button class="button" type="button" data-action="flip" aria-pressed="false" aria-label={t('hero.flip')}>b</button>
+      <button class="button" type="button" data-action="swap" aria-pressed="false" aria-label={t('hero.swap')}>c</button>
     </div>
   </div>
   <audio class="music" src={url('audio/music.mp3')} loop preload="none"></audio>
 </header>
 
 <script>
-  import { url } from '../lib/url';
-
   const hero = document.querySelector<HTMLElement>('.hero')!;
   const [selfie, swapped] = hero.querySelectorAll<HTMLImageElement>('.photo');
   const music = hero.querySelector<HTMLAudioElement>('.music')!;
   const buttons = [...hero.querySelectorAll<HTMLButtonElement>('.buttons button')];
   const button = (action: string) => buttons.find((b) => b.dataset.action === action)!;
 
-  const hover = new Audio(url('audio/hover.wav'));
-  const click = new Audio(url('audio/click.wav'));
   let soundOn = false;
   let analyser: AnalyserNode | undefined;
   let frame = 0;
-
-  function play(sound: HTMLAudioElement) {
-    if (!soundOn) return;
-    sound.currentTime = 0;
-    sound.play().catch(() => {});
-  }
-
-  function remember(key: string, on: boolean) {
-    try {
-      localStorage.setItem(`hero:${key}`, on ? '1' : '0');
-    } catch {}
-  }
-
-  function recall(key: string) {
-    try {
-      return localStorage.getItem(`hero:${key}`) === '1';
-    } catch {
-      return false;
-    }
-  }
 
   function setPressed(action: string, on: boolean) {
     button(action).setAttribute('aria-pressed', String(on));
@@ -85,14 +62,12 @@ function current(href: string) {
   function setFlip(on: boolean) {
     hero.classList.toggle('flipped', on);
     setPressed('flip', on);
-    remember('flip', on);
   }
 
   function setSwap(on: boolean) {
     selfie!.hidden = on;
     swapped!.hidden = !on;
     setPressed('swap', on);
-    remember('swap', on);
   }
 
   function bounce() {
@@ -130,14 +105,6 @@ function current(href: string) {
   button('sound').addEventListener('click', () => setSound(!soundOn));
   button('flip').addEventListener('click', () => setFlip(!hero.classList.contains('flipped')));
   button('swap').addEventListener('click', () => setSwap(selfie!.hidden === false));
-
-  document.querySelectorAll<HTMLElement>('.hero a, .hero button').forEach((el) => {
-    el.addEventListener('mouseenter', () => play(hover));
-    el.addEventListener('click', () => play(click));
-  });
-
-  setFlip(recall('flip'));
-  setSwap(recall('swap'));
 </script>
 
 <style>
@@ -204,15 +171,10 @@ function current(href: string) {
   button {
     width: 40px;
     height: 40px;
-    border: 0;
-    font: 700 20px var(--font-sans);
-    color: var(--pink);
+    font-size: 20px;
     background: var(--mantle);
-    cursor: pointer;
     transform-origin: top center;
-    transition: background-color 0.25s, color 0.25s;
   }
-  button:hover, button[aria-pressed='true'] { color: var(--base); background: var(--pink); }
   @media (max-width: 600px) {
     .card { height: 360px; }
     nav { top: 20px; left: 20px; }

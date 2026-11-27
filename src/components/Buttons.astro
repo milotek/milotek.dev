@@ -1,67 +1,85 @@
 ---
-import { friends, site } from '../config';
-import { useTranslations } from '../i18n';
+import { buttons } from '../config';
 import { url } from '../lib/url';
 
-const t = useTranslations(Astro.currentLocale);
-const own = new URL(url('88x31.png'), Astro.site).href;
-const snippet = `<a href="${new URL(url(''), Astro.site).href}"><img src="${own}" alt="${site.handle}" width="88" height="31"></a>`;
+const WAVES = 2;
+const BOB = 1.6;
+const lanes = [0, 1, 2].map((k) => buttons.filter((_, i) => i % 3 === k));
 ---
 
-<ul class="wall">
+<div class="falls">
   {
-    friends.map((f) => (
-      <li>
-        <a href={f.href} title={f.name}>
-          <img src={f.button} alt={f.name} width="88" height="31" loading="lazy" decoding="async" />
-        </a>
-      </li>
+    lanes.map((lane, row) => (
+      <ul class="lane">
+        {[...lane, ...lane].map((f, i) => {
+          const Badge = f.href ? 'a' : 'span';
+          return (
+            <li>
+              <Badge class="badge" style={`animation-delay: ${(-(((i % lane.length) / lane.length) * WAVES + row / 2) * BOB).toFixed(2)}s`} href={f.href?.startsWith('/') ? url(f.href.slice(1)) : f.href} title={f.name}>
+                <img src={f.button.startsWith('/') ? url(f.button.slice(1)) : f.button} alt={f.name} width="88" height="31" loading="lazy" decoding="async" />
+              </Badge>
+            </li>
+          );
+        })}
+      </ul>
     ))
   }
-</ul>
-<div class="mine">
-  <img src={url('88x31.png')} alt={t('buttons.mine', { handle: site.handle })} width="88" height="31" />
-  <button type="button" data-snippet={snippet} data-copied={t('buttons.copied')} data-failed={t('buttons.failed')}>{t('buttons.copy')}</button>
 </div>
 <script is:inline src="https://pawr.ing/webring/webring.js" defer></script>
+<hr />
 <div id="pawring"></div>
 
 <script>
-  const button = document.querySelector<HTMLButtonElement>('.mine button')!;
-  const label = button.textContent;
-  button.addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText(button.dataset.snippet!);
-      button.textContent = button.dataset.copied!;
-    } catch {
-      button.textContent = button.dataset.failed!;
-    }
-    setTimeout(() => (button.textContent = label), 1500);
+  const lanes = [...document.querySelectorAll<HTMLElement>('.falls .lane')];
+  const speeds = [60, 80, 50];
+  const drift = lanes.map(() => ({ period: 7000 + Math.random() * 8000, phase: Math.random() * Math.PI * 2 }));
+  const offsets = lanes.map(() => 0);
+  const pushes = lanes.map(() => 0);
+  const held = lanes.map(() => false);
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let last = 0;
+
+  lanes.forEach((lane, i) => {
+    lane.addEventListener('pointerenter', () => (held[i] = true));
+    lane.addEventListener('pointerleave', () => (held[i] = false));
+    lane.addEventListener(
+      'wheel',
+      (e) => {
+        e.preventDefault();
+        pushes[i]! -= e.deltaY;
+      },
+      { passive: false },
+    );
   });
+
+  function tick(t: number) {
+    lanes.forEach((lane, i) => {
+      const half = lane.scrollHeight / 2;
+      const step = pushes[i]! * 0.2;
+      pushes[i]! -= step;
+      const speed = speeds[i]! * (1 + 0.35 * Math.sin((t / drift[i]!.period) * Math.PI * 2 + drift[i]!.phase));
+      const move = held[i] || still || !last ? 0 : (speed * (t - last)) / 1000;
+      offsets[i] = (((offsets[i]! + step + move) % half) + half) % half;
+      lane.style.transform = `translateY(${(offsets[i]! - half).toFixed(1)}px)`;
+    });
+    last = t;
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
 </script>
 
 <style>
-  .wall { display: flex; flex-wrap: wrap; gap: 6px; }
+  .falls { display: flex; justify-content: center; gap: 8px; height: 160px; overflow: hidden; mask-image: linear-gradient(transparent, black 30%, black 70%, transparent); }
+  .lane li { padding-bottom: 6px; }
+  .badge { display: block; animation: wobble 1.6s ease-in-out infinite; }
+  .lane:hover .badge { animation-play-state: paused; }
   img { image-rendering: pixelated; }
-  .wall img { transition: transform 0.15s; }
-  .wall a:hover img { transform: scale(1.4); }
-  .mine {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 14px;
-    padding-top: 12px;
-    border-top: 1px solid var(--line);
-    font-size: 14px;
+  .lane img { transition: transform 0.15s; }
+  .badge:hover img { transform: scale(1.4); }
+  .lane:hover, .badge:hover { position: relative; z-index: 1; }
+  @keyframes wobble {
+    0%, 100% { transform: translateX(-3px); }
+    50% { transform: translateX(3px); }
   }
-  button {
-    border: 0;
-    padding: 4px 10px;
-    font: 700 13px var(--font-sans);
-    color: var(--base);
-    background: var(--pink);
-    cursor: pointer;
-  }
-  #pawring { margin-top: 14px; }
+  hr { margin: 14px 0; border: 0; border-top: 1px solid var(--line); }
 </style>

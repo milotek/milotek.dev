@@ -1,6 +1,7 @@
 ---
 title: Pixeljam Studios
 blurb: 'Pull requests to a friends'' game studio: a Fragsurf port to Unity, gunplay systems, engine tooling.'
+cover: ../../assets/projects/pixeljam/cover.png
 year: '2026'
 by: me and friends
 tech: [C#, Unity, Luau, GDScript]

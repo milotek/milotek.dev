@@ -25,9 +25,9 @@ const t = useTranslations(Astro.currentLocale);
 
 <style>
   .masonry { columns: 3; column-gap: var(--gap); }
-  a { display: block; margin-bottom: var(--gap); break-inside: avoid; }
-  img { width: 100%; transition: transform 0.2s; }
-  a:hover img { transform: scale(1.02); }
+  a { display: block; margin-bottom: var(--gap); overflow: hidden; break-inside: avoid; }
+  img { width: 100%; transition: transform 0.3s; }
+  a:hover img { transform: scale(1.05); }
   @media (max-width: 900px) {
     .masonry { columns: 2; }
   }

@@ -3,9 +3,9 @@ import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import Tile from '../components/Tile.astro';
 import NowPlaying from '../components/NowPlaying.astro';
-import ProjectCard from '../components/ProjectCard.astro';
 import GitHub from '../components/GitHub.astro';
 import Buttons from '../components/Buttons.astro';
+import ProjectCard from '../components/ProjectCard.astro';
 import { getPosts } from '../lib/posts';
 import { getProjects } from '../lib/projects';
 import { isoDate } from '../lib/time';
@@ -13,45 +13,43 @@ import { url } from '../lib/url';
 import { site, socials } from '../config';
 import { useTranslations } from '../i18n';
 import me from '../assets/art/3525b230.jpg';
+import github from '../assets/me/github.png';
 
 const t = useTranslations(Astro.currentLocale);
-const featured = (await getProjects()).filter((p) => p.data.status).slice(0, 4);
-const posts = (await getPosts()).slice(0, 4);
+const projects = await getProjects();
+const posts = await getPosts();
 ---
 
 <Base>
-  <Tile label={t('home.about')} span={5}>
+  <Tile label={t('home.about')} span={7} action={{ href: url('about/'), text: t('home.more') }}>
     <div class="who">
-      <Image src={me} alt={t('home.portrait')} width={112} densities={[1, 2]} />
+      {[me, github].map((src) => <Image class="pfp" src={src} alt={t('home.portrait')} width={112} densities={[1, 2]} loading="lazy" hidden />)}
       <div>
         <h1 class="wide">{site.name}</h1>
         <p class="role mono">{t('site.role')}</p>
-        <p class="sub">{t('home.bio')}</p>
-        <p class="sub" set:html={t('home.bio.fursona')} />
+        <p>{t('home.bio')}</p>
+        <p set:html={t('home.bio.fursona')} />
       </div>
     </div>
   </Tile>
 
-  <Tile label={t('home.nowPlaying')} span={7} action={site.lastfm.user ? { href: `https://www.last.fm/user/${site.lastfm.user}`, text: t('home.lastfm') } : undefined}>
+  <Tile label={t('home.nowPlaying')} span={5}>
     <NowPlaying />
   </Tile>
 
-  <Tile label={t('home.projects')} action={{ href: url('projects/'), text: t('home.allProjects') }}>
-    <div class="projects">
-      {featured.map((p) => <ProjectCard project={p} />)}
+  <Tile label={t('home.projects')} action={{ href: url('projects/'), text: t('home.more') }}>
+    <div class="projects scroller">
+      {projects.map((p) => <ProjectCard project={p} />)}
+      <a class="more button" href={url('projects/')}>{t('home.allProjects')}</a>
     </div>
   </Tile>
 
-  <Tile label={t('home.github')} span={7} action={{ href: `https://github.com/${site.github}`, text: `@${site.github} ↗` }}>
-    <GitHub />
-  </Tile>
-
-  <Tile label={t('home.contact')} span={5}>
+  <Tile label={t('home.contact')} span={4}>
     <ul class="links">
       {
         socials.map((s) => (
           <li>
-            <a href={s.href}>
+            <a class="button" href={s.href} style={`--brand: ${s.colour}; --ink: ${s.ink ?? 'var(--base)'}`}>
               {s.label.toLowerCase()} <span class="mono">{s.handle}</span>
             </a>
           </li>
@@ -60,8 +58,12 @@ const posts = (await getPosts()).slice(0, 4);
     </ul>
   </Tile>
 
-  <Tile label={t('home.blog')} span={7} action={{ href: url('blog/'), text: t('home.everyPost') }}>
-    <ul class="posts">
+  <Tile label={t('home.github')} span={8} action={{ href: `https://github.com/${site.github}`, text: t('home.more') }}>
+    <GitHub />
+  </Tile>
+
+  <Tile label={t('home.blog')} span={8} action={{ href: url('blog/'), text: t('home.more') }}>
+    <ul class="posts scroller">
       {
         posts.map((p) => (
           <li>
@@ -75,42 +77,71 @@ const posts = (await getPosts()).slice(0, 4);
     </ul>
   </Tile>
 
-  <Tile label={t('home.buttons')} span={5}>
+  <Tile label={t('home.buttons')} span={4}>
     <Buttons />
   </Tile>
 </Base>
 
+<script>
+  const pfps = document.querySelectorAll<HTMLImageElement>('.pfp');
+  pfps[Math.floor(Math.random() * pfps.length)]!.hidden = false;
+
+  for (const row of document.querySelectorAll<HTMLElement>('.projects')) {
+    row.addEventListener(
+      'wheel',
+      (e) => {
+        const room = e.deltaY > 0 ? row.scrollWidth - row.clientWidth - row.scrollLeft : row.scrollLeft;
+        if (!e.deltaY || room < 1) return;
+        e.preventDefault();
+        row.scrollBy({ left: e.deltaY, behavior: 'smooth' });
+      },
+      { passive: false },
+    );
+  }
+</script>
+
 <style>
   .who { display: flex; gap: 18px; }
   .who img { flex: none; width: 112px; height: 112px; object-fit: cover; }
+  .pfp[hidden] { display: none; }
   h1 { font-size: 28px; line-height: 1.1; }
   .role { color: var(--pink); margin: 6px 0 12px; }
   .who p + p { margin-top: 8px; }
-  .projects { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-  .links { display: flex; flex-direction: column; gap: 10px; }
-  .links a {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 12px 14px;
-    font-weight: 700;
-    color: var(--text);
-    background: var(--base);
-    text-decoration: none;
-    transition: background-color 0.2s, color 0.2s;
+  .who p + p:last-child { margin-top: 1.55em; }
+  .projects {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - 48px) / 4);
+    gap: 16px;
+    margin-bottom: -17px;
+    padding-bottom: 5px;
+    overflow-x: auto;
+    --fade: 30%;
+    --strip: bottom / 100% 12px;
+    --towards: to right;
   }
-  .links span { color: var(--dim); overflow: hidden; text-overflow: ellipsis; }
-  .links a:hover, .links a:hover span { color: var(--base); background: var(--pink); }
+  .posts::-webkit-scrollbar-track { margin-block: 10px; }
+  .more { display: grid; place-items: center; font-size: 16px; text-decoration: none; }
+  .links { display: flex; flex-direction: column; gap: 10px; }
+  .links a { display: flex; justify-content: space-between; gap: 12px; padding: 12px 14px; font-size: 16px; text-decoration: none; }
+  .links span { color: var(--dim); overflow: hidden; text-overflow: ellipsis; transition: color 0.25s; }
+  .links a:hover { color: var(--ink); background: var(--brand); }
+  .links a:hover span { color: var(--ink); }
   .posts a { display: flex; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--line); color: var(--text); text-decoration: none; }
   .posts li:last-child a { border: 0; }
+  .posts { margin-right: -17px; padding-right: 5px; overflow-y: auto; --fade: 48px; }
+  @media (min-width: 901px) {
+    :global(.tile:has(.posts)) { contain: size; display: flex; flex-direction: column; }
+    .posts { flex: 1; min-height: 0; }
+  }
   .posts time { flex: none; padding-top: 2px; }
   .posts a:hover { color: var(--pink); }
   @media (max-width: 900px) {
-    .projects { grid-template-columns: repeat(2, 1fr); }
+    .posts { max-height: 200px; }
   }
   @media (max-width: 600px) {
     .who { flex-direction: column; }
-    .projects { grid-template-columns: 1fr; }
+    .projects { grid-auto-columns: 75%; }
     .posts a { flex-direction: column; gap: 2px; }
   }
 </style>

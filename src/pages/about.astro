@@ -1,0 +1,13 @@
+---
+import Base from '../layouts/Base.astro';
+import Tile from '../components/Tile.astro';
+import { useTranslations } from '../i18n';
+
+const t = useTranslations(Astro.currentLocale);
+---
+
+<Base title={t('about.title')}>
+  <Tile label={t('about.title')}>
+    <div class="prose"></div>
+  </Tile>
+</Base>
