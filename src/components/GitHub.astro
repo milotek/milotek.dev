@@ -11,15 +11,15 @@ interface Day {
 
 interface Profile {
   repositories: { totalCount: number };
-  recent: { nodes: { name: string; description: string | null; url: string }[] };
+  pinnedItems: { nodes: { name: string; description: string | null; url: string }[] };
   contributionsCollection: { contributionCalendar: { totalContributions: number; weeks: { contributionDays: Day[] }[] } };
 }
 
 const QUERY = `query($login: String!) {
   user(login: $login) {
     repositories(privacy: PUBLIC, ownerAffiliations: OWNER) { totalCount }
-    recent: repositories(first: 2, privacy: PUBLIC, ownerAffiliations: OWNER, orderBy: { field: PUSHED_AT, direction: DESC }) {
-      nodes { name description url }
+    pinnedItems(first: 6, types: REPOSITORY) {
+      nodes { ... on Repository { name description url } }
     }
     contributionsCollection { contributionCalendar { totalContributions weeks { contributionDays { date contributionLevel } } } }
   }
@@ -55,11 +55,11 @@ const weeks = calendar?.weeks.slice(-40) ?? [];
       <p class="numbers mono dim">
         {t('github.summary', { contributions: calendar.totalContributions.toLocaleString(t('lang')), repos: profile.repositories.totalCount })}
       </p>
-      <div class="calendar" style={`--weeks: ${weeks.length}; --days: ${weeks.at(-1)?.contributionDays.length ?? 7}`} aria-hidden="true">
-        {weeks.flatMap((w) => w.contributionDays.map((d) => <i class={`l${LEVEL[d.contributionLevel]}`} />))}
+      <div class="calendar" style={`--weeks: ${weeks.length}`} aria-hidden="true">
+        {weeks.flatMap((w, x) => w.contributionDays.map((d, y) => <i class={`l${LEVEL[d.contributionLevel]}`} style={`--d: ${x + y}`} />))}
       </div>
       <ul class="repos">
-        {profile.recent.nodes.map((r) => (
+        {profile.pinnedItems.nodes.map((r) => (
           <li>
             <a href={r.url}>
               <b class="mono">{r.name}</b>
@@ -75,33 +75,35 @@ const weeks = calendar?.weeks.slice(-40) ?? [];
 }
 
 <style>
-  /* One rainbow behind the whole grid, like the 3D graph on the GitHub profile.
-     The mask keeps only the cells (columns ∩ rows ∩ not the unfilled end of this
-     week); each cell then darkens the rainbow by contribution level. */
   .calendar {
-    --cell-gap: 3px;
-    --col: calc((100% + var(--cell-gap)) / var(--weeks));
-    --row: calc((100% + var(--cell-gap)) / 7);
     display: grid;
     grid-template-rows: repeat(7, 1fr);
     grid-template-columns: repeat(var(--weeks), 1fr);
     grid-auto-flow: column;
-    gap: var(--cell-gap);
+    gap: 3px;
     margin: 14px 0;
-    background: var(--rainbow);
-    animation: rainbow 10s linear infinite reverse;
-    mask:
-      linear-gradient(90deg, #000 calc(100% - var(--cell-gap)), #0000 0) 0 0 / var(--col) 100%,
-      linear-gradient(#000 calc(100% - var(--cell-gap)), #0000 0) 0 0 / 100% var(--row),
-      linear-gradient(90deg, #000 calc(100% - var(--col)), #0000 0),
-      linear-gradient(#000 calc(var(--row) * var(--days)), #0000 0);
-    mask-composite: intersect, intersect, add;
   }
-  .calendar i { aspect-ratio: 1; }
-  .calendar .l0 { background: color-mix(in srgb, var(--base) 75%, transparent); }
-  .calendar .l1 { background: color-mix(in srgb, var(--base) 45%, transparent); }
-  .calendar .l2 { background: color-mix(in srgb, var(--base) 30%, transparent); }
-  .calendar .l3 { background: color-mix(in srgb, var(--base) 15%, transparent); }
+  .calendar i { aspect-ratio: 1; animation: cycle 7s linear infinite; animation-delay: calc(var(--d) * -0.12s); }
+  .calendar .l0 { opacity: 0.12; }
+  .calendar .l1 { opacity: 0.35; }
+  .calendar .l2 { opacity: 0.55; }
+  .calendar .l3 { opacity: 0.8; }
+  @keyframes cycle {
+    0%, 100% { background: var(--ctp-mocha-rosewater); }
+    7% { background: var(--ctp-mocha-flamingo); }
+    14% { background: var(--ctp-mocha-pink); }
+    21% { background: var(--ctp-mocha-mauve); }
+    29% { background: var(--ctp-mocha-red); }
+    36% { background: var(--ctp-mocha-maroon); }
+    43% { background: var(--ctp-mocha-peach); }
+    50% { background: var(--ctp-mocha-yellow); }
+    57% { background: var(--ctp-mocha-green); }
+    64% { background: var(--ctp-mocha-teal); }
+    71% { background: var(--ctp-mocha-sky); }
+    79% { background: var(--ctp-mocha-sapphire); }
+    86% { background: var(--ctp-mocha-blue); }
+    93% { background: var(--ctp-mocha-lavender); }
+  }
   .repos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .repos a { display: block; height: 100%; padding: 10px 12px; background: var(--base); text-decoration: none; }
   .repos a:hover { outline: 1px solid var(--pink); }

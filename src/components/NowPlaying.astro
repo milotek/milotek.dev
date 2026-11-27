@@ -281,7 +281,8 @@ const strings = { live: t('nowPlaying.live'), ago: t('nowPlaying.ago'), units: t
   .recent:not(:empty) { margin-top: 8px; padding-top: 6px; border-top: 1px solid var(--line); }
   .recent::-webkit-scrollbar-track { margin-block: 6px; }
   .recent :global(button) { display: block; max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; border: 0; padding: 0; font: inherit; text-align: left; color: var(--sub); background: none; cursor: pointer; transition: color 0.25s; }
-  .recent :global(button:hover), .recent :global(.shown) { color: var(--pink); }
+  .recent :global(button:hover) { color: var(--pink); }
+  .recent :global(.shown) { color: var(--text); }
   @media (min-width: 901px) {
     :global(.tile:has(.np)) { contain: size; display: flex; flex-direction: column; }
   }
