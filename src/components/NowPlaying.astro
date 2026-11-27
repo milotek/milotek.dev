@@ -24,6 +24,7 @@ const strings = { live: t('nowPlaying.live'), ago: t('nowPlaying.ago'), units: t
         <path class="base" />
         <path class="hover" />
         <path class="played" />
+        <linearGradient id="np-flash">{[0, 1, 0].map((o) => <stop offset="1" stop-color="white" stop-opacity={o} />)}</linearGradient>
         <path class="flash" />
       </svg>
       <span class="time mono"><span class="now">0:00</span><span class="total dim">0:00</span></span>
@@ -95,6 +96,7 @@ const strings = { live: t('nowPlaying.live'), ago: t('nowPlaying.ago'), units: t
     const button = box.querySelector<HTMLButtonElement>('.play')!;
     const wave = box.querySelector<SVGSVGElement>('.wave')!;
     const paths = [...wave.querySelectorAll('path')];
+    const sweeps = [...wave.querySelectorAll<SVGStopElement>('#np-flash stop')];
     const [now, total] = box.querySelectorAll<HTMLElement>('.time span');
     const audio = root.parentElement!.querySelector<HTMLAudioElement>('.song')!;
     let url: string | undefined;
@@ -106,7 +108,7 @@ const strings = { live: t('nowPlaying.live'), ago: t('nowPlaying.ago'), units: t
     let edges: number[] = [];
     let beats: number[] = [];
     let next = 0;
-    let flash = 0;
+    let beat = -Infinity;
 
     function target(i: number, t: number): number {
       const mode = box.dataset.state;
@@ -123,9 +125,9 @@ const strings = { live: t('nowPlaying.live'), ago: t('nowPlaying.ago'), units: t
 
     function frame(t: number) {
       if (analyser && box.dataset.state === 'playing') analyser.getByteFrequencyData(bins);
-      for (; beats[next]! <= audio.currentTime; next++) flash = 1;
-      flash *= 0.88;
-      wave.style.setProperty('--flash', flash.toFixed(2));
+      for (; beats[next]! <= audio.currentTime; next++) beat = t;
+      const sweep = ((t - beat) / 400) * 1.4 - 0.2;
+      sweeps.forEach((stop, k) => stop.setAttribute('offset', String(Math.min(1, Math.max(0, sweep + (k - 1) * 0.12)))));
       const ease = box.dataset.state === 'playing' ? 0.45 : 0.1;
       heights = heights.map((h, i) => h + (target(i, t) - h) * ease);
       const d = outline(heights);
@@ -274,8 +276,9 @@ const strings = { live: t('nowPlaying.live'), ago: t('nowPlaying.ago'), units: t
   .base { fill: color-mix(in srgb, var(--text) 22%, transparent); }
   .hover { fill: color-mix(in srgb, var(--text) 45%, transparent); clip-path: inset(0 calc((1 - var(--hover)) * 100%) 0 0); opacity: 0; transition: opacity 0.15s; }
   .wave:hover .hover { opacity: 1; }
-  .flash { fill: white; opacity: var(--flash, 0); }
-  .played { fill: url(#np-fill); clip-path: inset(0 calc((1 - var(--progress)) * 100%) 0 0); }
+  .played, .flash { clip-path: inset(0 calc((1 - var(--progress)) * 100%) 0 0); }
+  .played { fill: url(#np-fill); }
+  .flash { fill: url(#np-flash); }
   .time { flex: none; display: flex; flex-direction: column; align-items: flex-end; min-width: 4ch; font-size: 0.65rem; line-height: 1.25; font-variant-numeric: tabular-nums; color: var(--sub); }
   .recent { flex: 1; min-height: 0; margin-right: -15px; padding-right: 7px; overflow-y: auto; --fade: 32px; }
   .recent:not(:empty) { margin-top: 8px; padding-top: 6px; }
