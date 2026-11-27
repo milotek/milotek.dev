@@ -14,6 +14,7 @@ export const site = {
 
 export const socials = [
   { label: 'Email', href: `mailto:${site.email}`, handle: site.email, colour: 'var(--pink)' },
+  { label: 'Phone', href: 'tel:+447745011538', handle: '+44 7745 011538', colour: 'var(--pink)' },
   { label: 'GitHub', href: 'https://github.com/milotek', handle: '@milotek', colour: '#ffffff' },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/fired/', handle: 'in/fired', colour: '#0a66c2', ink: 'white' },
   { label: 'Spotify', href: site.spotify, handle: 'not in the groove', colour: '#1db954' },

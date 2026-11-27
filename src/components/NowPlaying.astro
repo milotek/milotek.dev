@@ -9,29 +9,36 @@ const colours = ['rosewater', 'flamingo', 'pink', 'mauve', 'red', 'maroon', 'pea
 const strings = { live: t('nowPlaying.live'), ago: t('nowPlaying.ago'), units: t('nowPlaying.units'), play: t('nowPlaying.play'), pause: t('nowPlaying.pause'), broke: t('broke', { what: 'last.fm' }) };
 ---
 
-<div class="np" data-user={user} data-key={apiKey} data-strings={JSON.stringify(strings)}>
-  <a class="art" aria-hidden="true" tabindex="-1"></a>
-  <div class="meta">
-    <p class="track wide">{ready ? ' ' : <a href={site.spotify}>{t('nowPlaying.spotify')}</a>}</p>
-    <p class="artist sub"></p>
-    <div class="player" data-state="idle">
-      <button class="play button" type="button" aria-label={t('nowPlaying.play')} disabled>
-        <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
-        <svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6zm8 0h4v14h-4z" /></svg>
-      </button>
-      <svg class="wave" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-        <linearGradient id="np-fill">{colours.map((c, i) => <stop offset={i / (colours.length - 1)} style={`stop-color: var(--ctp-mocha-${c})`} />)}</linearGradient>
-        <path class="base" />
-        <path class="hover" />
-        <path class="played" />
-        <path class="flash" />
-      </svg>
-      <span class="time mono"><span class="now">0:00</span><span class="total dim">0:00</span></span>
+{ready ? (
+  <>
+    <div class="np" data-user={user} data-key={apiKey} data-strings={JSON.stringify(strings)}>
+      <a class="art" aria-hidden="true" tabindex="-1"></a>
+      <div class="meta">
+        <p class="track wide"><span class="wait">{t('nowPlaying.title')}</span></p>
+        <p class="artist sub"><span class="wait">{t('nowPlaying.artist')}</span></p>
+        <div class="player" data-state="idle">
+          <button class="play button" type="button" aria-label={t('nowPlaying.play')} disabled>
+            <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
+            <svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6zm8 0h4v14h-4z" /></svg>
+          </button>
+          <svg class="wave" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <linearGradient id="np-fill">{colours.map((c, i) => <stop offset={i / (colours.length - 1)} style={`stop-color: var(--ctp-mocha-${c})`} />)}</linearGradient>
+            <path class="base" />
+            <path class="hover" />
+            <path class="played" />
+            <path class="flash" />
+          </svg>
+          <span class="time mono"><span class="now">0:00</span><span class="total dim">0:00</span></span>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-<ul class="recent scroller mono dim"></ul>
-<audio class="song" crossorigin="anonymous" preload="none"></audio>
+    <hr />
+    <ul class="recent scroller mono dim">{Array.from({ length: 5 }, () => <li class="wait">{t('nowPlaying.title')} - {t('nowPlaying.artist')} {t('nowPlaying.time')}</li>)}</ul>
+    <audio class="song" crossorigin="anonymous" preload="none"></audio>
+  </>
+) : (
+  <div class="np"><p class="broke"><span><span>{strings.broke}</span></span></p></div>
+)}
 
 <script>
   interface Track {
@@ -245,6 +252,8 @@ const strings = { live: t('nowPlaying.live'), ago: t('nowPlaying.ago'), units: t
       };
       show(tracks[0]!);
     } catch {
+      recent.previousElementSibling?.remove();
+      recent.replaceChildren();
       root.innerHTML = `<p class="broke"><span><span>${strings.broke}</span></span></p>`;
     }
   }
@@ -265,6 +274,7 @@ const strings = { live: t('nowPlaying.live'), ago: t('nowPlaying.ago'), units: t
   .track :global(a) { color: var(--text); text-decoration: none; }
   .track :global(a:hover) { color: var(--pink); }
   .artist { margin-top: 6px; }
+  .wait { color: var(--dim); }
   .player { display: flex; align-items: center; gap: 10px; margin-top: auto; }
   .play { flex: none; display: grid; place-items: center; width: 30px; height: 30px; }
   .play svg { width: 20px; height: 20px; fill: currentColor; }
@@ -277,6 +287,7 @@ const strings = { live: t('nowPlaying.live'), ago: t('nowPlaying.ago'), units: t
   .flash { fill: white; opacity: var(--flash, 0); }
   .played { fill: url(#np-fill); clip-path: inset(0 calc((1 - var(--progress)) * 100%) 0 0); }
   .time { flex: none; display: flex; flex-direction: column; align-items: flex-end; min-width: 4ch; font-size: 0.65rem; line-height: 1.25; font-variant-numeric: tabular-nums; color: var(--sub); }
+  hr { flex: none; margin: 14px 0 0; border: 0; border-top: 1px solid var(--line); }
   .recent { flex: 1; min-height: 0; margin-right: -10px; padding-right: 12px; overflow-y: auto; --fade: 32px; }
   .recent:not(:empty) { margin-top: 8px; padding-top: 6px; }
   .recent :global(button) { display: block; max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; border: 0; padding: 0; font: inherit; text-align: left; color: var(--sub); background: none; cursor: pointer; transition: color 0.25s; }

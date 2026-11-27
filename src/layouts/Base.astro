@@ -79,7 +79,7 @@ const stamp = execFileSync('git', ['log', '-1', '--date=format:%Y-%m-%d %H:%M', 
 
       let still = '';
       addEventListener('pointerover', (e) => {
-        const el = (e.target as Element).closest(LOUD);
+        const el = (e.target as Element).closest('.button');
         if (!el || el.contains(e.relatedTarget as Node | null) || still === `${e.screenX},${e.screenY}`) return;
         still = `${e.screenX},${e.screenY}`;
         sfx('hover');

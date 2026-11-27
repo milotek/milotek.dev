@@ -16,7 +16,7 @@ export default {
 
   'hero.brand': "milo tek's site",
   'hero.copyright': 'COPYRIGHT LOLOLOLOL',
-  'hero.music': 'Music',
+  'hero.aaaa': 'Turn all the text into a',
   'hero.flip': 'Flip the header',
   'hero.swap': 'Swap the picture',
 
@@ -41,10 +41,14 @@ export default {
   broke: '{what} broke',
   'github.day': '{count} contributions on {date}',
   'github.dayOne': '1 contribution on {date}',
+  'github.stars': 'stars',
+  'github.forks': 'forks',
   'github.summary': '{contributions} contributions · {repos} repos',
 
-  'nowPlaying.spotify': 'my spotify',
   'nowPlaying.live': 'now!',
+  'nowPlaying.title': 'title',
+  'nowPlaying.artist': 'artist',
+  'nowPlaying.time': 'time',
   'nowPlaying.ago': '{n}{unit} ago',
   'nowPlaying.units': 's m h d w mo y',
   'nowPlaying.play': 'play',

@@ -24,6 +24,12 @@ const posts = await getPosts();
   <Tile label={t('home.about')} span={7} action={{ href: url('about/'), text: t('home.more') }}>
     <div class="who">
       {[me, github].map((src) => <Image class="pfp" src={src} alt={t('home.portrait')} width={112} densities={[1, 2]} loading="lazy" hidden />)}
+      <script is:inline>
+        {
+          const pfps = document.querySelectorAll('.pfp');
+          Object.assign(pfps[Math.floor(Math.random() * pfps.length)], { hidden: false, loading: 'eager' });
+        }
+      </script>
       <div>
         <h1 class="wide">{site.name}</h1>
         <p class="role mono">{t('site.role')}</p>
@@ -82,11 +88,6 @@ const posts = await getPosts();
   </Tile>
 </Base>
 
-<script>
-  const pfps = document.querySelectorAll<HTMLImageElement>('.pfp');
-  pfps[Math.floor(Math.random() * pfps.length)]!.hidden = false;
-</script>
-
 <style>
   .who { display: flex; gap: 18px; }
   .who img { flex: none; width: 112px; height: 112px; object-fit: cover; }
@@ -104,7 +105,7 @@ const posts = await getPosts();
     padding-bottom: 12px;
     overflow-x: auto;
     --fade: 30%;
-    --strip: bottom / 100% 12px;
+    --strip: bottom / 100% 6px;
     --towards: to right;
   }
   .more { display: grid; place-items: center; font-size: 16px; text-decoration: none; }
