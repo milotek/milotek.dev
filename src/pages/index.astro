@@ -85,30 +85,6 @@ const posts = await getPosts();
 <script>
   const pfps = document.querySelectorAll<HTMLImageElement>('.pfp');
   pfps[Math.floor(Math.random() * pfps.length)]!.hidden = false;
-
-  for (const row of document.querySelectorAll<HTMLElement>('.projects')) {
-    let target = 0;
-    let gliding = false;
-    const glide = () => {
-      row.scrollLeft += (target - row.scrollLeft) * 0.2;
-      gliding = Math.abs(target - row.scrollLeft) > 1;
-      if (gliding) requestAnimationFrame(glide);
-      else row.scrollLeft = target;
-    };
-    row.addEventListener(
-      'wheel',
-      (e) => {
-        const room = e.deltaY > 0 ? row.scrollWidth - row.clientWidth - row.scrollLeft : row.scrollLeft;
-        if (!e.deltaY || room < 1) return;
-        e.preventDefault();
-        if (!gliding) target = row.scrollLeft;
-        target = Math.max(0, Math.min(row.scrollWidth - row.clientWidth, target + e.deltaY));
-        if (!gliding) requestAnimationFrame(glide);
-        gliding = true;
-      },
-      { passive: false },
-    );
-  }
 </script>
 
 <style>
@@ -124,14 +100,13 @@ const posts = await getPosts();
     grid-auto-flow: column;
     grid-auto-columns: calc((100% - 48px) / 4);
     gap: 16px;
-    margin-bottom: -15px;
-    padding-bottom: 7px;
+    margin-bottom: -10px;
+    padding-bottom: 12px;
     overflow-x: auto;
     --fade: 30%;
-    --strip: bottom / 100% 8px;
+    --strip: bottom / 100% 12px;
     --towards: to right;
   }
-  .posts::-webkit-scrollbar-track { margin-block: 10px; }
   .more { display: grid; place-items: center; font-size: 16px; text-decoration: none; }
   .links { display: flex; flex-direction: column; gap: 10px; }
   .links a { display: flex; justify-content: space-between; gap: 12px; padding: 12px 14px; font-size: 16px; text-decoration: none; }
@@ -140,7 +115,7 @@ const posts = await getPosts();
   .links a:hover span { color: var(--ink); }
   .posts a { display: flex; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--line); color: var(--text); text-decoration: none; }
   .posts li:last-child a { border: 0; }
-  .posts { margin-right: -15px; padding-right: 7px; overflow-y: auto; --fade: 48px; }
+  .posts { margin-right: -10px; padding-right: 12px; overflow-y: auto; --fade: 48px; }
   @media (min-width: 901px) {
     :global(.tile:has(.posts)) { contain: size; display: flex; flex-direction: column; }
     .posts { flex: 1; min-height: 0; }
