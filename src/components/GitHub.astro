@@ -1,11 +1,13 @@
 ---
 import { site } from '../config';
 import { useTranslations } from '../i18n';
+import { longDate } from '../lib/time';
 
 const t = useTranslations(Astro.currentLocale);
 
 interface Day {
   date: string;
+  contributionCount: number;
   contributionLevel: 'NONE' | 'FIRST_QUARTILE' | 'SECOND_QUARTILE' | 'THIRD_QUARTILE' | 'FOURTH_QUARTILE';
 }
 
@@ -21,7 +23,7 @@ const QUERY = `query($login: String!) {
     pinnedItems(first: 6, types: REPOSITORY) {
       nodes { ... on Repository { name description url } }
     }
-    contributionsCollection { contributionCalendar { totalContributions weeks { contributionDays { date contributionLevel } } } }
+    contributionsCollection { contributionCalendar { totalContributions weeks { contributionDays { date contributionCount contributionLevel } } } }
   }
 }`;
 
@@ -56,12 +58,20 @@ const weeks = calendar?.weeks.slice(-40) ?? [];
         {t('github.summary', { contributions: calendar.totalContributions.toLocaleString(t('lang')), repos: profile.repositories.totalCount })}
       </p>
       <div class="calendar" style={`--weeks: ${weeks.length}`} aria-hidden="true">
-        {weeks.flatMap((w, x) => w.contributionDays.map((d, y) => <i class={`l${LEVEL[d.contributionLevel]}`} style={`--d: ${x + y}`} />))}
+        {weeks.flatMap((w, x) =>
+          w.contributionDays.map((d, y) => (
+            <i
+              class={`l${LEVEL[d.contributionLevel]}`}
+              style={`--d: ${x + y}`}
+              title={t(d.contributionCount === 1 ? 'github.dayOne' : 'github.day', { count: d.contributionCount, date: longDate(new Date(d.date), t('lang')) })}
+            />
+          )),
+        )}
       </div>
       <ul class="repos">
         {profile.pinnedItems.nodes.map((r) => (
           <li>
-            <a href={r.url}>
+            <a class="button" href={r.url}>
               <b class="mono">{r.name}</b>
               {r.description && <span class="sub">{r.description}</span>}
             </a>
@@ -89,25 +99,25 @@ const weeks = calendar?.weeks.slice(-40) ?? [];
   .calendar .l2 { opacity: 0.55; }
   .calendar .l3 { opacity: 0.8; }
   @keyframes cycle {
-    0%, 100% { background: var(--ctp-mocha-rosewater); }
-    7% { background: var(--ctp-mocha-flamingo); }
-    14% { background: var(--ctp-mocha-pink); }
-    21% { background: var(--ctp-mocha-mauve); }
-    29% { background: var(--ctp-mocha-red); }
-    36% { background: var(--ctp-mocha-maroon); }
-    43% { background: var(--ctp-mocha-peach); }
-    50% { background: var(--ctp-mocha-yellow); }
-    57% { background: var(--ctp-mocha-green); }
-    64% { background: var(--ctp-mocha-teal); }
-    71% { background: var(--ctp-mocha-sky); }
-    79% { background: var(--ctp-mocha-sapphire); }
-    86% { background: var(--ctp-mocha-blue); }
-    93% { background: var(--ctp-mocha-lavender); }
+    0% { background: white; }
+    8% { background: var(--ctp-mocha-flamingo); }
+    15% { background: var(--ctp-mocha-pink); }
+    23% { background: var(--ctp-mocha-mauve); }
+    31% { background: var(--ctp-mocha-red); }
+    38% { background: var(--ctp-mocha-maroon); }
+    46% { background: var(--ctp-mocha-peach); }
+    54% { background: var(--ctp-mocha-yellow); }
+    62% { background: var(--ctp-mocha-green); }
+    69% { background: var(--ctp-mocha-teal); }
+    77% { background: var(--ctp-mocha-sky); }
+    85% { background: var(--ctp-mocha-sapphire); }
+    92% { background: var(--ctp-mocha-blue); }
+    100% { background: var(--ctp-mocha-lavender); }
   }
   .repos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .repos a { display: block; height: 100%; padding: 10px 12px; background: var(--base); text-decoration: none; }
-  .repos a:hover { outline: 1px solid var(--pink); }
-  .repos span { display: block; margin-top: 4px; font-size: 13px; }
+  .repos a { display: block; height: 100%; padding: 10px 12px; text-decoration: none; }
+  .repos span { display: block; margin-top: 4px; font-size: 13px; transition: color 0.25s; }
+  .repos a:hover span { color: var(--base); }
   @media (max-width: 600px) {
     .repos { grid-template-columns: 1fr; }
   }

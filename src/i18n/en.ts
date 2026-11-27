@@ -39,6 +39,8 @@ export default {
   'home.buttons': 'buttons',
 
   broke: '{what} broke',
+  'github.day': '{count} contributions on {date}',
+  'github.dayOne': '1 contribution on {date}',
   'github.summary': '{contributions} contributions · {repos} repos',
 
   'nowPlaying.spotify': 'my spotify',
