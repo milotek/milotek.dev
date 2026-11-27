@@ -26,7 +26,7 @@ function current(href: string) {
 <header class="hero">
   <div class="card">
     <Image class="photo" src={selfie} alt="" widths={[800, 1600]} sizes="(max-width: 1152px) 100vw, 1120px" loading="eager" />
-    <Image class="photo stretched" src={swap} alt="" widths={[800, 1600]} sizes="(max-width: 1152px) 100vw, 1120px" hidden />
+    <Image class="photo stretched" src={swap} alt="" width={100} quality={30} loading="eager" hidden />
     <nav aria-label={t('nav.label')}>
       {nav.map((n) => <a class="chip" href={n.href} aria-current={current(n.href) ? 'page' : undefined}>{n.text}</a>)}
     </nav>
