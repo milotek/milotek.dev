@@ -21,6 +21,18 @@
   src: url('/fonts/mono.otf') format('opentype');
 }
 
+/* Subset to the letters of "Google" only. */
+@font-face {
+  font-display: swap;
+  font-family: 'Google Sans Flex';
+  font-weight: 700;
+  src: url('/fonts/google.woff2') format('woff2');
+}
+
+.google {
+  font-family: 'Google Sans Flex', sans-serif;
+}
+
 /* Design tokens (Catppuccin Mocha palette + layout scales) */
 
 :root {
