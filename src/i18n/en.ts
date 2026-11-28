@@ -34,7 +34,7 @@ export const EN_STRINGS = {
   'home.bio':
     'hi my name is Milo I am nineteen and I am from the UK and I like to play video games and my favourite video game is Left 4 Dead 2 and I work at Google on mobile search and I like eating purple skittles',
   'home.bio.fursona': 'Please do not ask me about my fursona =)',
-  'home.nowPlaying': 'music',
+  'home.nowPlaying': 'listening to...',
   'home.projects': 'projects',
   'home.allProjects': 'all projects ↗',
   'home.github': 'activity',
