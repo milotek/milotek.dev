@@ -3,13 +3,14 @@ import {WEB_BUTTONS, type WebButton} from '../config';
 import {url} from '../lib/url';
 
 const LANE_COUNT = 3;
-const LANE_DURATIONS_SEC: readonly number[] = [7.5, 5.5, 9];
-const WOBBLE_WAVES = 2;
+const WOBBLE_WAVES = 6;
 const WOBBLE_PERIOD_SEC = 1.6;
 
-const lanes: WebButton[][] = Array.from({length: LANE_COUNT}, (_, laneIndex) =>
-  WEB_BUTTONS.filter((_, buttonIndex) => buttonIndex % LANE_COUNT === laneIndex),
-);
+const laneOffsetStep = Math.floor(WEB_BUTTONS.length / LANE_COUNT);
+const lanes: WebButton[][] = Array.from({length: LANE_COUNT}, (_, laneIndex) => {
+  const offset = laneIndex * laneOffsetStep;
+  return [...WEB_BUTTONS.slice(offset), ...WEB_BUTTONS.slice(0, offset)];
+});
 
 function resolvePath(path: string): string {
   return path.startsWith('/') ? url(path.slice(1)) : path;
@@ -29,10 +30,7 @@ function computeWobbleDelay(
 <div class="button-waterfall">
   {
     lanes.map((lane, laneIndex) => (
-      <ul
-        class="button-lane"
-        style={`--duration: ${LANE_DURATIONS_SEC[laneIndex] ?? 7}s`}
-      >
+      <ul class="button-lane">
         {[...lane, ...lane].map((button, itemIndex) => {
           const Tag = button.href ? 'a' : 'span';
           return (
@@ -63,6 +61,12 @@ function computeWobbleDelay(
 <hr class="webring-divider" />
 <div id="pawring"></div>
 
+<script>
+  import {initButtonWaterfall} from '../scripts/button_waterfall';
+
+  initButtonWaterfall();
+</script>
+
 <style>
   .button-waterfall {
     display: flex;
@@ -73,16 +77,6 @@ function computeWobbleDelay(
     overflow: hidden;
   }
 
-  .button-lane {
-    animation: waterfall-scroll var(--duration) linear infinite;
-    height: max-content;
-  }
-
-  .button-lane:hover,
-  .button-lane:hover .web-button-badge {
-    animation-play-state: paused;
-  }
-
   .button-lane li {
     padding-bottom: 6px;
   }
@@ -90,6 +84,10 @@ function computeWobbleDelay(
   .web-button-badge {
     animation: button-wobble 1.6s ease-in-out infinite;
     display: block;
+  }
+
+  .button-lane:hover .web-button-badge {
+    animation-play-state: paused;
   }
 
   img {
@@ -108,16 +106,6 @@ function computeWobbleDelay(
   .web-button-badge:hover {
     position: relative;
     z-index: 1;
-  }
-
-  @keyframes waterfall-scroll {
-    from {
-      transform: translateY(-50%);
-    }
-
-    to {
-      transform: translateY(0);
-    }
   }
 
   @keyframes button-wobble {
