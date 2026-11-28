@@ -27,39 +27,41 @@ function computeWobbleDelay(
 }
 ---
 
-<div class="button-waterfall">
-  {
-    lanes.map((lane, laneIndex) => (
-      <ul class="button-lane">
-        {[...lane, ...lane].map((button, itemIndex) => {
-          const Tag = button.href ? 'a' : 'span';
-          return (
-            <li>
-              <Tag
-                class="web-button-badge"
-                style={`animation-delay: ${computeWobbleDelay(itemIndex, lane.length, laneIndex)}`}
-                href={button.href ? resolvePath(button.href) : undefined}
-                title={button.name}
-              >
-                <img
-                  src={resolvePath(button.imageSrc)}
-                  alt={button.name}
-                  width="88"
-                  height="31"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </Tag>
-            </li>
-          );
-        })}
-      </ul>
-    ))
-  }
+<div class="buttons-tile">
+  <div class="button-waterfall">
+    {
+      lanes.map((lane, laneIndex) => (
+        <ul class="button-lane">
+          {[...lane, ...lane].map((button, itemIndex) => {
+            const Tag = button.href ? 'a' : 'span';
+            return (
+              <li>
+                <Tag
+                  class="web-button-badge"
+                  style={`animation-delay: ${computeWobbleDelay(itemIndex, lane.length, laneIndex)}`}
+                  href={button.href ? resolvePath(button.href) : undefined}
+                  title={button.name}
+                >
+                  <img
+                    src={resolvePath(button.imageSrc)}
+                    alt={button.name}
+                    width="88"
+                    height="31"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </Tag>
+              </li>
+            );
+          })}
+        </ul>
+      ))
+    }
+  </div>
+  <script is:inline src="https://pawr.ing/webring/webring.js" defer></script>
+  <hr class="webring-divider" />
+  <div id="pawring"></div>
 </div>
-<script is:inline src="https://pawr.ing/webring/webring.js" defer></script>
-<hr class="webring-divider" />
-<div id="pawring"></div>
 
 <script>
   import {initButtonWaterfall} from '../scripts/button_waterfall';
@@ -68,6 +70,12 @@ function computeWobbleDelay(
 </script>
 
 <style>
+  .buttons-tile {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
   .button-waterfall {
     display: flex;
     gap: 8px;
@@ -120,8 +128,9 @@ function computeWobbleDelay(
   }
 
   #pawring {
+    align-items: center;
     display: flex;
-    margin-inline: auto;
+    margin: auto;
     width: fit-content;
   }
 
