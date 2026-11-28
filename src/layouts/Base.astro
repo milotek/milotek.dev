@@ -1,11 +1,12 @@
 ---
-import { execFileSync } from 'node:child_process';
 import '../styles/global.css';
-import { site } from '../config';
-import { useTranslations } from '../i18n';
-import { url } from '../lib/url';
-import Marquee from '../components/Marquee.astro';
+
 import Hero from '../components/Hero.astro';
+import Marquee from '../components/Marquee.astro';
+import {SITE} from '../config';
+import {useTranslations} from '../i18n';
+import {getLatestCommitStamp} from '../lib/git';
+import {url} from '../lib/url';
 
 interface Props {
   title?: string;
@@ -14,10 +15,18 @@ interface Props {
 }
 
 const t = useTranslations(Astro.currentLocale);
-const { title, description = t('site.description'), type = 'website' } = Astro.props;
-const fullTitle = title ? `${title} · ${site.handle}` : `${site.name} · ${site.handle}`;
-const canonical = new URL(Astro.url.pathname, Astro.site);
-const stamp = execFileSync('git', ['log', '-1', '--date=format:%Y-%m-%d %H:%M', '--format=%h @ %cd'], { encoding: 'utf8' }).trim();
+const {
+  title,
+  description = t('site.description'),
+  type = 'website',
+} = Astro.props;
+
+const fullTitle = title
+  ? `${title} · ${SITE.handle}`
+  : `${SITE.name} · ${SITE.handle}`;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+const commitStamp = getLatestCommitStamp();
+const currentYear = new Date().getFullYear();
 ---
 
 <!doctype html>
@@ -27,20 +36,37 @@ const stamp = execFileSync('git', ['log', '-1', '--date=format:%Y-%m-%d %H:%M', 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <meta name="author" content={site.name} />
+    <meta name="author" content={SITE.name} />
     <meta name="theme-color" content="#1e1e2e" />
-    <link rel="canonical" href={canonical} />
+    <link rel="canonical" href={canonicalUrl} />
     <link rel="icon" href={url('favicon.ico')} sizes="48x48" />
     <link rel="icon" href={url('favicon.png')} type="image/png" sizes="64x64" />
     <link rel="apple-touch-icon" href={url('apple-touch-icon.png')} />
-    <link rel="alternate" type="application/rss+xml" title={`${site.handle} blog`} href={url('rss.xml')} />
-    <link rel="preload" href={url('fonts/sans.otf')} as="font" type="font/otf" crossorigin />
-    <link rel="preload" href={url('fonts/extended.otf')} as="font" type="font/otf" crossorigin />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={t('rss.title', {handle: SITE.handle})}
+      href={url('rss.xml')}
+    />
+    <link
+      rel="preload"
+      href={url('fonts/sans.otf')}
+      as="font"
+      type="font/otf"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href={url('fonts/extended.otf')}
+      as="font"
+      type="font/otf"
+      crossorigin
+    />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content={type} />
-    <meta property="og:url" content={canonical} />
-    <meta property="og:site_name" content={site.handle} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content={SITE.handle} />
     <meta name="twitter:card" content="summary" />
     <meta name="generator" content={Astro.generator} />
   </head>
@@ -51,57 +77,41 @@ const stamp = execFileSync('git', ['log', '-1', '--date=format:%Y-%m-%d %H:%M', 
       <main class="grid">
         <slot />
       </main>
-      <footer class="mono dim">
-        <span>{t('footer.copyright', { year: new Date().getFullYear() })}</span>
-        <a href={site.repo}>{t('footer.source')}</a>
-        <a href={`${site.repo}/commit/${stamp.split(' ')[0]}`}>{stamp}</a>
+      <footer class="site-footer mono dim">
+        <span>{t('footer.copyright', {year: currentYear})}</span>
+        <a href={SITE.repoUrl}>{t('footer.source')}</a>
+        <a href={`${SITE.repoUrl}/commit/${commitStamp.shortHash}`}>
+          {commitStamp.label}
+        </a>
       </footer>
     </div>
+
     <script>
-      import { url } from '../lib/url';
+      import {initUiEffects} from '../scripts/ui_effects';
 
-      const sounds: Record<string, HTMLAudioElement> = {};
-      const LOUD = '.button, a.chip, .project, a.badge, .repos a, nav a, .hero button, .recent button, .wave';
-
-      function sfx(name: string) {
-        const sound = (sounds[name] ??= new Audio(url(`audio/ui/${name}.mp3`)));
-        sound.currentTime = 0;
-        sound.play().catch(() => {});
-      }
-
-      for (const box of document.querySelectorAll<HTMLElement>('.scroller')) {
-        const edges = () => {
-          box.classList.toggle('scrolled', box.scrollTop + box.scrollLeft > 0);
-          box.classList.toggle('end', box.scrollTop + box.clientHeight >= box.scrollHeight - 4 && box.scrollLeft + box.clientWidth >= box.scrollWidth - 4);
-        };
-        box.addEventListener('scroll', edges, { passive: true });
-      }
-
-      let still = '';
-      addEventListener('pointerover', (e) => {
-        const el = (e.target as Element).closest('.button');
-        if (!el || el.contains(e.relatedTarget as Node | null) || still === `${e.screenX},${e.screenY}`) return;
-        still = `${e.screenX},${e.screenY}`;
-        sfx('hover');
-      });
-      addEventListener('click', (e) => {
-        if ((e.target as Element).closest(LOUD)) sfx('click');
-      });
+      initUiEffects();
     </script>
   </body>
 </html>
 
 <style>
-  footer {
+  .site-footer {
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
     margin-top: 28px;
   }
-  footer > * {
-    padding: 4px 8px;
+
+  .site-footer > * {
     background: var(--mantle);
+    padding: 4px 8px;
   }
-  footer a { color: var(--dim); }
-  footer a:hover { color: var(--pink); }
+
+  .site-footer a {
+    color: var(--dim);
+  }
+
+  .site-footer a:hover {
+    color: var(--pink);
+  }
 </style>

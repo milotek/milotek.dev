@@ -1,29 +1,48 @@
 ---
-import { Image } from 'astro:assets';
-import Base from '../../layouts/Base.astro';
+import {Image} from 'astro:assets';
+
 import Tile from '../../components/Tile.astro';
-import { artworks, type Artwork } from '../../data/art';
-import { useTranslations } from '../../i18n';
-import { url } from '../../lib/url';
+import {ARTWORKS, type Artwork} from '../../data/art';
+import {useTranslations} from '../../i18n';
+import Base from '../../layouts/Base.astro';
+import {url} from '../../lib/url';
 
 export function getStaticPaths() {
-  return artworks.map((art) => ({ params: { slug: art.slug }, props: { art } }));
+  return ARTWORKS.map((artwork) => ({
+    params: {slug: artwork.slug},
+    props: {artwork},
+  }));
 }
 
-const { art } = Astro.props as { art: Artwork };
+interface Props {
+  artwork: Artwork;
+}
+
+const {artwork} = Astro.props;
 const t = useTranslations(Astro.currentLocale);
 ---
 
-<Base title={art.title} description={art.caption} type="article">
-  <Tile label={t('art.title')} action={{ href: url('art/'), text: t('art.back') }}>
-    <article class="prose">
-      <h1>{art.title}</h1>
-      <p>{art.caption}</p>
-      <Image src={art.src} alt={art.caption} width={1400} densities={[1, 2]} />
+<Base title={artwork.title} description={artwork.caption} type="article">
+  <Tile
+    label={t('art.title')}
+    action={{href: url('art/'), text: t('art.back')}}
+  >
+    <article class="artwork-detail prose">
+      <h1>{artwork.title}</h1>
+      <p>{artwork.caption}</p>
+      <Image
+        src={artwork.src}
+        alt={artwork.caption}
+        width={1400}
+        densities={[1, 2]}
+      />
     </article>
   </Tile>
 </Base>
 
 <style>
-  article { max-width: 56rem; margin-inline: auto; }
+  .artwork-detail {
+    margin-inline: auto;
+    max-width: 56rem;
+  }
 </style>

@@ -1,306 +1,333 @@
 ---
-import { site } from '../config';
-import { useTranslations } from '../i18n';
+import {SITE} from '../config';
+import {useTranslations} from '../i18n';
 
 const t = useTranslations(Astro.currentLocale);
-const { user, apiKey } = site.lastfm;
-const ready = Boolean(user && apiKey);
-const colours = ['rosewater', 'flamingo', 'pink', 'mauve', 'red', 'maroon', 'peach', 'yellow', 'green', 'teal', 'sky', 'sapphire', 'blue', 'lavender'];
-const strings = { live: t('nowPlaying.live'), ago: t('nowPlaying.ago'), units: t('nowPlaying.units'), play: t('nowPlaying.play'), pause: t('nowPlaying.pause'), broke: t('broke', { what: 'last.fm' }) };
+const {user, apiKey} = SITE.lastfm;
+const isConfigured = Boolean(user && apiKey);
+
+const WAVEFORM_GRADIENT_TOKENS = [
+  'rosewater',
+  'flamingo',
+  'pink',
+  'mauve',
+  'red',
+  'maroon',
+  'peach',
+  'yellow',
+  'green',
+  'teal',
+  'sky',
+  'sapphire',
+  'blue',
+  'lavender',
+] as const;
+
+const PLACEHOLDER_ROW_COUNT = 5;
+
+const widgetStrings = {
+  live: t('nowPlaying.live'),
+  ago: t('nowPlaying.ago'),
+  units: t('nowPlaying.units'),
+  play: t('nowPlaying.play'),
+  pause: t('nowPlaying.pause'),
+  broke: t('error.broke', {what: 'last.fm'}),
+};
 ---
 
-{ready ? (
-  <>
-    <div class="np" data-user={user} data-key={apiKey} data-strings={JSON.stringify(strings)}>
-      <a class="art" aria-hidden="true" tabindex="-1"></a>
-      <div class="meta">
-        <p class="track wide"><span class="wait">{t('nowPlaying.title')}</span></p>
-        <p class="artist sub"><span class="wait">{t('nowPlaying.artist')}</span></p>
-        <div class="player" data-state="idle">
-          <button class="play button" type="button" aria-label={t('nowPlaying.play')} disabled>
-            <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
-            <svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6zm8 0h4v14h-4z" /></svg>
-          </button>
-          <svg class="wave" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-            <linearGradient id="np-fill">{colours.map((c, i) => <stop offset={i / (colours.length - 1)} style={`stop-color: var(--ctp-mocha-${c})`} />)}</linearGradient>
-            <path class="base" />
-            <path class="hover" />
-            <path class="played" />
-            <path class="flash" />
-          </svg>
-          <span class="time mono"><span class="now">0:00</span><span class="total dim">0:00</span></span>
+{
+  isConfigured ? (
+    <>
+      <div
+        class="now-playing"
+        data-user={user}
+        data-key={apiKey}
+        data-strings={JSON.stringify(widgetStrings)}
+      >
+        <a class="album-art" aria-hidden="true" tabindex="-1" />
+        <div class="track-meta">
+          <p class="track-title wide">
+            <span class="placeholder-text">{t('nowPlaying.title')}</span>
+          </p>
+          <p class="track-artist sub">
+            <span class="placeholder-text">{t('nowPlaying.artist')}</span>
+          </p>
+          <div class="audio-player" data-state="idle">
+            <button
+              class="play-button button"
+              type="button"
+              aria-label={t('nowPlaying.play')}
+              disabled
+            >
+              <svg
+                class="icon-play"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path d="M8 5v14l11-7z" />
+              </svg>
+              <svg
+                class="icon-pause"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path d="M6 5h4v14H6zm8 0h4v14h-4z" />
+              </svg>
+            </button>
+            <svg
+              class="waveform"
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <linearGradient id="waveform-fill">
+                {WAVEFORM_GRADIENT_TOKENS.map((token, index) => (
+                  <stop
+                    offset={index / (WAVEFORM_GRADIENT_TOKENS.length - 1)}
+                    style={`stop-color: var(--ctp-mocha-${token})`}
+                  />
+                ))}
+              </linearGradient>
+              <path class="waveform-base" />
+              <path class="waveform-hover" />
+              <path class="waveform-played" />
+              <path class="waveform-flash" />
+            </svg>
+            <span class="track-time mono">
+              <span class="time-current">0:00</span>
+              <span class="time-total dim">0:00</span>
+            </span>
+          </div>
         </div>
       </div>
+
+      <hr class="recent-divider" />
+
+      <ul class="recent-tracks scroller mono dim">
+        {Array.from({length: PLACEHOLDER_ROW_COUNT}, () => (
+          <li class="placeholder-text">
+            {t('nowPlaying.title')} - {t('nowPlaying.artist')}{' '}
+            {t('nowPlaying.time')}
+          </li>
+        ))}
+      </ul>
+
+      <audio class="track-audio" crossorigin="anonymous" preload="none" />
+    </>
+  ) : (
+    <div class="now-playing">
+      <p class="error-banner">
+        <span>
+          <span>{widgetStrings.broke}</span>
+        </span>
+      </p>
     </div>
-    <hr />
-    <ul class="recent scroller mono dim">{Array.from({ length: 5 }, () => <li class="wait">{t('nowPlaying.title')} - {t('nowPlaying.artist')} {t('nowPlaying.time')}</li>)}</ul>
-    <audio class="song" crossorigin="anonymous" preload="none"></audio>
-  </>
-) : (
-  <div class="np"><p class="broke"><span><span>{strings.broke}</span></span></p></div>
-)}
+  )
+}
 
 <script>
-  interface Track {
-    name: string;
-    url: string;
-    artist: { '#text': string };
-    image?: { size: string; '#text': string }[];
-    date?: { uts: string };
-    '@attr'?: { nowplaying?: string };
-  }
+  import {initNowPlayingWidgets} from '../scripts/now_playing';
 
-  interface Strings {
-    live: string;
-    ago: string;
-    units: string;
-    play: string;
-    pause: string;
-    broke: string;
-  }
-
-  const SIZES = [60, 60, 24, 7, 4.35, 12];
-
-  // Units come in as 's m h d w mo y': one per step, plus seconds first.
-  function ago(ms: number, strings: Strings): string {
-    const units = strings.units.split(' ');
-    let n = Math.max(1, (Date.now() - ms) / 1000);
-    let i = 0;
-    while (i < SIZES.length && n >= SIZES[i]!) n /= SIZES[i++]!;
-    return strings.ago.replace('{n}', String(Math.round(n))).replace('{unit}', units[i]!);
-  }
-
-  const SAVED = 'https://files.tek.rip/Downloads/randomsongslol/';
-
-  const clock = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
-
-  async function source(name: string, artist: string): Promise<string | undefined> {
-    const url = SAVED + encodeURIComponent(`${artist} - ${name}`.replace(/[/\\:*?"<>|]/g, '') + '.mp3');
-    return (await fetch(url, { method: 'HEAD' })).ok ? url : undefined;
-  }
-
-  const BARS = 14;
-
-  function outline(heights: number[]): string {
-    const points = heights.map((h, i) => [(i / (heights.length - 1)) * 100, 100 - h * 100] as const);
-    let d = `M0 100 L${points[0]}`;
-    for (let i = 1; i < points.length; i++) {
-      const [px, py] = points[i - 1]!;
-      const [x, y] = points[i]!;
-      d += ` Q${px} ${py} ${(px + x) / 2} ${(py + y) / 2}`;
-    }
-    return `${d} L${points.at(-1)} L100 100Z`;
-  }
-
-  function sweep(at: number, t: number, period: number): number {
-    const phase = (((t / 1000 - at) / period) % 1 + 1) % 1;
-    return 0.1 + 0.9 * Math.max(0, 1 - Math.abs(phase - 0.2) / 0.2) ** 2;
-  }
-
-  function player(root: HTMLElement, strings: Strings) {
-    const box = root.querySelector<HTMLElement>('.player')!;
-    const button = box.querySelector<HTMLButtonElement>('.play')!;
-    const wave = box.querySelector<SVGSVGElement>('.wave')!;
-    const paths = [...wave.querySelectorAll('path')];
-    const [now, total] = box.querySelectorAll<HTMLElement>('.time span');
-    const audio = root.parentElement!.querySelector<HTMLAudioElement>('.song')!;
-    let url: string | undefined;
-    let heights = Array<number>(BARS).fill(0.1);
-    const peaks = Array<number>(BARS).fill(0.25);
-    let shape: number[] | undefined;
-    let analyser: AnalyserNode | undefined;
-    let bins = new Uint8Array();
-    let edges: number[] = [];
-    let beats: number[] = [];
-    let next = 0;
-    let flash = 0;
-
-    function target(i: number, t: number): number {
-      const mode = box.dataset.state;
-      if (mode === 'playing') {
-        let sum = 0;
-        for (let j = edges[i]!; j < edges[i + 1]!; j++) sum += bins[j]!;
-        const v = sum / Math.max(1, edges[i + 1]! - edges[i]!) / 255;
-        peaks[i] = Math.max(v, peaks[i]! * 0.995, 0.15);
-        return Math.max(0.06, (v / peaks[i]!) ** 2);
-      }
-      if (mode !== 'loading' && shape) return shape[i]!;
-      return sweep(i / BARS, t, mode === 'loading' ? 1.2 : 2.4);
-    }
-
-    function frame(t: number) {
-      if (analyser && box.dataset.state === 'playing') analyser.getByteFrequencyData(bins);
-      for (; beats[next]! <= audio.currentTime; next++) flash = 1;
-      flash *= 0.88;
-      wave.style.setProperty('--flash', flash.toFixed(2));
-      const ease = box.dataset.state === 'playing' ? 0.45 : 0.1;
-      heights = heights.map((h, i) => h + (target(i, t) - h) * ease);
-      const d = outline(heights);
-      for (const path of paths) path.setAttribute('d', d);
-      if (audio.duration) {
-        wave.style.setProperty('--progress', String(audio.currentTime / audio.duration));
-        now!.textContent = clock(audio.currentTime);
-        total!.textContent = clock(audio.duration);
-      }
-      requestAnimationFrame(frame);
-    }
-
-    function pause() {
-      audio.pause();
-      box.dataset.state = 'paused';
-      button.setAttribute('aria-label', strings.play);
-    }
-
-    button.addEventListener('click', () => {
-      if (!url) return;
-      if (!audio.paused || box.dataset.state === 'loading') return pause();
-      button.setAttribute('aria-label', strings.pause);
-      if (!analyser) {
-        const ctx = new AudioContext();
-        analyser = ctx.createAnalyser();
-        analyser.fftSize = 2048;
-        analyser.smoothingTimeConstant = 0.55;
-        analyser.maxDecibels = -10;
-        bins = new Uint8Array(analyser.frequencyBinCount);
-        const first = Math.round(40 / (ctx.sampleRate / analyser.fftSize));
-        edges = Array.from({ length: BARS + 1 }, (_, i) => Math.round(first * 400 ** (i / BARS)));
-        ctx.createMediaElementSource(audio).connect(analyser);
-        analyser.connect(ctx.destination);
-      }
-      box.dataset.state = 'loading';
-      audio.play().catch(pause);
-    });
-    audio.addEventListener('playing', () => (box.dataset.state = 'playing'));
-    audio.addEventListener('ended', pause);
-    audio.addEventListener('seeked', () => {
-      const ahead = beats.findIndex((b) => b > audio.currentTime);
-      next = ahead < 0 ? beats.length : ahead;
-    });
-
-    function at(e: PointerEvent) {
-      const { left, width } = wave.getBoundingClientRect();
-      return Math.min(1, Math.max(0, (e.clientX - left) / width));
-    }
-    wave.addEventListener('pointermove', (e) => wave.style.setProperty('--hover', String(at(e))));
-    wave.addEventListener('click', (e) => {
-      if (audio.duration) audio.currentTime = at(e) * audio.duration;
-    });
-
-    requestAnimationFrame(frame);
-    return (found?: string) => {
-      pause();
-      box.dataset.state = 'idle';
-      [url, shape, beats, next] = [found, undefined, [], 0];
-      wave.style.setProperty('--progress', '0');
-      now!.textContent = total!.textContent = clock(0);
-      button.disabled = !found;
-      if (!found) return audio.removeAttribute('src');
-      audio.src = found;
-      fetch(found.replace(/mp3$/, 'json'))
-        .then((r) => r.json())
-        .then((song: { levels: number[]; beats: number[] }) => ({ levels: shape, beats } = song))
-        .catch(() => {});
-    };
-  }
-
-  function link(href: string, text: string) {
-    return Object.assign(document.createElement('a'), { href, textContent: text });
-  }
-
-  async function load(root: HTMLElement) {
-    const { user, key } = root.dataset;
-    if (!user || !key) return;
-    const strings: Strings = JSON.parse(root.dataset.strings!);
-    const track = root.querySelector<HTMLElement>('.track')!;
-    const artist = root.querySelector<HTMLElement>('.artist')!;
-    const art = root.querySelector<HTMLAnchorElement>('.art')!;
-    const recent = root.parentElement!.querySelector<HTMLUListElement>('.recent')!;
-    const query = new URLSearchParams({ method: 'user.getrecenttracks', user, api_key: key, format: 'json', limit: '10' });
-
-    try {
-      const res = await fetch(`https://ws.audioscrobbler.com/2.0/?${query}`);
-      if (!res.ok) throw new Error(String(res.status));
-      const tracks: Track[] = (await res.json())?.recenttracks?.track ?? [];
-      if (!tracks.length) throw new Error('no tracks');
-      const play = player(root, strings);
-      const when = (t: Track) => (t.date ? Number(t.date.uts) * 1000 : Date.now());
-      const since = (t: Track) => (t.date ? ago(when(t), strings) : strings.live);
-      const fade = (t: Track) => `color-mix(in oklab, var(--green) ${Math.max(0, 100 - (Date.now() - when(t)) / 36000)}%, var(--dim))`;
-
-      const show = (shown: Track) => {
-        track.replaceChildren(link(shown.url, shown.name));
-        track.title = shown.name;
-        artist.textContent = shown.artist['#text'];
-        const cover = shown.image?.find((i) => i.size === 'extralarge')?.['#text'];
-        art.style.backgroundImage = cover ? `url("${cover}")` : '';
-        art.href = shown.url;
-        source(shown.name, shown.artist['#text']).then(play, () => play());
-        recent.replaceChildren(
-          ...tracks.map((t) => {
-            const pick = Object.assign(document.createElement('button'), { type: 'button', textContent: `${t.name} - ${t.artist['#text']}` });
-            const age = document.createElement('span');
-            age.textContent = ` ${since(t)}`;
-            age.style.color = fade(t);
-            pick.append(age);
-            pick.classList.toggle('shown', t === shown);
-            pick.addEventListener('click', () => setTimeout(() => show(t)));
-            const li = document.createElement('li');
-            li.append(pick);
-            return li;
-          }),
-        );
-      };
-      show(tracks[0]!);
-    } catch {
-      recent.previousElementSibling?.remove();
-      recent.replaceChildren();
-      root.innerHTML = `<p class="broke"><span><span>${strings.broke}</span></span></p>`;
-    }
-  }
-
-  document.querySelectorAll<HTMLElement>('.np').forEach(load);
+  initNowPlayingWidgets();
 </script>
 
 <style>
-  .np { display: flex; gap: 18px; }
-  .art {
+  .now-playing {
+    display: flex;
+    gap: 18px;
+  }
+
+  .album-art {
+    background: conic-gradient(
+        from 200deg,
+        var(--ctp-mocha-pink),
+        var(--blue),
+        var(--green),
+        var(--ctp-mocha-yellow),
+        var(--ctp-mocha-pink)
+      )
+      center / cover;
     flex: none;
-    width: 150px;
     height: 150px;
-    background: conic-gradient(from 200deg, var(--ctp-mocha-pink), var(--blue), var(--green), var(--ctp-mocha-yellow), var(--ctp-mocha-pink)) center / cover;
+    width: 150px;
   }
-  .meta { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-  .track { overflow: hidden; font-size: 28px; line-height: 1.1; white-space: nowrap; text-overflow: ellipsis; }
-  .track :global(a) { color: var(--text); text-decoration: none; }
-  .track :global(a:hover) { color: var(--pink); }
-  .artist { margin-top: 6px; }
-  .wait { color: var(--dim); }
-  .player { display: flex; align-items: center; gap: 10px; margin-top: auto; }
-  .play { flex: none; display: grid; place-items: center; width: 30px; height: 30px; }
-  .play svg { width: 20px; height: 20px; fill: currentColor; }
-  .icon-pause, [data-state='playing'] .icon-play, [data-state='loading'] .icon-play { display: none; }
-  [data-state='playing'] .icon-pause, [data-state='loading'] .icon-pause { display: block; }
-  .wave { flex: 1; height: 26px; cursor: pointer; --progress: 0; --hover: 0; }
-  .base { fill: color-mix(in srgb, var(--text) 22%, transparent); }
-  .hover { fill: color-mix(in srgb, var(--text) 45%, transparent); clip-path: inset(0 calc((1 - var(--hover)) * 100%) 0 0); opacity: 0; transition: opacity 0.15s; }
-  .wave:hover .hover { opacity: 1; }
-  .flash { fill: white; opacity: var(--flash, 0); }
-  .played { fill: url(#np-fill); clip-path: inset(0 calc((1 - var(--progress)) * 100%) 0 0); }
-  .time { flex: none; display: flex; flex-direction: column; align-items: flex-end; min-width: 4ch; font-size: 0.65rem; line-height: 1.25; font-variant-numeric: tabular-nums; color: var(--sub); }
-  hr { flex: none; margin: 14px 0 0; border: 0; border-top: 1px solid var(--line); }
-  .recent { flex: 1; min-height: 0; margin-right: -10px; padding-right: 12px; overflow-y: auto; --fade: 32px; }
-  .recent:not(:empty) { margin-top: 8px; padding-top: 6px; }
-  .recent :global(button) { display: block; max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; border: 0; padding: 0; font: inherit; text-align: left; color: var(--sub); background: none; cursor: pointer; transition: color 0.25s; }
-  .recent :global(button:hover) { color: var(--pink); }
-  .recent :global(.shown) { color: var(--text); }
+
+  .track-meta {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .track-title {
+    font-size: 28px;
+    line-height: 1.1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .track-title :global(a) {
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .track-title :global(a:hover) {
+    color: var(--pink);
+  }
+
+  .track-artist {
+    margin-top: 6px;
+  }
+
+  .placeholder-text {
+    color: var(--dim);
+  }
+
+  .audio-player {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
+  }
+
+  .play-button {
+    display: grid;
+    flex: none;
+    height: 30px;
+    place-items: center;
+    width: 30px;
+  }
+
+  .play-button svg {
+    fill: currentColor;
+    height: 20px;
+    width: 20px;
+  }
+
+  .icon-pause,
+  [data-state='playing'] .icon-play,
+  [data-state='loading'] .icon-play {
+    display: none;
+  }
+
+  [data-state='playing'] .icon-pause,
+  [data-state='loading'] .icon-pause {
+    display: block;
+  }
+
+  .waveform {
+    --hover: 0;
+    --progress: 0;
+    cursor: pointer;
+    flex: 1;
+    height: 26px;
+  }
+
+  .waveform-base {
+    fill: color-mix(in srgb, var(--text) 22%, transparent);
+  }
+
+  .waveform-hover {
+    clip-path: inset(0 calc((1 - var(--hover)) * 100%) 0 0);
+    fill: color-mix(in srgb, var(--text) 45%, transparent);
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .waveform:hover .waveform-hover {
+    opacity: 1;
+  }
+
+  .waveform-flash {
+    fill: #fff;
+    opacity: var(--flash, 0);
+  }
+
+  .waveform-played {
+    clip-path: inset(0 calc((1 - var(--progress)) * 100%) 0 0);
+    fill: url(#waveform-fill);
+  }
+
+  .track-time {
+    align-items: flex-end;
+    color: var(--sub);
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    font-size: 0.65rem;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.25;
+    min-width: 4ch;
+  }
+
+  .recent-divider {
+    border: 0;
+    border-top: 1px solid var(--line);
+    flex: none;
+    margin: 14px 0 0;
+  }
+
+  .recent-tracks {
+    --fade: 32px;
+    flex: 1;
+    margin-right: -10px;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 12px;
+  }
+
+  .recent-tracks:not(:empty) {
+    margin-top: 8px;
+    padding-top: 6px;
+  }
+
+  .recent-tracks :global(button) {
+    background: none;
+    border: 0;
+    color: var(--sub);
+    cursor: pointer;
+    display: block;
+    font: inherit;
+    max-width: 100%;
+    overflow: hidden;
+    padding: 0;
+    text-align: left;
+    text-overflow: ellipsis;
+    transition: color 0.25s;
+    white-space: nowrap;
+  }
+
+  .recent-tracks :global(button:hover) {
+    color: var(--pink);
+  }
+
+  .recent-tracks :global(.is-selected) {
+    color: var(--text);
+  }
+
   @media (min-width: 901px) {
-    :global(.tile:has(.np)) { contain: size; display: flex; flex-direction: column; }
+    :global(.tile:has(.now-playing)) {
+      contain: size;
+      display: flex;
+      flex-direction: column;
+    }
   }
+
   @media (max-width: 900px) {
-    .recent { max-height: 64px; }
+    .recent-tracks {
+      max-height: 64px;
+    }
   }
+
   @media (max-width: 600px) {
-    .np { flex-direction: column; }
-    .art { width: 100%; height: 160px; }
+    .now-playing {
+      flex-direction: column;
+    }
+
+    .album-art {
+      height: 160px;
+      width: 100%;
+    }
   }
 </style>

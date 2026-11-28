@@ -1,9 +1,9 @@
 ---
-import Base from '../../layouts/Base.astro';
-import Tile from '../../components/Tile.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
-import { getProjects } from '../../lib/projects';
-import { useTranslations } from '../../i18n';
+import Tile from '../../components/Tile.astro';
+import {useTranslations} from '../../i18n';
+import Base from '../../layouts/Base.astro';
+import {getProjects} from '../../lib/projects';
 
 const t = useTranslations(Astro.currentLocale);
 const projects = await getProjects();
@@ -11,10 +11,16 @@ const projects = await getProjects();
 
 <Base title={t('projects.title')} description={t('projects.description')}>
   <Tile label={t('projects.title')}>
-    <div class="cards">{projects.map((p) => <ProjectCard project={p} />)}</div>
+    <div class="project-grid">
+      {projects.map((project) => <ProjectCard project={project} />)}
+    </div>
   </Tile>
 </Base>
 
 <style>
-  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 20px; }
+  .project-grid {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  }
 </style>

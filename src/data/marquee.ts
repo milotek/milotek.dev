@@ -1,4 +1,8 @@
-export const marquee = [
+/**
+ * @fileoverview Background marquee lines rendered behind the page content.
+ */
+
+export const MARQUEE_LINES: readonly string[] = [
   "To be fair, you have to have a very high IQ to understand xaev's music. The humor is extremely subtle, and without a solid grasp of electronic music history and the evolution of dariacore most of the jokes will go over a typical listener's head. There's also xaev's production talent, which is incredibly woven into his songs - his personal philosophy draws heavily from Leroy's discography, for instance.",
   'LDM ball cube ball big cube ball next Rest In Peace niflheim vismuth slow wave fast robot keep going! slow ship go! slow ball Auto? fast dual ship slow fast ufo slow How? fast ship slow cube fast ball lol slow robot in out slow ufo take a break ????? !!!!! ?? ?! ??! !! ?! !! ?!!? ??! !! ?!!? ??! ?! ?? !! ?? !! ?? ?! ??! ?!!? ?? ??! ?! !! ?!!? slow ufo go! go! Yeah! fast cube dual wave watch out! faster! OMG! mini next next great! verified by NIFLHEIM koreaqwer',
   'As a consequence people who dislike xaev truly ARE idiots - of course they wouldn\'t appreciate, for instance, the niche references in xaev\'s hit song "toby fox discovers the hyperpop soundfont", which itself is a cryptic reference to Toby Fox\'s exclusive use of soundfonts for Undertale\'s soundtrack.',
