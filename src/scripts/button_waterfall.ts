@@ -1,12 +1,13 @@
 /**
- * @fileoverview Continuous 3-lane vertical scroll animation for 88x31 buttons
- * with hover pause and wheel scrubbing.
+ * @fileoverview Continuous 3-lane vertical scroll animation for 88x31 buttons.
+ *
+ * Each lane drifts at its own base speed with sinusoidal modulation, pauses on
+ * hover, and supports wheel scrubbing.
  */
 
-const SPEED_PX_PER_SEC = 60;
+const LANE_SPEEDS_PX_PER_SEC: readonly number[] = [60, 80, 50];
+const DRIFT_AMPLITUDE = 0.35;
 const WHEEL_DAMPING = 0.2;
-// Half of a button height + bottom padding ((31px + 6px) / 2) for a brick stagger.
-const LANE_STAGGER_PX = 18.5;
 
 /** Initializes the falling 88x31 button lanes if present on the page. */
 export function initButtonWaterfall(): void {
@@ -23,7 +24,10 @@ export function initButtonWaterfall(): void {
 
   const lanes = elements.map((element, index) => ({
     element,
-    offsetPx: index * LANE_STAGGER_PX,
+    speed: LANE_SPEEDS_PX_PER_SEC[index] ?? 60,
+    periodMs: 7000 + Math.random() * 8000,
+    phaseRad: Math.random() * Math.PI * 2,
+    offsetPx: 0,
     wheelPx: 0,
     paused: false,
   }));
@@ -60,7 +64,13 @@ export function initButtonWaterfall(): void {
       const wheelStep = lane.wheelPx * WHEEL_DAMPING;
       lane.wheelPx -= wheelStep;
 
-      const autoStep = lane.paused || reducedMotion ? 0 : SPEED_PX_PER_SEC * dtSec;
+      const drift =
+        1 +
+        DRIFT_AMPLITUDE *
+          Math.sin((nowMs / lane.periodMs) * Math.PI * 2 + lane.phaseRad);
+      const autoStep =
+        lane.paused || reducedMotion ? 0 : lane.speed * drift * dtSec;
+
       lane.offsetPx =
         (((lane.offsetPx + wheelStep + autoStep) % halfHeight) + halfHeight) %
         halfHeight;

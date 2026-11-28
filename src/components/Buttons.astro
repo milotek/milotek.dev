@@ -3,14 +3,12 @@ import {WEB_BUTTONS, type WebButton} from '../config';
 import {url} from '../lib/url';
 
 const LANE_COUNT = 3;
-const WOBBLE_WAVES = 6;
+const WOBBLE_WAVES = 2;
 const WOBBLE_PERIOD_SEC = 1.6;
 
-const laneOffsetStep = Math.floor(WEB_BUTTONS.length / LANE_COUNT);
-const lanes: WebButton[][] = Array.from({length: LANE_COUNT}, (_, laneIndex) => {
-  const offset = laneIndex * laneOffsetStep;
-  return [...WEB_BUTTONS.slice(offset), ...WEB_BUTTONS.slice(0, offset)];
-});
+const lanes: WebButton[][] = Array.from({length: LANE_COUNT}, (_, laneIndex) =>
+  WEB_BUTTONS.filter((_, buttonIndex) => buttonIndex % LANE_COUNT === laneIndex),
+);
 
 function resolvePath(path: string): string {
   return path.startsWith('/') ? url(path.slice(1)) : path;
