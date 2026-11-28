@@ -5,6 +5,8 @@
 
 const SPEED_PX_PER_SEC = 60;
 const WHEEL_DAMPING = 0.2;
+// Half of a button height + bottom padding ((31px + 6px) / 2) for a brick stagger.
+const LANE_STAGGER_PX = 18.5;
 
 /** Initializes the falling 88x31 button lanes if present on the page. */
 export function initButtonWaterfall(): void {
@@ -19,9 +21,9 @@ export function initButtonWaterfall(): void {
     '(prefers-reduced-motion: reduce)',
   ).matches;
 
-  const lanes = elements.map((element) => ({
+  const lanes = elements.map((element, index) => ({
     element,
-    offsetPx: 0,
+    offsetPx: index * LANE_STAGGER_PX,
     wheelPx: 0,
     paused: false,
   }));
