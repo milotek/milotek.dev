@@ -22,9 +22,10 @@ const {
 } = Astro.props;
 
 const fullTitle = title
-  ? `${title} · ${SITE.handle}`
-  : `${SITE.name} · ${SITE.handle}`;
+  ? `${t('hero.brand')} // ${title}`
+  : t('hero.brand');
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+const tabTitle = (canonicalUrl.host + canonicalUrl.pathname).replace(/\/$/, '');
 const commitStamp = getLatestCommitStamp();
 ---
 
@@ -33,7 +34,7 @@ const commitStamp = getLatestCommitStamp();
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{fullTitle}</title>
+    <title>{tabTitle}</title>
     <meta name="description" content={description} />
     <meta name="author" content={SITE.name} />
     <meta name="theme-color" content="#1e1e2e" />
@@ -90,6 +91,13 @@ const commitStamp = getLatestCommitStamp();
       initUiEffects();
       if (new URLSearchParams(location.search).has('edit')) {
         import('../scripts/edit_strings').then((m) => m.initEditStrings());
+      }
+      if (import.meta.env.PROD) {
+        fetch('https://discord-logger.milo-af4.workers.dev/', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({page: location.host + location.pathname + location.hash}),
+        }).catch(() => {});
       }
     </script>
   </body>
