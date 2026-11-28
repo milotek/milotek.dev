@@ -88,6 +88,9 @@ const commitStamp = getLatestCommitStamp();
       import {initUiEffects} from '../scripts/ui_effects';
 
       initUiEffects();
+      if (new URLSearchParams(location.search).has('edit')) {
+        import('../scripts/edit_strings').then((m) => m.initEditStrings());
+      }
     </script>
   </body>
 </html>
