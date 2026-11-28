@@ -138,7 +138,7 @@ function createWaveformPlayer(
   root: HTMLElement,
   audio: HTMLAudioElement,
   strings: NowPlayingStrings,
-): (previewUrl?: string, live?: boolean) => void {
+): (previewUrl?: string, liveSinceSec?: number) => void {
   const container = root.querySelector<HTMLElement>('.audio-player');
   const playButton = container?.querySelector<HTMLButtonElement>('.play-button');
   const waveform = container?.querySelector<SVGSVGElement>('.waveform');
@@ -322,11 +322,11 @@ function createWaveformPlayer(
 
   window.requestAnimationFrame(renderFrame);
 
-  return (foundUrl?: string, live = false) => {
+  return (foundUrl?: string, liveSinceSec?: number) => {
     const wasListening = isLive && !audio.paused;
     pause();
     container.dataset.state = 'idle';
-    isLive = live && Boolean(foundUrl);
+    isLive = liveSinceSec !== undefined && Boolean(foundUrl);
     liveStartMs = undefined;
     container.toggleAttribute('data-live', isLive);
     audio.loop = isLive;
@@ -348,15 +348,16 @@ function createWaveformPlayer(
     audio.src = foundUrl;
     if (isLive) {
       goLive();
-      // Fake "joining mid-song": the clock starts somewhere in the middle half and
-      // runs silently while muted, so unmuting jumps to where the song "is".
+      // The clock runs silently from when the song started, so unmuting jumps to
+      // where it "is" and every visitor and reload lands on the same spot.
       audio.addEventListener(
         'loadedmetadata',
         () => {
           if (!isLive) {
             return;
           }
-          liveStartMs = performance.now() - audio.duration * (0.25 + Math.random() * 0.5) * 1000;
+          const elapsedMs = Math.max(0, Date.now() - (liveSinceSec ?? 0) * 1000);
+          liveStartMs = performance.now() - elapsedMs;
           if (wasListening) {
             playButton.click();
           }
@@ -376,8 +377,8 @@ function createWaveformPlayer(
   };
 }
 
-/** Fetches the most recent unique Last.fm listens. */
-async function fetchRecentTracks(user: string, apiKey: string): Promise<LastFmTrack[]> {
+/** Fetches the most recent Last.fm listens, now playing first. */
+async function fetchRecentTracks(user: string, apiKey: string): Promise<readonly LastFmTrack[]> {
   const query = new URLSearchParams({
     method: 'user.getrecenttracks',
     user,
@@ -392,7 +393,40 @@ async function fetchRecentTracks(user: string, apiKey: string): Promise<LastFmTr
   const payload = (await response.json()) as {
     recenttracks?: {track?: readonly LastFmTrack[]};
   };
-  return deduplicateTracks(payload.recenttracks?.track ?? [], RECENT_TRACK_COUNT);
+  return payload.recenttracks?.track ?? [];
+}
+
+/**
+ * Estimates when the now-playing track started, in Unix seconds. A scrobble's
+ * timestamp is when that track started, so before this one scrobbles it started
+ * when the previous one ended.
+ */
+async function estimateLiveStart(
+  recent: readonly LastFmTrack[],
+  apiKey: string,
+): Promise<number | undefined> {
+  const [live, previous] = recent;
+  if (!live || live.date) {
+    return undefined;
+  }
+  if (!previous?.date) {
+    return Date.now() / 1000;
+  }
+  const previousStart = Number(previous.date.uts);
+  if (previous.name === live.name && previous.artist['#text'] === live.artist['#text']) {
+    return previousStart;
+  }
+  const query = new URLSearchParams({
+    method: 'track.getInfo',
+    artist: previous.artist['#text'],
+    track: previous.name,
+    api_key: apiKey,
+    format: 'json',
+  });
+  const info = await fetch(`${LASTFM_API_URL}?${query.toString()}`)
+    .then((res) => res.json() as Promise<{track?: {duration?: string}}>)
+    .catch(() => undefined);
+  return previousStart + Number(info?.track?.duration ?? 0) / 1000;
 }
 
 /** Identifies one listen, so a live track that gets scrobbled counts as changed. */
@@ -418,7 +452,9 @@ async function hydrateWidget(root: HTMLElement): Promise<void> {
   }
 
   try {
-    let tracks = await fetchRecentTracks(user, apiKey);
+    let recent = await fetchRecentTracks(user, apiKey);
+    let tracks = deduplicateTracks(recent, RECENT_TRACK_COUNT);
+    let liveSince = await estimateLiveStart(recent, apiKey);
     const latest = tracks[0];
     if (!latest) {
       throw new Error('No recent tracks returned.');
@@ -444,7 +480,7 @@ async function hydrateWidget(root: HTMLElement): Promise<void> {
 
       findPreviewUrl(selected.name, selected.artist['#text']).then(
         (found) => {
-          loadPreview(found, !selected.date);
+          loadPreview(found, selected.date ? undefined : liveSince);
         },
         () => {
           loadPreview(undefined);
@@ -492,15 +528,15 @@ async function hydrateWidget(root: HTMLElement): Promise<void> {
       ) {
         return;
       }
-      fetchRecentTracks(user, apiKey).then(
-        (fresh) => {
-          if (fresh[0] && listenKey(fresh[0]) !== listenKey(tracks[0])) {
-            tracks = fresh;
-            showTrack(fresh[0]);
-          }
-        },
-        () => {},
-      );
+      void (async () => {
+        const fresh = await fetchRecentTracks(user, apiKey);
+        if (fresh[0] && listenKey(fresh[0]) !== listenKey(tracks[0])) {
+          recent = fresh;
+          tracks = deduplicateTracks(recent, RECENT_TRACK_COUNT);
+          liveSince = await estimateLiveStart(recent, apiKey);
+          showTrack(tracks[0] ?? fresh[0]);
+        }
+      })().catch(() => {});
     }, LIVE_POLL_MS);
   } catch {
     recentList.previousElementSibling?.remove();
