@@ -33,6 +33,31 @@ const FRESHNESS_MS_PER_PERCENT = 36_000;
 const WAVEFORM_BARS = 14;
 const FFT_SIZE = 2048;
 const LASTFM_DEFAULT_COVER_ID = '2a96cbd8b46e442fc41c2b86b821562f';
+const LASTFM_FETCH_LIMIT = '50';
+const RECENT_TRACK_COUNT = 10;
+
+/** Keeps only the most recent listen of each unique track, up to `maxCount`. */
+function deduplicateTracks(
+  tracks: readonly LastFmTrack[],
+  maxCount: number,
+): LastFmTrack[] {
+  const seen = new Set<string>();
+  const unique: LastFmTrack[] = [];
+
+  for (const track of tracks) {
+    const key = `${track.artist['#text']}\0${track.name}`.toLowerCase();
+    if (seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    unique.push(track);
+    if (unique.length >= maxCount) {
+      break;
+    }
+  }
+
+  return unique;
+}
 
 /** Formats elapsed time since `timestampMs` using localized short units. */
 function formatRelativeAge(timestampMs: number, strings: NowPlayingStrings): string {
@@ -300,7 +325,7 @@ async function hydrateWidget(root: HTMLElement): Promise<void> {
     user,
     api_key: apiKey,
     format: 'json',
-    limit: '10',
+    limit: LASTFM_FETCH_LIMIT,
   });
 
   try {
@@ -312,7 +337,10 @@ async function hydrateWidget(root: HTMLElement): Promise<void> {
     const payload = (await response.json()) as {
       recenttracks?: {track?: readonly LastFmTrack[]};
     };
-    const tracks = payload.recenttracks?.track ?? [];
+    const tracks = deduplicateTracks(
+      payload.recenttracks?.track ?? [],
+      RECENT_TRACK_COUNT,
+    );
     const latest = tracks[0];
     if (!latest) {
       throw new Error('No recent tracks returned.');
