@@ -1,19 +1,26 @@
 ---
-import { Image } from 'astro:assets';
-import type { CollectionEntry } from 'astro:content';
-import { url } from '../lib/url';
+import {Image} from 'astro:assets';
+import type {CollectionEntry} from 'astro:content';
+
+import {url} from '../lib/url';
 
 interface Props {
   project: CollectionEntry<'projects'>;
 }
 
-const { project } = Astro.props;
-const { title, blurb, year, cover } = project.data;
+const {project} = Astro.props;
+const {title, blurb, year, cover} = project.data;
 ---
 
-<a class="project card" href={url(`projects/${project.id}/`)}>
-  {cover ? <Image src={cover} alt="" width={480} densities={[1, 2]} /> : <span class="blank" aria-hidden="true" />}
-  <div>
+<a class="project-card card" href={url(`projects/${project.id}/`)}>
+  {
+    cover ? (
+      <Image src={cover} alt="" width={480} densities={[1, 2]} />
+    ) : (
+      <span class="project-cover-placeholder" aria-hidden="true" />
+    )
+  }
+  <div class="project-card-body">
     <span class="mono dim">{year}</span>
     <h3 class="wide">{title}</h3>
     <p class="sub">{blurb}</p>
@@ -21,13 +28,67 @@ const { title, blurb, year, cover } = project.data;
 </a>
 
 <style>
-  .project { position: relative; display: flex; flex-direction: column; overflow: hidden; color: inherit; text-decoration: none; background: var(--base); }
-  .project::after { content: ''; position: absolute; inset: 0; outline: inherit; outline-offset: -1px; pointer-events: none; }
-  img, .blank { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; filter: saturate(0.85); transition: filter 0.25s, transform 0.3s; }
-  .blank { background: repeating-linear-gradient(135deg, var(--crust) 0 7px, var(--base) 7px 14px); }
-  .project:hover img { filter: none; transform: scale(1.05); }
-  .project:hover h3 { color: var(--pink); }
-  div { position: relative; flex: 1; padding: 12px 12px 14px; border-top: 3px solid var(--pink); background: var(--base); }
-  h3 { font-size: 18px; margin: 4px 0; transition: color 0.25s; }
-  p { font-size: 14px; line-height: 1.4; }
+  .project-card {
+    background: var(--base);
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    text-decoration: none;
+  }
+
+  .project-card::after {
+    content: '';
+    inset: 0;
+    outline: inherit;
+    outline-offset: -1px;
+    pointer-events: none;
+    position: absolute;
+  }
+
+  img,
+  .project-cover-placeholder {
+    aspect-ratio: 4 / 3;
+    filter: saturate(0.85);
+    object-fit: cover;
+    transition: filter 0.25s, transform 0.3s;
+    width: 100%;
+  }
+
+  .project-cover-placeholder {
+    background: repeating-linear-gradient(
+      135deg,
+      var(--crust) 0 7px,
+      var(--base) 7px 14px
+    );
+  }
+
+  .project-card:hover img {
+    filter: none;
+    transform: scale(1.05);
+  }
+
+  .project-card:hover h3 {
+    color: var(--pink);
+  }
+
+  .project-card-body {
+    background: var(--base);
+    border-top: 3px solid var(--pink);
+    flex: 1;
+    padding: 12px 12px 14px;
+    position: relative;
+  }
+
+  h3 {
+    font-size: 18px;
+    margin: 4px 0;
+    transition: color 0.25s;
+  }
+
+  p {
+    font-size: 14px;
+    line-height: 1.4;
+  }
 </style>

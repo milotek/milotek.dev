@@ -1,171 +1,210 @@
 ---
-import { Image } from 'astro:assets';
-import { url } from '../lib/url';
-import { site } from '../config';
-import { useTranslations } from '../i18n';
-import selfie from '../assets/me/selfie.jpg';
-import swap from '../assets/me/swap.jpg';
+import {Image} from 'astro:assets';
+
+import selfiePhoto from '../assets/me/selfie.jpg';
+import alternatePhoto from '../assets/me/swap.jpg';
+import {SITE} from '../config';
+import {useTranslations} from '../i18n';
+import {url} from '../lib/url';
 
 const t = useTranslations(Astro.currentLocale);
-const here = Astro.url.pathname;
+const currentPath = Astro.url.pathname;
 
-const nav = [
-  { href: url(''), text: t('nav.home') },
-  { href: url('about/'), text: t('nav.about') },
-  { href: url('projects/'), text: t('nav.projects') },
-  { href: url('blog/'), text: t('nav.blog') },
-  { href: url('art/'), text: t('nav.art') },
-  { href: `mailto:${site.email}`, text: t('nav.contact') },
+const navLinks = [
+  {href: url(''), text: t('nav.home')},
+  {href: url('about/'), text: t('nav.about')},
+  {href: url('projects/'), text: t('nav.projects')},
+  {href: url('blog/'), text: t('nav.blog')},
+  {href: url('art/'), text: t('nav.art')},
+  {href: `mailto:${SITE.email}`, text: t('nav.contact')},
 ];
 
-function current(href: string) {
-  return href === url('') ? here === href : here.startsWith(href);
+function isCurrentRoute(href: string): boolean {
+  if (href === url('')) {
+    return currentPath === href;
+  }
+  return currentPath.startsWith(href);
 }
 ---
 
 <header class="hero">
-  <div class="card">
-    <Image class="photo" src={selfie} alt="" widths={[800, 1600]} sizes="(max-width: 1152px) 100vw, 1120px" loading="eager" />
-    <Image class="photo stretched" src={swap} alt="" width={100} quality={30} loading="eager" hidden />
-    <nav aria-label={t('nav.label')}>
-      {nav.map((n) => <a class="chip" href={n.href} aria-current={current(n.href) ? 'page' : undefined}>{n.text}</a>)}
+  <div class="hero-banner card">
+    <Image
+      class="hero-photo"
+      src={selfiePhoto}
+      alt=""
+      widths={[800, 1600]}
+      sizes="(max-width: 1152px) 100vw, 1120px"
+      loading="eager"
+    />
+    <Image
+      class="hero-photo hero-photo-stretched"
+      src={alternatePhoto}
+      alt=""
+      width={100}
+      quality={30}
+      loading="eager"
+      hidden
+    />
+    <nav class="hero-nav" aria-label={t('nav.label')}>
+      {
+        navLinks.map((item) => (
+          <a
+            class="chip"
+            href={item.href}
+            aria-current={isCurrentRoute(item.href) ? 'page' : undefined}
+          >
+            {item.text}
+          </a>
+        ))
+      }
     </nav>
-    <p class="brand">{t('hero.brand')}</p>
+    <p class="hero-brand">{t('hero.brand')}</p>
   </div>
-  <div class="rainbow"></div>
-  <div class="strip">
-    <p class="copy">{t('hero.copyright')}</p>
-    <div class="buttons">
-      <button class="button" type="button" data-action="aaaa" aria-pressed="false" aria-label={t('hero.aaaa')}>a</button>
-      <button class="button" type="button" data-action="flip" aria-pressed="false" aria-label={t('hero.flip')}>b</button>
-      <button class="button" type="button" data-action="swap" aria-pressed="false" aria-label={t('hero.swap')}>c</button>
+  <div class="hero-rainbow"></div>
+  <div class="hero-strip">
+    <p class="hero-copyright">{t('hero.copyright')}</p>
+    <div class="hero-controls">
+      <button
+        class="button"
+        type="button"
+        data-action="aaaa"
+        aria-pressed="false"
+        aria-label={t('hero.aaaa')}
+      >
+        a
+      </button>
+      <button
+        class="button"
+        type="button"
+        data-action="flip"
+        aria-pressed="false"
+        aria-label={t('hero.flip')}
+      >
+        b
+      </button>
+      <button
+        class="button"
+        type="button"
+        data-action="swap"
+        aria-pressed="false"
+        aria-label={t('hero.swap')}
+      >
+        c
+      </button>
     </div>
   </div>
 </header>
 
 <script>
-  const hero = document.querySelector<HTMLElement>('.hero')!;
-  const [selfie, swapped] = hero.querySelectorAll<HTMLImageElement>('.photo');
-  const buttons = [...hero.querySelectorAll<HTMLButtonElement>('.buttons button')];
-  const button = (action: string) => buttons.find((b) => b.dataset.action === action)!;
-  const originals = new Map<Text, string>();
+  import {initHeroControls} from '../scripts/hero_controls';
 
-  function setPressed(action: string, on: boolean) {
-    button(action).setAttribute('aria-pressed', String(on));
-  }
-
-  function setFlip(on: boolean) {
-    hero.classList.toggle('flipped', on);
-    setPressed('flip', on);
-  }
-
-  function setSwap(on: boolean) {
-    selfie!.hidden = on;
-    swapped!.hidden = !on;
-    setPressed('swap', on);
-  }
-
-  function aify(root: Node) {
-    const walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-    for (let node: Text | null; (node = walk.nextNode() as Text | null); ) {
-      if (node.parentElement?.closest('script, style')) continue;
-      const as = node.data.replace(/\p{L}/gu, (c) => (c === c.toLowerCase() ? 'a' : 'A'));
-      if (as === node.data) continue;
-      originals.set(node, node.data);
-      node.data = as;
-    }
-  }
-
-  // Keeps text that loads later (now playing, recent tracks) in a's too.
-  const observer = new MutationObserver((records) => records.forEach((r) => aify(r.target.parentNode ?? r.target)));
-
-  function setAaaa(on: boolean) {
-    setPressed('aaaa', on);
-    if (on) {
-      aify(document.body);
-      observer.observe(document.body, { subtree: true, childList: true, characterData: true });
-      return;
-    }
-    observer.disconnect();
-    originals.forEach((text, node) => (node.data = text));
-    originals.clear();
-  }
-
-  button('aaaa').addEventListener('click', () => setAaaa(!originals.size));
-  button('flip').addEventListener('click', () => setFlip(!hero.classList.contains('flipped')));
-  button('swap').addEventListener('click', () => setSwap(selfie!.hidden === false));
+  initHeroControls();
 </script>
 
 <style>
-  .hero { transition: transform 0.3s; }
-  .hero.flipped { transform: scaleX(-1); }
-  .card {
-    position: relative;
+  .hero {
+    transition: transform 0.3s;
+  }
+
+  .hero.flipped {
+    transform: scaleX(-1);
+  }
+
+  .hero-banner {
+    background: var(--mantle);
     height: 420px;
     overflow: hidden;
-    background: var(--mantle);
+    position: relative;
   }
-  .photo {
-    position: absolute;
-    inset: 0;
-    width: 100%;
+
+  .hero-photo {
     height: 100%;
+    inset: 0;
     object-fit: cover;
     object-position: center 30%;
-  }
-  .photo[hidden] { display: none; }
-  .stretched { object-fit: fill; }
-  nav {
     position: absolute;
-    top: 40px;
-    left: 40px;
+    width: 100%;
+  }
+
+  .hero-photo[hidden] {
+    display: none;
+  }
+
+  .hero-photo-stretched {
+    object-fit: fill;
+  }
+
+  .hero-nav {
+    align-items: flex-start;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 18px;
     font-size: 24px;
-  }
-  .brand {
+    gap: 18px;
+    left: 40px;
     position: absolute;
-    right: 20px;
+    top: 40px;
+  }
+
+  .hero-brand {
+    background: var(--base);
     bottom: 20px;
-    padding: 0 12px;
+    color: var(--pink);
     font-size: 48px;
     font-weight: 700;
     line-height: 1.25;
-    color: var(--pink);
-    background: var(--base);
+    padding: 0 12px;
+    position: absolute;
+    right: 20px;
   }
-  .rainbow {
-    height: 10px;
-    background: var(--rainbow);
+
+  .hero-rainbow {
     animation: rainbow 3s linear infinite;
+    background: var(--rainbow);
+    height: 10px;
   }
-  .strip {
+
+  .hero-strip {
+    align-items: flex-start;
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
   }
-  .copy {
-    height: 40px;
-    display: flex;
+
+  .hero-copyright {
     align-items: center;
-    padding: 0 12px;
+    background: var(--mantle);
+    color: #a6adc880;
+    display: flex;
     font-size: 14px;
     font-weight: 700;
-    color: #a6adc880;
-    background: var(--mantle);
-  }
-  .buttons { display: flex; }
-  button {
-    width: 40px;
     height: 40px;
-    font-size: 20px;
-    background: var(--mantle);
+    padding: 0 12px;
   }
+
+  .hero-controls {
+    display: flex;
+  }
+
+  /* Keep specificity low so `.button:hover` and `[aria-pressed='true']` win. */
+  button {
+    background: var(--mantle);
+    font-size: 20px;
+    height: 40px;
+    width: 40px;
+  }
+
   @media (max-width: 600px) {
-    .card { height: 360px; }
-    nav { top: 20px; left: 20px; }
-    .brand { font-size: 30px; }
+    .hero-banner {
+      height: 360px;
+    }
+
+    .hero-nav {
+      left: 20px;
+      top: 20px;
+    }
+
+    .hero-brand {
+      font-size: 30px;
+    }
   }
 </style>

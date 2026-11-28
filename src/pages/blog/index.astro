@@ -1,24 +1,29 @@
 ---
-import Base from '../../layouts/Base.astro';
 import Tile from '../../components/Tile.astro';
-import { getPosts } from '../../lib/posts';
-import { useTranslations } from '../../i18n';
-import { isoDate } from '../../lib/time';
-import { url } from '../../lib/url';
+import {useTranslations} from '../../i18n';
+import Base from '../../layouts/Base.astro';
+import {getPosts} from '../../lib/posts';
+import {formatIsoDate} from '../../lib/time';
+import {url} from '../../lib/url';
 
 const t = useTranslations(Astro.currentLocale);
 const posts = await getPosts();
 ---
 
 <Base title={t('blog.title')} description={t('blog.description')}>
-  <Tile label={t('blog.title')} action={{ href: url('rss.xml'), text: t('blog.rss') }}>
-    <ul class="posts">
+  <Tile
+    label={t('blog.title')}
+    action={{href: url('rss.xml'), text: t('blog.rss')}}
+  >
+    <ul class="blog-index">
       {
-        posts.map((p) => (
+        posts.map((post) => (
           <li>
-            <a href={url(`blog/${p.id}/`)}>
-              <time class="mono dim" datetime={isoDate(p.published)}>{isoDate(p.published)}</time>
-              <span class="wide">{p.title}</span>
+            <a href={url(`blog/${post.id}/`)}>
+              <time class="mono dim" datetime={formatIsoDate(post.published)}>
+                {formatIsoDate(post.published)}
+              </time>
+              <span class="wide">{post.title}</span>
             </a>
           </li>
         ))
@@ -28,12 +33,36 @@ const posts = await getPosts();
 </Base>
 
 <style>
-  .posts a { display: flex; gap: 20px; align-items: baseline; padding: 14px 0; border-bottom: 1px solid var(--line); color: var(--text); text-decoration: none; }
-  .posts li:last-child a { border: 0; }
-  .posts time { flex: none; }
-  .posts span { font-size: 1.1rem; }
-  .posts a:hover { color: var(--pink); }
+  .blog-index a {
+    align-items: baseline;
+    border-bottom: 1px solid var(--line);
+    color: var(--text);
+    display: flex;
+    gap: 20px;
+    padding: 14px 0;
+    text-decoration: none;
+  }
+
+  .blog-index li:last-child a {
+    border: 0;
+  }
+
+  .blog-index time {
+    flex: none;
+  }
+
+  .blog-index span {
+    font-size: 1.1rem;
+  }
+
+  .blog-index a:hover {
+    color: var(--pink);
+  }
+
   @media (max-width: 600px) {
-    .posts a { flex-direction: column; gap: 4px; }
+    .blog-index a {
+      flex-direction: column;
+      gap: 4px;
+    }
   }
 </style>

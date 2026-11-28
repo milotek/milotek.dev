@@ -1,23 +1,60 @@
 ---
-import { buttons } from '../config';
-import { url } from '../lib/url';
+import {WEB_BUTTONS, type WebButton} from '../config';
+import {url} from '../lib/url';
 
-const WAVES = 2;
-const BOB = 1.6;
-const lanes = [0, 1, 2].map((k) => buttons.filter((_, i) => i % 3 === k));
+const LANE_COUNT = 3;
+const WOBBLE_WAVES = 2;
+const WOBBLE_PERIOD_SEC = 1.6;
+
+const lanes: WebButton[][] = Array.from({length: LANE_COUNT}, (_, laneIndex) =>
+  WEB_BUTTONS.filter((_, buttonIndex) => buttonIndex % LANE_COUNT === laneIndex),
+);
+
+function resolveHref(href: string | undefined): string | undefined {
+  if (!href) {
+    return undefined;
+  }
+  return href.startsWith('/') ? url(href.slice(1)) : href;
+}
+
+function resolveImageSrc(src: string): string {
+  return src.startsWith('/') ? url(src.slice(1)) : src;
+}
+
+function computeWobbleDelay(
+  itemIndex: number,
+  laneLength: number,
+  laneIndex: number,
+): string {
+  const phase = ((itemIndex % laneLength) / laneLength) * WOBBLE_WAVES;
+  const delaySec = -((phase + laneIndex / 2) * WOBBLE_PERIOD_SEC);
+  return `${delaySec.toFixed(2)}s`;
+}
 ---
 
-<div class="falls">
+<div class="button-waterfall">
   {
-    lanes.map((lane, row) => (
-      <ul class="lane">
-        {[...lane, ...lane].map((f, i) => {
-          const Badge = f.href ? 'a' : 'span';
+    lanes.map((lane, laneIndex) => (
+      <ul class="button-lane">
+        {[...lane, ...lane].map((button, itemIndex) => {
+          const Tag = button.href ? 'a' : 'span';
           return (
             <li>
-              <Badge class="badge" style={`animation-delay: ${(-(((i % lane.length) / lane.length) * WAVES + row / 2) * BOB).toFixed(2)}s`} href={f.href?.startsWith('/') ? url(f.href.slice(1)) : f.href} title={f.name}>
-                <img src={f.button.startsWith('/') ? url(f.button.slice(1)) : f.button} alt={f.name} width="88" height="31" loading="lazy" decoding="async" />
-              </Badge>
+              <Tag
+                class="web-button-badge"
+                style={`animation-delay: ${computeWobbleDelay(itemIndex, lane.length, laneIndex)}`}
+                href={resolveHref(button.href)}
+                title={button.name}
+              >
+                <img
+                  src={resolveImageSrc(button.imageSrc)}
+                  alt={button.name}
+                  width="88"
+                  height="31"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </Tag>
             </li>
           );
         })}
@@ -26,61 +63,76 @@ const lanes = [0, 1, 2].map((k) => buttons.filter((_, i) => i % 3 === k));
   }
 </div>
 <script is:inline src="https://pawr.ing/webring/webring.js" defer></script>
-<hr />
+<hr class="webring-divider" />
 <div id="pawring"></div>
 
 <script>
-  const lanes = [...document.querySelectorAll<HTMLElement>('.falls .lane')];
-  const speeds = [60, 80, 50];
-  const drift = lanes.map(() => ({ period: 7000 + Math.random() * 8000, phase: Math.random() * Math.PI * 2 }));
-  const offsets = lanes.map(() => 0);
-  const pushes = lanes.map(() => 0);
-  const held = lanes.map(() => false);
-  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let last = 0;
+  import {initButtonWaterfall} from '../scripts/button_waterfall';
 
-  lanes.forEach((lane, i) => {
-    lane.addEventListener('pointerenter', () => (held[i] = true));
-    lane.addEventListener('pointerleave', () => (held[i] = false));
-    lane.addEventListener(
-      'wheel',
-      (e) => {
-        e.preventDefault();
-        pushes[i]! -= e.deltaY;
-      },
-      { passive: false },
-    );
-  });
-
-  function tick(t: number) {
-    lanes.forEach((lane, i) => {
-      const half = lane.scrollHeight / 2;
-      const step = pushes[i]! * 0.2;
-      pushes[i]! -= step;
-      const speed = speeds[i]! * (1 + 0.35 * Math.sin((t / drift[i]!.period) * Math.PI * 2 + drift[i]!.phase));
-      const move = held[i] || still || !last ? 0 : (speed * (t - last)) / 1000;
-      offsets[i] = (((offsets[i]! + step + move) % half) + half) % half;
-      lane.style.transform = `translateY(${(offsets[i]! - half).toFixed(1)}px)`;
-    });
-    last = t;
-    requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
+  initButtonWaterfall();
 </script>
 
 <style>
-  .falls { display: flex; justify-content: center; gap: 8px; height: 160px; overflow: hidden; mask-image: linear-gradient(transparent, black 30%, black 70%, transparent); }
-  .lane li { padding-bottom: 6px; }
-  .badge { display: block; animation: wobble 1.6s ease-in-out infinite; }
-  .lane:hover .badge { animation-play-state: paused; }
-  img { image-rendering: pixelated; }
-  .lane img { transition: transform 0.15s; }
-  .badge:hover img { transform: scale(1.4); }
-  .lane:hover, .badge:hover { position: relative; z-index: 1; }
-  @keyframes wobble {
-    0%, 100% { transform: translateX(-3px); }
-    50% { transform: translateX(3px); }
+  .button-waterfall {
+    display: flex;
+    gap: 8px;
+    height: 160px;
+    justify-content: center;
+    mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent);
+    overflow: hidden;
   }
-  #pawring { display: flex; width: fit-content; margin-inline: auto; }
-  hr { margin: 14px 0; border: 0; border-top: 1px solid var(--line); }
+
+  .button-lane li {
+    padding-bottom: 6px;
+  }
+
+  .web-button-badge {
+    animation: button-wobble 1.6s ease-in-out infinite;
+    display: block;
+  }
+
+  .button-lane:hover .web-button-badge {
+    animation-play-state: paused;
+  }
+
+  img {
+    image-rendering: pixelated;
+  }
+
+  .button-lane img {
+    transition: transform 0.15s;
+  }
+
+  .web-button-badge:hover img {
+    transform: scale(1.4);
+  }
+
+  .button-lane:hover,
+  .web-button-badge:hover {
+    position: relative;
+    z-index: 1;
+  }
+
+  @keyframes button-wobble {
+    0%,
+    100% {
+      transform: translateX(-3px);
+    }
+
+    50% {
+      transform: translateX(3px);
+    }
+  }
+
+  #pawring {
+    display: flex;
+    margin-inline: auto;
+    width: fit-content;
+  }
+
+  .webring-divider {
+    border: 0;
+    border-top: 1px solid var(--line);
+    margin: 14px 0;
+  }
 </style>

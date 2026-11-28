@@ -1,10 +1,17 @@
-// UI strings. Blog posts, projects and art captions live in their own content.
-// `{name}` placeholders are filled in by t().
-export default {
+/**
+ * @fileoverview English UI strings.
+ *
+ * Blog posts, project write-ups, and artwork captions live in their own
+ * content files. Placeholders like `{name}` are interpolated by the translator
+ * returned from `createTranslator()`.
+ */
+
+export const EN_STRINGS = {
   lang: 'en-GB',
 
   'site.role': 'Software Engineer @ Google, London',
-  'site.description': 'Software Engineer @ Google, working on the Google Search app for Android and iOS.',
+  'site.description':
+    'Software Engineer @ Google, working on the Google Search app for Android and iOS.',
 
   'nav.label': 'Site',
   'nav.home': '/',
@@ -25,8 +32,9 @@ export default {
 
   'home.about': 'about',
   'home.portrait': 'A drawing of me',
-  'home.bio': 'hi my name is Milo I am nineteen and I am from the UK and I like to play video games and my favourite video game is Left 4 Dead 2 and I work at Google on mobile search and I like eating purple skittles',
-  // HTML: rendered with set:html for the strikethrough.
+  'home.bio':
+    'hi my name is Milo I am nineteen and I am from the UK and I like to play video games and my favourite video game is Left 4 Dead 2 and I work at Google on mobile search and I like eating purple skittles',
+  // Rendered with set:html for the strikethrough tag.
   'home.bio.fursona': 'please <s>do not</s> ask me about my fursona',
   'home.nowPlaying': 'now playing',
   'home.projects': "things i've made",
@@ -35,10 +43,12 @@ export default {
   'home.contact': 'contact',
   'home.blog': 'blog',
   'home.more': 'more ↗',
-  'about.title': 'about',
   'home.buttons': 'buttons',
 
-  broke: '{what} broke',
+  'about.title': 'about',
+
+  'error.broke': '{what} broke',
+
   'github.day': '{count} contributions on {date}',
   'github.dayOne': '1 contribution on {date}',
   'github.stars': 'stars',
@@ -54,9 +64,9 @@ export default {
   'nowPlaying.play': 'play',
   'nowPlaying.pause': 'pause',
 
-
   'projects.title': 'projects',
-  'projects.description': 'Things Milo Tekchandani has built: backend and infrastructure, hardware, apps, games.',
+  'projects.description':
+    'Things Milo Tekchandani has built: backend and infrastructure, hardware, apps, games.',
   'project.label': 'project',
   'project.details': 'details',
   'project.by': 'by',
@@ -64,18 +74,21 @@ export default {
   'project.tech': 'with',
 
   'blog.title': 'blog',
-  'blog.description': 'Writing by Milo Tekchandani. Keyboards, VR headsets, Lua, whatever else.',
+  'blog.description':
+    'Writing by Milo Tekchandani. Keyboards, VR headsets, Lua, whatever else.',
   'blog.rss': 'rss ↗',
   'blog.back': 'every post ↗',
   'rss.title': '{handle} blog',
   'rss.description': 'Terrible writing from milo@milotek.dev.',
 
   'art.title': 'art',
-  'art.description': 'Drawings and pixel art by Milo Tekchandani, mostly made in Procreate.',
+  'art.description':
+    'Drawings and pixel art by Milo Tekchandani, mostly made in Procreate.',
   'art.back': 'all art ↗',
 
   '404.title': '404',
   '404.description': 'Not here.',
-  '404.image': 'A badly drawn stick figure giving a thumbs up next to two cogs, captioned UNDER CONSTRUCTION.',
+  '404.image':
+    'A badly drawn stick figure giving a thumbs up next to two cogs, captioned UNDER CONSTRUCTION.',
   '404.home': 'back home',
 } as const;

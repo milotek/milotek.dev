@@ -1,31 +1,39 @@
-import { execFileSync } from 'node:child_process';
-import { getCollection, type CollectionEntry } from 'astro:content';
+/**
+ * @fileoverview Blog collection loader and sorting helpers.
+ */
 
-export interface Post {
-  id: string;
-  title: string;
-  published: Date;
-  entry: CollectionEntry<'blog'>;
+import {getCollection, type CollectionEntry} from 'astro:content';
+
+import {getFileAddedDate} from './git';
+
+/** A blog post enriched with its derived title and Git publication date. */
+export interface BlogPost {
+  readonly id: string;
+  readonly title: string;
+  readonly published: Date;
+  readonly entry: CollectionEntry<'blog'>;
 }
 
-function titleOf(entry: CollectionEntry<'blog'>): string {
-  return entry.body?.match(/^#\s+(.+)$/m)?.[1]?.trim() ?? entry.id;
+const HEADING_PATTERN = /^#\s+(.+)$/m;
+
+/** Extracts the first Markdown H1 heading, falling back to the entry slug. */
+function extractTitle(entry: CollectionEntry<'blog'>): string {
+  const match = entry.body?.match(HEADING_PATTERN);
+  return match?.[1]?.trim() ?? entry.id;
 }
 
-function published(path: string): Date {
-  const dates = execFileSync('git', ['log', '--full-history', '--topo-order', '--no-renames', '--diff-filter=A', '--format=%aI', '--', path], { encoding: 'utf8' }).trim();
-  const latest = dates.split('\n')[0];
-  return latest ? new Date(latest) : new Date();
-}
-
-export async function getPosts(): Promise<Post[]> {
+/** Returns all blog posts sorted newest-first by their Git creation date. */
+export async function getPosts(): Promise<BlogPost[]> {
   const entries = await getCollection('blog');
-  return entries
-    .map((entry) => ({
-      id: entry.id,
-      title: titleOf(entry),
-      published: published(entry.filePath!),
-      entry,
-    }))
-    .sort((a, b) => b.published.getTime() - a.published.getTime());
+  const posts: BlogPost[] = entries.map((entry) => ({
+    id: entry.id,
+    title: extractTitle(entry),
+    published: entry.filePath ? getFileAddedDate(entry.filePath) : new Date(),
+    entry,
+  }));
+
+  posts.sort(
+    (first, second) => second.published.getTime() - first.published.getTime(),
+  );
+  return posts;
 }

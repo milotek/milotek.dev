@@ -1,38 +1,61 @@
 ---
-import { Image } from 'astro:assets';
-import Base from '../layouts/Base.astro';
-import Tile from '../components/Tile.astro';
-import NowPlaying from '../components/NowPlaying.astro';
-import GitHub from '../components/GitHub.astro';
+import {Image} from 'astro:assets';
+
+import portraitArtwork from '../assets/art/3525b230.jpg';
+import githubAvatar from '../assets/me/github.png';
 import Buttons from '../components/Buttons.astro';
+import GitHub from '../components/GitHub.astro';
+import NowPlaying from '../components/NowPlaying.astro';
 import ProjectCard from '../components/ProjectCard.astro';
-import { getPosts } from '../lib/posts';
-import { getProjects } from '../lib/projects';
-import { isoDate } from '../lib/time';
-import { url } from '../lib/url';
-import { site, socials } from '../config';
-import { useTranslations } from '../i18n';
-import me from '../assets/art/3525b230.jpg';
-import github from '../assets/me/github.png';
+import Tile from '../components/Tile.astro';
+import {SITE, SOCIAL_LINKS} from '../config';
+import {useTranslations} from '../i18n';
+import Base from '../layouts/Base.astro';
+import {getPosts} from '../lib/posts';
+import {getProjects} from '../lib/projects';
+import {formatIsoDate} from '../lib/time';
+import {url} from '../lib/url';
 
 const t = useTranslations(Astro.currentLocale);
 const projects = await getProjects();
 const posts = await getPosts();
+const avatarImages = [portraitArtwork, githubAvatar];
 ---
 
 <Base>
-  <Tile label={t('home.about')} span={7} action={{ href: url('about/'), text: t('home.more') }}>
-    <div class="who">
-      {[me, github].map((src) => <Image class="pfp" src={src} alt={t('home.portrait')} width={112} densities={[1, 2]} loading="lazy" hidden />)}
+  <Tile
+    label={t('home.about')}
+    span={7}
+    action={{href: url('about/'), text: t('home.more')}}
+  >
+    <div class="bio-layout">
+      {
+        avatarImages.map((src) => (
+          <Image
+            class="avatar"
+            src={src}
+            alt={t('home.portrait')}
+            width={112}
+            densities={[1, 2]}
+            loading="lazy"
+            hidden
+          />
+        ))
+      }
+      {/* Inline so a random avatar is revealed before first paint. */}
       <script is:inline>
-        {
-          const pfps = document.querySelectorAll('.pfp');
-          Object.assign(pfps[Math.floor(Math.random() * pfps.length)], { hidden: false, loading: 'eager' });
-        }
+        (() => {
+          const avatars = document.querySelectorAll('.avatar');
+          const chosen = avatars[Math.floor(Math.random() * avatars.length)];
+          if (chosen instanceof HTMLImageElement) {
+            chosen.hidden = false;
+            chosen.loading = 'eager';
+          }
+        })();
       </script>
       <div>
-        <h1 class="wide">{site.name}</h1>
-        <p class="role mono">{t('site.role')}</p>
+        <h1 class="bio-name wide">{SITE.name}</h1>
+        <p class="bio-role mono">{t('site.role')}</p>
         <p>{t('home.bio')}</p>
         <p set:html={t('home.bio.fursona')} />
       </div>
@@ -43,20 +66,30 @@ const posts = await getPosts();
     <NowPlaying />
   </Tile>
 
-  <Tile label={t('home.projects')} action={{ href: url('projects/'), text: t('home.more') }}>
-    <div class="projects scroller">
-      {projects.map((p) => <ProjectCard project={p} />)}
-      <a class="more button" href={url('projects/')}>{t('home.allProjects')}</a>
+  <Tile
+    label={t('home.projects')}
+    action={{href: url('projects/'), text: t('home.more')}}
+  >
+    <div class="project-strip scroller">
+      {projects.map((project) => <ProjectCard project={project} />)}
+      <a class="all-projects-link button" href={url('projects/')}>
+        {t('home.allProjects')}
+      </a>
     </div>
   </Tile>
 
   <Tile label={t('home.contact')} span={4}>
-    <ul class="links">
+    <ul class="social-links">
       {
-        socials.map((s) => (
+        SOCIAL_LINKS.map((social) => (
           <li>
-            <a class="button" href={s.href} style={`--brand: ${s.colour}; --ink: ${s.ink ?? 'var(--base)'}`}>
-              {s.label.toLowerCase()} <span class="mono">{s.handle}</span>
+            <a
+              class="button"
+              href={social.href}
+              style={`--brand: ${social.brandColor}; --ink: ${social.inkColor ?? 'var(--base)'}`}
+            >
+              {social.label.toLowerCase()}
+              <span class="mono">{social.handle}</span>
             </a>
           </li>
         ))
@@ -64,18 +97,31 @@ const posts = await getPosts();
     </ul>
   </Tile>
 
-  <Tile label={t('home.github')} span={8} action={{ href: `https://github.com/${site.github}`, text: t('home.more') }}>
+  <Tile
+    label={t('home.github')}
+    span={8}
+    action={{
+      href: `https://github.com/${SITE.githubUsername}`,
+      text: t('home.more'),
+    }}
+  >
     <GitHub />
   </Tile>
 
-  <Tile label={t('home.blog')} span={8} action={{ href: url('blog/'), text: t('home.more') }}>
-    <ul class="posts scroller">
+  <Tile
+    label={t('home.blog')}
+    span={8}
+    action={{href: url('blog/'), text: t('home.more')}}
+  >
+    <ul class="post-list scroller">
       {
-        posts.map((p) => (
+        posts.map((post) => (
           <li>
-            <a href={url(`blog/${p.id}/`)}>
-              <time class="mono dim" datetime={isoDate(p.published)}>{isoDate(p.published)}</time>
-              {p.title}
+            <a href={url(`blog/${post.id}/`)}>
+              <time class="mono dim" datetime={formatIsoDate(post.published)}>
+                {formatIsoDate(post.published)}
+              </time>
+              {post.title}
             </a>
           </li>
         ))
@@ -89,46 +135,151 @@ const posts = await getPosts();
 </Base>
 
 <style>
-  .who { display: flex; gap: 18px; }
-  .who img { flex: none; width: 112px; height: 112px; object-fit: cover; }
-  .pfp[hidden] { display: none; }
-  h1 { font-size: 28px; line-height: 1.1; }
-  .role { color: var(--pink); margin: 6px 0 12px; }
-  .who p + p { margin-top: 8px; }
-  .who p + p:last-child { margin-top: 1.55em; }
-  .projects {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: calc((100% - 48px) / 4);
-    gap: 16px;
-    margin-bottom: -10px;
-    padding-bottom: 12px;
-    overflow-x: auto;
+  .bio-layout {
+    display: flex;
+    gap: 18px;
+  }
+
+  .bio-layout img {
+    flex: none;
+    height: 112px;
+    object-fit: cover;
+    width: 112px;
+  }
+
+  .avatar[hidden] {
+    display: none;
+  }
+
+  .bio-name {
+    font-size: 28px;
+    line-height: 1.1;
+  }
+
+  .bio-role {
+    color: var(--pink);
+    margin: 6px 0 12px;
+  }
+
+  .bio-layout p + p {
+    margin-top: 8px;
+  }
+
+  .bio-layout p + p:last-child {
+    margin-top: 1.55em;
+  }
+
+  .project-strip {
     --fade: 30%;
     --strip: bottom / 100% 6px;
     --towards: to right;
+    display: grid;
+    gap: 16px;
+    grid-auto-columns: calc((100% - 48px) / 4);
+    grid-auto-flow: column;
+    margin-bottom: -10px;
+    overflow-x: auto;
+    padding-bottom: 12px;
   }
-  .more { display: grid; place-items: center; font-size: 16px; text-decoration: none; }
-  .links { display: flex; flex-direction: column; gap: 10px; }
-  .links a { display: flex; justify-content: space-between; gap: 12px; padding: 12px 14px; font-size: 16px; text-decoration: none; }
-  .links span { color: var(--dim); overflow: hidden; text-overflow: ellipsis; transition: color 0.25s; }
-  .links a:hover { color: var(--ink); background: var(--brand); }
-  .links a:hover span { color: var(--ink); }
-  .posts a { display: flex; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--line); color: var(--text); text-decoration: none; }
-  .posts li:last-child a { border: 0; }
-  .posts { margin-right: -10px; padding-right: 12px; overflow-y: auto; --fade: 48px; }
+
+  .all-projects-link {
+    display: grid;
+    font-size: 16px;
+    place-items: center;
+    text-decoration: none;
+  }
+
+  .social-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .social-links a {
+    display: flex;
+    font-size: 16px;
+    gap: 12px;
+    justify-content: space-between;
+    padding: 12px 14px;
+    text-decoration: none;
+  }
+
+  .social-links span {
+    color: var(--dim);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.25s;
+  }
+
+  .social-links a:hover {
+    background: var(--brand);
+    color: var(--ink);
+  }
+
+  .social-links a:hover span {
+    color: var(--ink);
+  }
+
+  .post-list {
+    --fade: 48px;
+    margin-right: -10px;
+    overflow-y: auto;
+    padding-right: 12px;
+  }
+
+  .post-list a {
+    border-bottom: 1px solid var(--line);
+    color: var(--text);
+    display: flex;
+    gap: 16px;
+    padding: 10px 0;
+    text-decoration: none;
+  }
+
+  .post-list li:last-child a {
+    border: 0;
+  }
+
+  .post-list time {
+    flex: none;
+    padding-top: 2px;
+  }
+
+  .post-list a:hover {
+    color: var(--pink);
+  }
+
   @media (min-width: 901px) {
-    :global(.tile:has(.posts)) { contain: size; display: flex; flex-direction: column; }
-    .posts { flex: 1; min-height: 0; }
+    :global(.tile:has(.post-list)) {
+      contain: size;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .post-list {
+      flex: 1;
+      min-height: 0;
+    }
   }
-  .posts time { flex: none; padding-top: 2px; }
-  .posts a:hover { color: var(--pink); }
+
   @media (max-width: 900px) {
-    .posts { max-height: 200px; }
+    .post-list {
+      max-height: 200px;
+    }
   }
+
   @media (max-width: 600px) {
-    .who { flex-direction: column; }
-    .projects { grid-auto-columns: 75%; }
-    .posts a { flex-direction: column; gap: 2px; }
+    .bio-layout {
+      flex-direction: column;
+    }
+
+    .project-strip {
+      grid-auto-columns: 75%;
+    }
+
+    .post-list a {
+      flex-direction: column;
+      gap: 2px;
+    }
   }
 </style>
