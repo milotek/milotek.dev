@@ -85,6 +85,7 @@
     0 0 / 200% 100%;
 
   --gap: 20px;
+  --hover-duration: 0.25s;
   --page: 1120px;
 }
 
@@ -201,7 +202,7 @@ pre code {
   font-weight: 700;
   padding: 2px 8px;
   text-decoration: none;
-  transition: background-color 0.25s, color 0.25s;
+  transition: background-color var(--hover-duration), color var(--hover-duration);
 }
 
 a.chip:hover,
@@ -213,7 +214,7 @@ a.chip[aria-current='page'] {
 .card {
   outline: 1px solid transparent;
   outline-offset: -1px;
-  transition: outline-color 0.25s;
+  transition: outline-color var(--hover-duration);
 }
 
 .card:hover {
@@ -226,7 +227,7 @@ a.chip[aria-current='page'] {
   color: var(--pink);
   cursor: pointer;
   font: 700 14px var(--font-sans);
-  transition: background-color 0.25s, color 0.25s;
+  transition: background-color var(--hover-duration), color var(--hover-duration);
 }
 
 .button:hover,
@@ -282,6 +283,7 @@ a.chip[aria-current='page'] {
   left: 0;
   position: relative;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 @keyframes bounce-y {
@@ -298,70 +300,11 @@ a.chip[aria-current='page'] {
   }
 }
 
-/* Custom scrollbars and animated scroll-edge fade masks */
+/* Custom scrollbars */
 
 :root {
-  scrollbar-color: color-mix(in srgb, var(--text) 28%, transparent)
-    color-mix(in srgb, var(--crust) 60%, transparent);
-}
-
-@supports selector(::-webkit-scrollbar) {
-  :root {
-    scrollbar-color: auto;
-  }
-}
-
-@property --thumb {
-  inherits: true;
-  initial-value: transparent;
-  syntax: '<color>';
-}
-
-@property --start {
-  inherits: false;
-  initial-value: 0px;
-  syntax: '<length-percentage>';
-}
-
-@property --end {
-  inherits: false;
-  initial-value: 0px;
-  syntax: '<length-percentage>';
-}
-
-:root,
-.scroller {
-  --thumb: transparent;
-  transition: --end 0.3s, --start 0.3s, --thumb 0.3s;
-}
-
-.scroller {
-  --end: var(--fade);
-  --start: 0px;
-  --strip: right / 6px 100%;
-  --towards: to bottom;
-  mask:
-    linear-gradient(#000, #000) var(--strip) no-repeat,
-    linear-gradient(
-      var(--towards),
-      transparent,
-      #000 var(--start),
-      #000 calc(100% - var(--end)),
-      transparent
-    );
-}
-
-.scroller.scrolled {
-  --start: var(--fade);
-}
-
-.scroller.end {
-  --end: 0px;
-}
-
-:root:hover,
-.scroller:hover {
-  --thumb: color-mix(in srgb, var(--text) 28%, transparent);
+  scrollbar-color: color-mix(in srgb, var(--text) 28%, transparent) transparent;
+  scrollbar-width: thin;
 }
 
 ::-webkit-scrollbar {
@@ -375,15 +318,11 @@ a.chip[aria-current='page'] {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--thumb);
+  background: color-mix(in srgb, var(--text) 28%, transparent);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: color-mix(in srgb, var(--text) 46%, transparent);
-}
-
-::-webkit-scrollbar-thumb:active {
-  background-color: color-mix(in srgb, var(--text) 64%, transparent);
+  background: color-mix(in srgb, var(--text) 46%, transparent);
 }
 
 /* Long-form prose and Obsidian-style callouts */

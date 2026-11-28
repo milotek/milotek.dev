@@ -70,7 +70,7 @@ const avatarImages = [portraitArtwork, githubAvatar];
     label={t('home.projects')}
     action={{href: url('projects/'), text: t('home.more')}}
   >
-    <div class="project-strip scroller">
+    <div class="project-strip">
       {projects.map((project) => <ProjectCard project={project} />)}
       <a class="all-projects-link button" href={url('projects/')}>
         {t('home.allProjects')}
@@ -113,7 +113,7 @@ const avatarImages = [portraitArtwork, githubAvatar];
     span={8}
     action={{href: url('blog/'), text: t('home.more')}}
   >
-    <ul class="post-list scroller">
+    <ul class="post-list">
       {
         posts.map((post) => (
           <li>
@@ -170,14 +170,12 @@ const avatarImages = [portraitArtwork, githubAvatar];
   }
 
   .project-strip {
-    --fade: 30%;
-    --strip: bottom / 100% 6px;
-    --towards: to right;
     display: grid;
     gap: 16px;
     grid-auto-columns: calc((100% - 48px) / 4);
     grid-auto-flow: column;
     margin-bottom: -10px;
+    mask-image: linear-gradient(to right, #000 80%, transparent);
     overflow-x: auto;
     padding-bottom: 12px;
   }
@@ -208,7 +206,7 @@ const avatarImages = [portraitArtwork, githubAvatar];
     color: var(--dim);
     overflow: hidden;
     text-overflow: ellipsis;
-    transition: color 0.25s;
+    transition: color var(--hover-duration);
   }
 
   .social-links a:hover {
@@ -221,8 +219,9 @@ const avatarImages = [portraitArtwork, githubAvatar];
   }
 
   .post-list {
-    --fade: 48px;
     margin-right: -10px;
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 36px), transparent);
+    max-height: 260px;
     overflow-y: auto;
     padding-right: 12px;
   }
@@ -247,19 +246,6 @@ const avatarImages = [portraitArtwork, githubAvatar];
 
   .post-list a:hover {
     color: var(--pink);
-  }
-
-  @media (min-width: 901px) {
-    :global(.tile:has(.post-list)) {
-      contain: size;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .post-list {
-      flex: 1;
-      min-height: 0;
-    }
   }
 
   @media (max-width: 900px) {

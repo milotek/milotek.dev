@@ -1,5 +1,5 @@
 /**
- * @fileoverview Global UI sound effects and scroll-fade edge listeners.
+ * @fileoverview Global UI hover and click sound effects.
  */
 
 import {url} from '../lib/url';
@@ -16,8 +16,6 @@ const CLICK_SOUND_SELECTOR = [
   '.waveform',
 ].join(', ');
 
-const SCROLL_END_TOLERANCE_PX = 4;
-
 const soundCache = new Map<string, HTMLAudioElement>();
 
 /** Plays a cached UI sound effect from `public/audio/ui/<name>.mp3`. */
@@ -29,34 +27,12 @@ function playSoundEffect(name: 'hover' | 'click'): void {
   }
   audio.currentTime = 0;
   audio.play().catch(() => {
-    // Ignore autoplay rejections when the user has not interacted yet.
+    // Ignore autoplay rejections before the first user interaction.
   });
 }
 
-/** Updates `.scrolled` and `.end` classes on scrollable containers for edge fades. */
-function initScrollFadeContainers(): void {
-  const containers = document.querySelectorAll<HTMLElement>('.scroller');
-
-  for (const container of containers) {
-    const updateScrollEdges = (): void => {
-      const hasScrolled = container.scrollTop + container.scrollLeft > 0;
-      const atVerticalEnd =
-        container.scrollTop + container.clientHeight >=
-        container.scrollHeight - SCROLL_END_TOLERANCE_PX;
-      const atHorizontalEnd =
-        container.scrollLeft + container.clientWidth >=
-        container.scrollWidth - SCROLL_END_TOLERANCE_PX;
-
-      container.classList.toggle('scrolled', hasScrolled);
-      container.classList.toggle('end', atVerticalEnd && atHorizontalEnd);
-    };
-
-    container.addEventListener('scroll', updateScrollEdges, {passive: true});
-  }
-}
-
 /** Attaches delegated pointerover and click listeners for UI sound effects. */
-function initSoundEffects(): void {
+export function initUiEffects(): void {
   let lastPointerCoords = '';
 
   window.addEventListener('pointerover', (event: PointerEvent) => {
@@ -94,10 +70,4 @@ function initSoundEffects(): void {
       playSoundEffect('click');
     }
   });
-}
-
-/** Initializes global UI effects on the current page. */
-export function initUiEffects(): void {
-  initScrollFadeContainers();
-  initSoundEffects();
 }

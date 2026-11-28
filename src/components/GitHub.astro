@@ -126,9 +126,11 @@ const weeks = calendar?.weeks.slice(-VISIBLE_WEEK_COUNT) ?? [];
   }
 
   .contribution-calendar i {
-    animation: palette-cycle 7s linear infinite;
+    animation: calendar-wave 7s linear infinite;
     animation-delay: calc(var(--delay-step) * -0.12s);
     aspect-ratio: 1;
+    background: var(--rainbow);
+    background-size: 1400% 100%;
   }
 
   .contribution-level-0 {
@@ -147,61 +149,9 @@ const weeks = calendar?.weeks.slice(-VISIBLE_WEEK_COUNT) ?? [];
     opacity: 0.8;
   }
 
-  @keyframes palette-cycle {
-    0% {
-      background: #fff;
-    }
-
-    8% {
-      background: var(--ctp-mocha-flamingo);
-    }
-
-    15% {
-      background: var(--ctp-mocha-pink);
-    }
-
-    23% {
-      background: var(--ctp-mocha-mauve);
-    }
-
-    31% {
-      background: var(--ctp-mocha-red);
-    }
-
-    38% {
-      background: var(--ctp-mocha-maroon);
-    }
-
-    46% {
-      background: var(--ctp-mocha-peach);
-    }
-
-    54% {
-      background: var(--ctp-mocha-yellow);
-    }
-
-    62% {
-      background: var(--ctp-mocha-green);
-    }
-
-    69% {
-      background: var(--ctp-mocha-teal);
-    }
-
-    77% {
-      background: var(--ctp-mocha-sky);
-    }
-
-    85% {
-      background: var(--ctp-mocha-sapphire);
-    }
-
-    92% {
-      background: var(--ctp-mocha-blue);
-    }
-
-    100% {
-      background: var(--ctp-mocha-lavender);
+  @keyframes calendar-wave {
+    to {
+      background-position: 100% 0;
     }
   }
 
@@ -222,7 +172,7 @@ const weeks = calendar?.weeks.slice(-VISIBLE_WEEK_COUNT) ?? [];
   }
 
   .github-repos b {
-    transition: color 0.25s;
+    transition: color var(--hover-duration);
   }
 
   .github-repos a:hover b {

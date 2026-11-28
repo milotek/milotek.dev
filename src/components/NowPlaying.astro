@@ -103,7 +103,7 @@ const widgetStrings = {
 
       <hr class="recent-divider" />
 
-      <ul class="recent-tracks scroller mono dim">
+      <ul class="recent-tracks mono dim">
         {Array.from({length: PLACEHOLDER_ROW_COUNT}, () => (
           <li class="placeholder-text">
             {t('nowPlaying.title')} - {t('nowPlaying.artist')}{' '}
@@ -138,15 +138,7 @@ const widgetStrings = {
   }
 
   .album-art {
-    background: conic-gradient(
-        from 200deg,
-        var(--ctp-mocha-pink),
-        var(--blue),
-        var(--green),
-        var(--ctp-mocha-yellow),
-        var(--ctp-mocha-pink)
-      )
-      center / cover;
+    background: var(--base) center / cover;
     flex: none;
     height: 150px;
     width: 150px;
@@ -264,22 +256,16 @@ const widgetStrings = {
   .recent-divider {
     border: 0;
     border-top: 1px solid var(--line);
-    flex: none;
     margin: 14px 0 0;
   }
 
   .recent-tracks {
-    --fade: 32px;
-    flex: 1;
     margin-right: -10px;
-    min-height: 0;
+    margin-top: 8px;
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 28px), transparent);
+    max-height: 104px;
     overflow-y: auto;
     padding-right: 12px;
-  }
-
-  .recent-tracks:not(:empty) {
-    margin-top: 8px;
-    padding-top: 6px;
   }
 
   .recent-tracks :global(button) {
@@ -294,7 +280,7 @@ const widgetStrings = {
     padding: 0;
     text-align: left;
     text-overflow: ellipsis;
-    transition: color 0.25s;
+    transition: color var(--hover-duration);
     white-space: nowrap;
   }
 
@@ -304,20 +290,6 @@ const widgetStrings = {
 
   .recent-tracks :global(.is-selected) {
     color: var(--text);
-  }
-
-  @media (min-width: 901px) {
-    :global(.tile:has(.now-playing)) {
-      contain: size;
-      display: flex;
-      flex-direction: column;
-    }
-  }
-
-  @media (max-width: 900px) {
-    .recent-tracks {
-      max-height: 64px;
-    }
   }
 
   @media (max-width: 600px) {

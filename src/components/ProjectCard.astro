@@ -12,7 +12,7 @@ const {project} = Astro.props;
 const {title, blurb, year, cover} = project.data;
 ---
 
-<a class="project-card card" href={url(`projects/${project.id}/`)}>
+<a class="project-card" href={url(`projects/${project.id}/`)}>
   {
     cover ? (
       <Image src={cover} alt="" width={480} densities={[1, 2]} />
@@ -30,21 +30,17 @@ const {title, blurb, year, cover} = project.data;
 <style>
   .project-card {
     background: var(--base);
+    border: 1px solid transparent;
     color: inherit;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    position: relative;
     text-decoration: none;
+    transition: border-color var(--hover-duration);
   }
 
-  .project-card::after {
-    content: '';
-    inset: 0;
-    outline: inherit;
-    outline-offset: -1px;
-    pointer-events: none;
-    position: absolute;
+  .project-card:hover {
+    border-color: var(--pink);
   }
 
   img,
@@ -52,7 +48,7 @@ const {title, blurb, year, cover} = project.data;
     aspect-ratio: 4 / 3;
     filter: saturate(0.85);
     object-fit: cover;
-    transition: filter 0.25s, transform 0.3s;
+    transition: filter var(--hover-duration);
     width: 100%;
   }
 
@@ -66,7 +62,6 @@ const {title, blurb, year, cover} = project.data;
 
   .project-card:hover img {
     filter: none;
-    transform: scale(1.05);
   }
 
   .project-card:hover h3 {
@@ -84,7 +79,7 @@ const {title, blurb, year, cover} = project.data;
   h3 {
     font-size: 18px;
     margin: 4px 0;
-    transition: color 0.25s;
+    transition: color var(--hover-duration);
   }
 
   p {
