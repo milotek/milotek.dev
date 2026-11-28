@@ -16,8 +16,13 @@ const t = useTranslations(Astro.currentLocale);
         width="480"
         height="360"
       />
+      <div class="not-found-text" set:html={t('404.body', {contact: url('#contact')})} />
       <a class="chip" href={url('')}>{t('404.home')}</a>
     </div>
+    <script is:inline>
+      document.querySelector('.wayback').href =
+        `https://web.archive.org/web/*/${location.href}`;
+    </script>
   </Tile>
 </Base>
 
@@ -28,5 +33,12 @@ const t = useTranslations(Astro.currentLocale);
     flex-direction: column;
     gap: 16px;
     text-align: center;
+  }
+
+  .not-found-text {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 60ch;
   }
 </style>
