@@ -102,7 +102,7 @@ export const SOCIAL_LINKS: readonly SocialLink[] = [
     label: 'Instagram',
     href: 'https://www.instagram.com/milo.tek/',
     handle: '@milo.tek',
-    brandColor: '#e4405f',
+    brandColor: 'linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)',
     inkColor: '#ffffff',
   },
 ];

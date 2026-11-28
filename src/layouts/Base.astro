@@ -26,7 +26,6 @@ const fullTitle = title
   : `${SITE.name} · ${SITE.handle}`;
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 const commitStamp = getLatestCommitStamp();
-const currentYear = new Date().getFullYear();
 ---
 
 <!doctype html>
@@ -78,7 +77,6 @@ const currentYear = new Date().getFullYear();
         <slot />
       </main>
       <footer class="site-footer mono dim">
-        <span>{t('footer.copyright', {year: currentYear})}</span>
         <a href={SITE.repoUrl}>{t('footer.source')}</a>
         <a href={`${SITE.repoUrl}/commit/${commitStamp.shortHash}`}>
           {commitStamp.label}

@@ -27,7 +27,6 @@ export const EN_STRINGS = {
   'hero.flip': 'Flip the header',
   'hero.swap': 'Swap the picture',
 
-  'footer.copyright': 'copyright {year} @ ur mum',
   'footer.source': 'source',
 
   'home.about': 'about',
