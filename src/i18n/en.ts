@@ -60,6 +60,8 @@ export const EN_STRINGS = {
   'nowPlaying.units': 's m h d w mo y',
   'nowPlaying.play': 'play',
   'nowPlaying.pause': 'pause',
+  'nowPlaying.mute': 'mute',
+  'nowPlaying.unmute': 'unmute',
 
   'projects.title': 'projects',
   'projects.description':

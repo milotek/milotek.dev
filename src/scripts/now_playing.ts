@@ -17,6 +17,8 @@ interface NowPlayingStrings {
   readonly units: string;
   readonly play: string;
   readonly pause: string;
+  readonly mute: string;
+  readonly unmute: string;
   readonly broke: string;
 }
 
@@ -35,6 +37,7 @@ const FFT_SIZE = 2048;
 const LASTFM_DEFAULT_COVER_ID = '2a96cbd8b46e442fc41c2b86b821562f';
 const LASTFM_FETCH_LIMIT = '50';
 const RECENT_TRACK_COUNT = 10;
+const LIVE_POLL_MS = 30_000;
 
 /** Keeps only the most recent listen of each unique track, up to `maxCount`. */
 function deduplicateTracks(
@@ -87,7 +90,7 @@ async function findPreviewUrl(
   trackName: string,
   artistName: string,
 ): Promise<string | undefined> {
-  const filename = `${artistName} - ${trackName}`.replace(/[/\\:*?"<>|]/g, '') + '.mp3';
+  const filename = `${artistName} - ${trackName}`.replace(/[/\\:*?"<>|]/g, '') + '.m4a';
   const candidate = AUDIO_ARCHIVE_URL + encodeURIComponent(filename);
   const response = await fetch(candidate, {method: 'HEAD'});
   return response.ok ? candidate : undefined;
@@ -135,7 +138,7 @@ function createWaveformPlayer(
   root: HTMLElement,
   audio: HTMLAudioElement,
   strings: NowPlayingStrings,
-): (previewUrl?: string) => void {
+): (previewUrl?: string, live?: boolean) => void {
   const container = root.querySelector<HTMLElement>('.audio-player');
   const playButton = container?.querySelector<HTMLButtonElement>('.play-button');
   const waveform = container?.querySelector<SVGSVGElement>('.waveform');
@@ -148,12 +151,15 @@ function createWaveformPlayer(
 
   const paths = [...waveform.querySelectorAll('path')];
   let previewUrl: string | undefined;
+  let isLive = false;
+  let liveStartMs: number | undefined;
   let heights = Array<number>(WAVEFORM_BARS).fill(0.1);
   const peaks = Array<number>(WAVEFORM_BARS).fill(0.25);
   let staticShape: readonly number[] | undefined;
   let beats: readonly number[] = [];
   let nextBeatIndex = 0;
   let flash = 0;
+  let lastTime = 0;
 
   let analyser: AnalyserNode | undefined;
   let bins: Uint8Array<ArrayBuffer> = new Uint8Array(0);
@@ -164,6 +170,19 @@ function createWaveformPlayer(
     container.dataset.state = 'paused';
     playButton.setAttribute('aria-label', strings.play);
   };
+
+  /** Silences a live track but keeps its clock running from where it was. */
+  const goLive = (): void => {
+    if (liveStartMs && !audio.paused) {
+      liveStartMs = performance.now() - audio.currentTime * 1000;
+    }
+    audio.pause();
+    container.dataset.state = 'live';
+    playButton.setAttribute('aria-label', strings.unmute);
+  };
+
+  const getLiveTime = (): number =>
+    ((performance.now() - (liveStartMs ?? 0)) / 1000) % audio.duration;
 
   const getPointerRatio = (event: MouseEvent): number => {
     const {left, width} = waveform.getBoundingClientRect();
@@ -184,6 +203,9 @@ function createWaveformPlayer(
       peaks[barIndex] = peak;
       return Math.max(0.06, (average / peak) ** 2);
     }
+    if (state === 'live' && staticShape) {
+      return 0.06 + (staticShape[barIndex] ?? 0.5) * (0.3 + 0.7 * flash);
+    }
     if (state !== 'loading' && staticShape) {
       return staticShape[barIndex] ?? 0.1;
     }
@@ -191,14 +213,22 @@ function createWaveformPlayer(
   };
 
   const renderFrame = (nowMs: number): void => {
-    const isPlaying = container.dataset.state === 'playing';
+    const state = container.dataset.state;
+    const isPlaying = state === 'playing';
     if (analyser && isPlaying) {
       analyser.getByteFrequencyData(bins);
     }
 
+    const time = state === 'live' && liveStartMs ? getLiveTime() : audio.currentTime;
+    if (time < lastTime) {
+      const ahead = beats.findIndex((beatSec) => beatSec > time);
+      nextBeatIndex = ahead < 0 ? beats.length : ahead;
+    }
+    lastTime = time;
+
     while (
       nextBeatIndex < beats.length &&
-      (beats[nextBeatIndex] ?? Infinity) <= audio.currentTime
+      (beats[nextBeatIndex] ?? Infinity) <= time
     ) {
       flash = 1;
       nextBeatIndex += 1;
@@ -207,7 +237,7 @@ function createWaveformPlayer(
     flash *= 0.88;
     waveform.style.setProperty('--flash', flash.toFixed(2));
 
-    const ease = isPlaying ? 0.45 : 0.1;
+    const ease = isPlaying || state === 'live' ? 0.45 : 0.1;
     heights = heights.map((height, i) => height + (computeTargetHeight(i, nowMs) - height) * ease);
 
     const pathData = buildWaveformPath(heights);
@@ -216,24 +246,15 @@ function createWaveformPlayer(
     }
 
     if (audio.duration) {
-      waveform.style.setProperty('--progress', String(audio.currentTime / audio.duration));
-      currentTimeEl.textContent = formatClock(audio.currentTime);
+      waveform.style.setProperty('--progress', String(time / audio.duration));
+      currentTimeEl.textContent = formatClock(time);
       totalTimeEl.textContent = formatClock(audio.duration);
     }
 
     window.requestAnimationFrame(renderFrame);
   };
 
-  playButton.addEventListener('click', () => {
-    if (!previewUrl) {
-      return;
-    }
-    if (!audio.paused || container.dataset.state === 'loading') {
-      pause();
-      return;
-    }
-
-    playButton.setAttribute('aria-label', strings.pause);
+  const connectAnalyser = (): void => {
     if (!analyser) {
       const ctx = new AudioContext();
       analyser = ctx.createAnalyser();
@@ -248,9 +269,25 @@ function createWaveformPlayer(
       ctx.createMediaElementSource(audio).connect(analyser);
       analyser.connect(ctx.destination);
     }
+  };
 
+  playButton.addEventListener('click', () => {
+    if (!previewUrl) {
+      return;
+    }
+    const stop = isLive ? goLive : pause;
+    if (!audio.paused || container.dataset.state === 'loading') {
+      stop();
+      return;
+    }
+
+    connectAnalyser();
+    if (container.dataset.state === 'live' && liveStartMs) {
+      audio.currentTime = getLiveTime();
+    }
+    playButton.setAttribute('aria-label', isLive ? strings.mute : strings.pause);
     container.dataset.state = 'loading';
-    audio.play().catch(pause);
+    audio.play().catch(stop);
   });
 
   audio.addEventListener('playing', () => {
@@ -266,16 +303,34 @@ function createWaveformPlayer(
     waveform.style.setProperty('--hover', String(getPointerRatio(event)));
   });
   waveform.addEventListener('click', (event: MouseEvent) => {
-    if (audio.duration) {
-      audio.currentTime = getPointerRatio(event) * audio.duration;
+    if (!audio.duration) {
+      return;
+    }
+    audio.currentTime = getPointerRatio(event) * audio.duration;
+    if (isLive) {
+      // Seeking desyncs from the fake live clock, so it becomes a normal player.
+      isLive = false;
+      container.removeAttribute('data-live');
+      audio.loop = false;
+      if (audio.paused) {
+        pause();
+      } else {
+        playButton.setAttribute('aria-label', strings.pause);
+      }
     }
   });
 
   window.requestAnimationFrame(renderFrame);
 
-  return (foundUrl?: string) => {
+  return (foundUrl?: string, live = false) => {
+    const wasListening = isLive && !audio.paused;
     pause();
     container.dataset.state = 'idle';
+    isLive = live && Boolean(foundUrl);
+    liveStartMs = undefined;
+    container.toggleAttribute('data-live', isLive);
+    audio.loop = isLive;
+    audio.preload = isLive ? 'metadata' : 'none';
     previewUrl = foundUrl;
     staticShape = undefined;
     beats = [];
@@ -291,7 +346,25 @@ function createWaveformPlayer(
     }
 
     audio.src = foundUrl;
-    fetch(foundUrl.replace(/mp3$/, 'json'))
+    if (isLive) {
+      goLive();
+      // Fake "joining mid-song": the clock starts somewhere in the middle half and
+      // runs silently while muted, so unmuting jumps to where the song "is".
+      audio.addEventListener(
+        'loadedmetadata',
+        () => {
+          if (!isLive) {
+            return;
+          }
+          liveStartMs = performance.now() - audio.duration * (0.25 + Math.random() * 0.5) * 1000;
+          if (wasListening) {
+            playButton.click();
+          }
+        },
+        {once: true},
+      );
+    }
+    fetch(foundUrl.replace(/m4a$/, 'json'))
       .then((res) => res.json() as Promise<TrackAnalysis>)
       .then((analysis) => {
         staticShape = analysis.levels;
@@ -301,6 +374,30 @@ function createWaveformPlayer(
         // Precomputed waveform and beat metadata are optional.
       });
   };
+}
+
+/** Fetches the most recent unique Last.fm listens. */
+async function fetchRecentTracks(user: string, apiKey: string): Promise<LastFmTrack[]> {
+  const query = new URLSearchParams({
+    method: 'user.getrecenttracks',
+    user,
+    api_key: apiKey,
+    format: 'json',
+    limit: LASTFM_FETCH_LIMIT,
+  });
+  const response = await fetch(`${LASTFM_API_URL}?${query.toString()}`);
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+  const payload = (await response.json()) as {
+    recenttracks?: {track?: readonly LastFmTrack[]};
+  };
+  return deduplicateTracks(payload.recenttracks?.track ?? [], RECENT_TRACK_COUNT);
+}
+
+/** Identifies one listen, so a live track that gets scrobbled counts as changed. */
+function listenKey(track?: LastFmTrack): string {
+  return `${track?.name}\0${track?.artist['#text']}\0${track?.date?.uts}`;
 }
 
 /** Fetches recent Last.fm tracks and hydrates a `.now-playing` widget root. */
@@ -320,35 +417,18 @@ async function hydrateWidget(root: HTMLElement): Promise<void> {
     return;
   }
 
-  const query = new URLSearchParams({
-    method: 'user.getrecenttracks',
-    user,
-    api_key: apiKey,
-    format: 'json',
-    limit: LASTFM_FETCH_LIMIT,
-  });
-
   try {
-    const response = await fetch(`${LASTFM_API_URL}?${query.toString()}`);
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
-    const payload = (await response.json()) as {
-      recenttracks?: {track?: readonly LastFmTrack[]};
-    };
-    const tracks = deduplicateTracks(
-      payload.recenttracks?.track ?? [],
-      RECENT_TRACK_COUNT,
-    );
+    let tracks = await fetchRecentTracks(user, apiKey);
     const latest = tracks[0];
     if (!latest) {
       throw new Error('No recent tracks returned.');
     }
 
     const loadPreview = createWaveformPlayer(root, audioEl, strings);
+    let current = latest;
 
     const showTrack = (selected: LastFmTrack): void => {
+      current = selected;
       const link = document.createElement('a');
       link.href = selected.url;
       link.textContent = selected.name;
@@ -364,7 +444,7 @@ async function hydrateWidget(root: HTMLElement): Promise<void> {
 
       findPreviewUrl(selected.name, selected.artist['#text']).then(
         (found) => {
-          loadPreview(found);
+          loadPreview(found, !selected.date);
         },
         () => {
           loadPreview(undefined);
@@ -400,6 +480,28 @@ async function hydrateWidget(root: HTMLElement): Promise<void> {
     };
 
     showTrack(latest);
+
+    // Follow the newest listen unless the visitor picked an older one or is
+    // listening to something that isn't live.
+    const player = root.querySelector('.audio-player');
+    window.setInterval(() => {
+      if (
+        document.hidden ||
+        current !== tracks[0] ||
+        (!audioEl.paused && !player?.hasAttribute('data-live'))
+      ) {
+        return;
+      }
+      fetchRecentTracks(user, apiKey).then(
+        (fresh) => {
+          if (fresh[0] && listenKey(fresh[0]) !== listenKey(tracks[0])) {
+            tracks = fresh;
+            showTrack(fresh[0]);
+          }
+        },
+        () => {},
+      );
+    }, LIVE_POLL_MS);
   } catch {
     recentList.previousElementSibling?.remove();
     recentList.replaceChildren();
