@@ -3,6 +3,7 @@ import {WEB_BUTTONS, type WebButton} from '../config';
 import {url} from '../lib/url';
 
 const LANE_COUNT = 3;
+const LANE_DURATIONS_SEC: readonly number[] = [7.5, 5.5, 9];
 const WOBBLE_WAVES = 2;
 const WOBBLE_PERIOD_SEC = 1.6;
 
@@ -10,15 +11,8 @@ const lanes: WebButton[][] = Array.from({length: LANE_COUNT}, (_, laneIndex) =>
   WEB_BUTTONS.filter((_, buttonIndex) => buttonIndex % LANE_COUNT === laneIndex),
 );
 
-function resolveHref(href: string | undefined): string | undefined {
-  if (!href) {
-    return undefined;
-  }
-  return href.startsWith('/') ? url(href.slice(1)) : href;
-}
-
-function resolveImageSrc(src: string): string {
-  return src.startsWith('/') ? url(src.slice(1)) : src;
+function resolvePath(path: string): string {
+  return path.startsWith('/') ? url(path.slice(1)) : path;
 }
 
 function computeWobbleDelay(
@@ -35,7 +29,10 @@ function computeWobbleDelay(
 <div class="button-waterfall">
   {
     lanes.map((lane, laneIndex) => (
-      <ul class="button-lane">
+      <ul
+        class="button-lane"
+        style={`--duration: ${LANE_DURATIONS_SEC[laneIndex] ?? 7}s`}
+      >
         {[...lane, ...lane].map((button, itemIndex) => {
           const Tag = button.href ? 'a' : 'span';
           return (
@@ -43,11 +40,11 @@ function computeWobbleDelay(
               <Tag
                 class="web-button-badge"
                 style={`animation-delay: ${computeWobbleDelay(itemIndex, lane.length, laneIndex)}`}
-                href={resolveHref(button.href)}
+                href={button.href ? resolvePath(button.href) : undefined}
                 title={button.name}
               >
                 <img
-                  src={resolveImageSrc(button.imageSrc)}
+                  src={resolvePath(button.imageSrc)}
                   alt={button.name}
                   width="88"
                   height="31"
@@ -66,12 +63,6 @@ function computeWobbleDelay(
 <hr class="webring-divider" />
 <div id="pawring"></div>
 
-<script>
-  import {initButtonWaterfall} from '../scripts/button_waterfall';
-
-  initButtonWaterfall();
-</script>
-
 <style>
   .button-waterfall {
     display: flex;
@@ -82,6 +73,16 @@ function computeWobbleDelay(
     overflow: hidden;
   }
 
+  .button-lane {
+    animation: waterfall-scroll var(--duration) linear infinite;
+    height: max-content;
+  }
+
+  .button-lane:hover,
+  .button-lane:hover .web-button-badge {
+    animation-play-state: paused;
+  }
+
   .button-lane li {
     padding-bottom: 6px;
   }
@@ -89,10 +90,6 @@ function computeWobbleDelay(
   .web-button-badge {
     animation: button-wobble 1.6s ease-in-out infinite;
     display: block;
-  }
-
-  .button-lane:hover .web-button-badge {
-    animation-play-state: paused;
   }
 
   img {
@@ -111,6 +108,16 @@ function computeWobbleDelay(
   .web-button-badge:hover {
     position: relative;
     z-index: 1;
+  }
+
+  @keyframes waterfall-scroll {
+    from {
+      transform: translateY(-50%);
+    }
+
+    to {
+      transform: translateY(0);
+    }
   }
 
   @keyframes button-wobble {
